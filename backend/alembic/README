@@ -1,0 +1,8 @@
+Alembic migrations for SAHAYAK.
+
+Create the first migration once PostgreSQL is running:
+
+    alembic revision --autogenerate -m "initial schema"
+    alembic upgrade head
+
+env.py reads DATABASE_URL through app.config, so alembic.ini needs no URL.

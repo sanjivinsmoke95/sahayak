@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   PHONE APP SHELL
+   On a phone the app fills the screen edge to edge. On a desktop
+   it is drawn inside a phone-shaped frame, so the layout is never
+   stretched into something it was not designed for.
+   ============================================================ */
+@layer base {
+  html {
+    font-size: 16px; /* Large = 18px, Extra large = 20px, set at runtime */
+  }
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background: #0c1420;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible, generous focus ring — keyboard users must always know where they are. */
+  :focus-visible {
+    outline: 3px solid #1b4b8f;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  input,
+  textarea {
+    font-size: 16px; /* stops iOS Safari zooming on focus */
+  }
+
+  button,
+  a,
+  [role='button'] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  button {
+    user-select: none;
+  }
+}
+
+@layer components {
+  .device-wrap {
+    min-height: 100dvh;
+  }
+
+  .device {
+    position: relative;
+    display: flex;
+    height: 100dvh;
+    width: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f6f8fc;
+  }
+
+  .notch {
+    display: none;
+  }
+
+  .fake-status {
+    display: none;
+  }
+
+  /* The one scrolling region. Header and tab bar stay put, like a native app. */
+  .app-scroll {
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  .app-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* The "official notice" paper block used for original government wording. */
+  .notice-paper {
+    background: repeating-linear-gradient(180deg, #fffdf7 0 31px, #f3efe4 31px 32px);
+    border: 1px solid #e3dbc8;
+  }
+}
+
+@media (min-width: 760px) {
+  body {
+    background: radial-gradient(1200px 700px at 50% -10%, #1b3358 0%, #0c1420 60%, #080e17 100%);
+  }
+
+  .device-wrap {
+    display: grid;
+    place-items: center;
+    padding: 22px 16px;
+  }
+
+  .device {
+    width: 402px;
+    height: min(858px, calc(100dvh - 44px));
+    border-radius: 46px;
+    box-shadow:
+      0 0 0 11px #141c28,
+      0 0 0 13px #39465a,
+      0 42px 90px -24px rgba(0, 0, 0, 0.75);
+  }
+
+  .notch {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    z-index: 60;
+    display: block;
+    height: 26px;
+    width: 104px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #141c28;
+    pointer-events: none;
+  }
+
+  .fake-status {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

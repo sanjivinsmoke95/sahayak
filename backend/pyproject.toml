@@ -1,0 +1,16 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["B008"]  # FastAPI's Depends() in defaults is the documented pattern
+
+[tool.ruff.lint.per-file-ignores]
+"alembic/*" = ["F403", "F405"]
+
+# The schemas are the wire contract with a TypeScript client, so their fields
+# are camelCase on purpose. Renaming them to snake_case would either break the
+# frontend or force a mapping layer in the browser for no benefit.
+"app/schemas/*" = ["N815"]
+"app/routers/*" = ["N803"]

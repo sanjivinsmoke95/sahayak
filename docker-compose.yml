@@ -1,0 +1,77 @@
+services:
+  db:
+    # pgvector is required by the included government-data collector.
+    image: pgvector/pgvector:pg16
+    container_name: sahayak-db
+    environment:
+      POSTGRES_USER: sahayak
+      POSTGRES_PASSWORD: sahayak
+      POSTGRES_DB: sahayak
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sahayak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  collector:
+    build: ./sahayak-collector
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8010
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sahayak
+      POSTGRES_USER: sahayak
+      POSTGRES_PASSWORD: sahayak
+      API_PORT: 8010
+    ports:
+      - "8010:8010"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://sahayak:sahayak@db:5432/sahayak
+      CORS_ORIGINS: http://localhost:3000
+      COLLECTOR_API_URL: http://collector:8010
+      # Add OPENAI_API_KEY to a root .env file for detailed AI explanations.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DEFAULT_AI_PROVIDER: ${DEFAULT_AI_PROVIDER:-openai}
+      # Mee Seva centre finder. Server key (Places API) stays server-side; the
+      # optional browser key (Maps JavaScript API, referrer-restricted) draws
+      # the interactive map. Put real values in a root .env file — never here.
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      GOOGLE_MAPS_BROWSER_KEY: ${GOOGLE_MAPS_BROWSER_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads-data:/app/uploads
+      # The shared demo notices live outside the backend build context, so make
+      # them available at runtime. Without this a fresh account is an empty shell.
+      - ./database/seed:/app/database/seed:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
+  uploads-data:

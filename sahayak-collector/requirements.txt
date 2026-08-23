@@ -1,0 +1,36 @@
+# ---- Core crawling ----
+Scrapy==2.13.0
+scrapy-playwright==0.0.43
+playwright==1.44.0
+beautifulsoup4==4.12.3
+lxml==5.2.2
+w3lib==2.1.2
+tldextract==5.1.2
+
+# ---- Data / validation ----
+pydantic==2.7.4
+pydantic-settings==2.3.4
+python-dateutil==2.9.0
+
+# ---- Database ----
+SQLAlchemy==2.0.31
+psycopg2-binary==2.9.9
+pgvector==0.3.0
+alembic==1.13.2
+
+# ---- Semantic search ----
+sentence-transformers==3.0.1
+numpy==1.26.4
+
+# ---- API ----
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+
+# ---- Scheduler ----
+APScheduler==3.10.4
+
+# ---- Utils ----
+PyYAML==6.0.1
+tenacity==8.4.1
+python-dotenv==1.0.1
+structlog==24.2.0
