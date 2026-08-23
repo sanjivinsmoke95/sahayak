@@ -1,0 +1,154 @@
+# ---------------------------------------------------------------------------
+# Registry of official Indian Government sources to crawl.
+#
+# Each source entry drives the generic spider. Add new portals here without
+# touching code. `render: true` routes requests through Playwright for
+# JavaScript-heavy single-page apps.
+#
+# `allowed_domains` is enforced by the domain filter in utils/domain_filter.py
+# so the crawler NEVER leaves official government infrastructure.
+# ---------------------------------------------------------------------------
+
+# Domains that are always considered "official government" regardless of source.
+trusted_suffixes:
+  - ".gov.in"
+  - ".nic.in"
+  # Vikaspedia is an official Government of India portal built by C-DAC under
+  # MeitY (Digital India). Its citizen-service pages are server-rendered and
+  # openly crawlable, which makes it a reliable verified source.
+  - ".vikaspedia.in"
+
+# Extra fully-qualified domains that are officially recognised gov portals
+# but do not end in .gov.in / .nic.in.
+trusted_domains:
+  - "www.myscheme.gov.in"
+  - "www.india.gov.in"
+  - "services.india.gov.in"
+  - "www.data.gov.in"
+
+sources:
+  # ==== VERIFIED WORKING SOURCE (returns 200, crawlable, server-rendered) ====
+  # A single official Income Certificate service page. `max_depth: 0` means we
+  # extract exactly this page and follow no links — the fastest reliable demo.
+  - name: vikaspedia_income_cert
+    label: "Vikaspedia (MeitY/C-DAC) - Apply for Income Certificate"
+    spider: generic
+    start_urls:
+      - "https://aspirational.vikaspedia.in/viewcontent/aspirational-districts/sikkim/west-sikkim/citizen-services/apply-for-income-certificate?lgn=en"
+    allowed_domains:
+      - "vikaspedia.in"
+    render: false            # plain server-rendered HTML, no Playwright needed
+    max_depth: 0             # single page — extract just this service
+    default_department: "Revenue Administration Department"
+    default_state: "Sikkim"
+    default_district: "West Sikkim"
+    default_language: "en"
+
+  - name: myscheme
+    label: "myScheme - National Scheme Discovery Platform"
+    spider: myscheme
+    start_urls:
+      - "https://www.myscheme.gov.in/search"
+    allowed_domains:
+      - "myscheme.gov.in"
+    render: true            # React SPA -> needs Playwright
+    default_department: null
+    default_state: "All India"
+
+  - name: national_portal
+    label: "National Portal of India"
+    spider: generic
+    start_urls:
+      - "https://www.india.gov.in/topics/social-development"
+      - "https://services.india.gov.in/"
+    allowed_domains:
+      - "india.gov.in"
+      - "services.india.gov.in"
+    render: false
+    default_department: null
+    default_state: "All India"
+
+  - name: data_gov_in
+    label: "Open Government Data Platform (data.gov.in)"
+    spider: generic
+    start_urls:
+      - "https://www.data.gov.in/catalogs"
+    allowed_domains:
+      - "data.gov.in"
+    render: false
+    default_state: "All India"
+
+  - name: passport_seva
+    label: "Passport Seva"
+    spider: generic
+    start_urls:
+      - "https://www.passportindia.gov.in/AppOnlineProject/welcomeLink"
+    allowed_domains:
+      - "passportindia.gov.in"
+    render: false
+    default_department: "Ministry of External Affairs"
+    default_state: "All India"
+
+  - name: parivahan
+    label: "Parivahan Sewa (Driving Licence / RC)"
+    spider: generic
+    start_urls:
+      - "https://parivahan.gov.in/parivahan/en/content/driving-licence-0"
+    allowed_domains:
+      - "parivahan.gov.in"
+    render: false
+    default_department: "Ministry of Road Transport and Highways"
+    default_state: "All India"
+
+  - name: uidai
+    label: "UIDAI (Aadhaar)"
+    spider: generic
+    start_urls:
+      - "https://uidai.gov.in/en/my-aadhaar/avail-aadhaar-services.html"
+    allowed_domains:
+      - "uidai.gov.in"
+    render: false
+    default_department: "UIDAI"
+    default_state: "All India"
+
+  - name: income_tax
+    label: "Income Tax Department"
+    spider: generic
+    start_urls:
+      - "https://www.incometax.gov.in/iec/foportal/help/individual/return-applicable-1"
+    allowed_domains:
+      - "incometax.gov.in"
+    render: false
+    default_department: "Ministry of Finance"
+    default_state: "All India"
+
+  # ---- State eDistrict / citizen-service portals ----
+  - name: seva_sindhu
+    label: "Seva Sindhu (Karnataka)"
+    spider: generic
+    start_urls:
+      - "https://sevasindhu.karnataka.gov.in/Sevasindhu/English"
+    allowed_domains:
+      - "sevasindhu.karnataka.gov.in"
+    render: true
+    default_state: "Karnataka"
+
+  - name: meeseva
+    label: "MeeSeva (Telangana / Andhra Pradesh)"
+    spider: generic
+    start_urls:
+      - "https://ts.meeseva.telangana.gov.in/meeseva/home.htm"
+    allowed_domains:
+      - "meeseva.telangana.gov.in"
+    render: false
+    default_state: "Telangana"
+
+  - name: edistrict_up
+    label: "eDistrict Uttar Pradesh"
+    spider: generic
+    start_urls:
+      - "https://edistrict.up.gov.in/edistrictup/"
+    allowed_domains:
+      - "edistrict.up.gov.in"
+    render: false
+    default_state: "Uttar Pradesh"

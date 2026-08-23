@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
+  "python.analysis.extraPaths": ["./backend"],
+  "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+  "eslint.workingDirectories": ["./frontend"],
+  "tailwindCSS.experimental.classRegex": [["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]],
+  "files.exclude": { "**/__pycache__": true, "**/.ruff_cache": true, "**/.next": true }
+}
