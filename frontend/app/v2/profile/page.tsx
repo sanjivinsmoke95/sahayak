@@ -3,17 +3,17 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { Icon } from '@/components/common';
 import { useDocuments, useProfiles, useTranslation } from '@/hooks';
-import { fill } from '@/utils/format';
 import { useSettingsStore, useUiStore } from '@/store';
-import type { StringKey } from '@/lib/i18n';
 
 interface Row {
   icon: string;
-  labelKey: StringKey;
+  label: string;
   onClick: () => void;
-  badge?: string;
+  value?: string;
+  danger?: boolean;
 }
 
 export default function V2ProfilePage() {
@@ -29,88 +29,70 @@ export default function V2ProfilePage() {
   const go = (path: string) => { setDirection('push'); router.push(path); };
   const docCount = (documents ?? []).length;
   const famCount = (profiles ?? []).length;
-  const langLabel = language.toUpperCase();
 
-  const sections: { titleKey: StringKey; rows: Row[] }[] = [
-    {
-      titleKey: 'profileSection1',
-      rows: [
-        { icon: 'folder', labelKey: 'profileMyDocs', onClick: () => go('/v2/documents'), badge: String(docCount) },
-        { icon: 'user', labelKey: 'profileFamily', onClick: () => go('/v2/profiles'), badge: famCount ? String(famCount) : undefined },
-      ],
-    },
-    {
-      titleKey: 'profileSection2',
-      rows: [
-        { icon: 'search', labelKey: 'profileSchemes', onClick: () => go('/v2/schemes') },
-        { icon: 'tasks', labelKey: 'profileApps', onClick: () => go('/v2/applications') },
-        { icon: 'chat', labelKey: 'profileAssistant', onClick: () => go('/v2/assistant') },
-      ],
-    },
-    {
-      titleKey: 'profileSection3',
-      rows: [
-        { icon: 'globe', labelKey: 'profileLanguage', onClick: () => setLanguageSheetOpen(true), badge: langLabel },
-        { icon: 'settings', labelKey: 'profileSettings', onClick: () => go('/v2/settings') },
-      ],
-    },
+  const services: Row[] = [
+    { icon: 'folder', label: 'My documents', value: String(docCount), onClick: () => go('/v2/documents') },
+    { icon: 'user', label: 'Family profiles', value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
+    { icon: 'search', label: 'Schemes for me', onClick: () => go('/v2/schemes') },
+    { icon: 'tasks', label: 'My applications', onClick: () => go('/v2/applications') },
+    { icon: 'scan', label: 'Nearby Mee Seva', onClick: () => go('/v2/mee-seva') },
+    { icon: 'chat', label: 'Ask Sahayak', onClick: () => go('/v2/assistant') },
   ];
+
+  const account: Row[] = [
+    { icon: 'globe', label: 'Language', value: language.toUpperCase(), onClick: () => setLanguageSheetOpen(true) },
+    { icon: 'help', label: 'Help & Support', onClick: () => go('/v2/assistant') },
+    { icon: 'info', label: 'About Sahayak', onClick: () => go('/v2/settings') },
+    { icon: 'star', label: 'Rate Us', onClick: () => toast('Thanks for using Sahayak!') },
+    { icon: 'logout', label: 'Logout', danger: true, onClick: () => toast("You're signed in privately on this device.") },
+  ];
+
+  const List = ({ rows }: { rows: Row[] }) => (
+    <div className="overflow-hidden rounded-[20px] border border-[#E8EDF5] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+      {rows.map((row, i) => (
+        <button
+          key={row.label}
+          type="button"
+          onClick={row.onClick}
+          className={`flex w-full items-center gap-4 px-5 py-4 text-left active:bg-[#F8FAFC] ${i > 0 ? 'border-t border-[#EEF2F7]' : ''}`}
+        >
+          <Icon
+            name={row.icon}
+            className={`h-[22px] w-[22px] shrink-0 ${row.danger ? 'text-[#DC3545]' : 'text-[#102D63]'}`}
+            strokeWidth={2}
+          />
+          <span className={`flex-1 text-base font-semibold ${row.danger ? 'text-[#DC3545]' : 'text-[#101828]'}`}>
+            {row.label}
+          </span>
+          {row.value && <span className="text-sm font-semibold text-[#667085]">{row.value}</span>}
+          {!row.danger && <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
-      {/* Profile header card */}
+      {/* Profile card */}
       <button
         type="button"
         onClick={() => go('/v2/settings')}
         className="flex w-full items-center gap-4 rounded-[20px] border border-[#E8EDF5] bg-white p-5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F8FAFC]"
       >
-        <img
-          src="/v2-assets/avatar-default.svg"
-          alt=""
-          className="h-16 w-16 shrink-0 rounded-full"
-          draggable={false}
-        />
+        <img src="/v2-assets/avatar-default.svg" alt="" className="h-16 w-16 shrink-0 rounded-full" draggable={false} />
         <div className="min-w-0 flex-1">
           <p className="v2-heading truncate text-xl font-extrabold text-[#101828]">
-            {displayName || t('profileGuest')}
+            {displayName || 'Welcome'}
           </p>
           <p className="mt-0.5 text-sm text-[#667085]">
-            {displayName
-              ? fill(t('profileDocsCount'), { n: docCount })
-              : t('profileSetName')}
+            {displayName ? 'View and edit your profile' : 'Tap to add your name'}
           </p>
         </div>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />
       </button>
 
-      {sections.map((section) => (
-        <section key={section.titleKey}>
-          <h2 className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-[#667085]">
-            {t(section.titleKey)}
-          </h2>
-          <div className="overflow-hidden rounded-[18px] border border-[#E8EDF5] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
-            {section.rows.map((row, i) => (
-              <button
-                key={row.labelKey}
-                type="button"
-                onClick={row.onClick}
-                className={`flex w-full items-center gap-3.5 px-4 py-3.5 text-left active:bg-[#F8FAFC] ${i > 0 ? 'border-t border-[#EAF1FF]' : ''}`}
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#102D63]">
-                  <Icon name={row.icon} className="h-5 w-5" />
-                </span>
-                <span className="flex-1 text-base font-semibold text-[#101828]">{t(row.labelKey)}</span>
-                {row.badge && (
-                  <span className="rounded-full bg-[#F8FAFC] px-2.5 py-0.5 text-xs font-bold text-[#667085]">
-                    {row.badge}
-                  </span>
-                )}
-                <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />
-              </button>
-            ))}
-          </div>
-        </section>
-      ))}
+      <List rows={services} />
+      <List rows={account} />
 
       <p className="text-center text-xs leading-relaxed text-[#667085]">{t('disclaimer')}</p>
     </div>
