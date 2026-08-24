@@ -8,3 +8,5 @@ export { V2Input, V2Textarea } from './V2Input';
 export { V2ExpandableSection } from './V2ExpandableSection';
 export { V2EmptyState } from './V2EmptyState';
 export { V2DocumentRow } from './V2DocumentRow';
+export { V2DocumentCard } from './V2DocumentCard';
+export { V2SchemeMatchCard } from './V2SchemeMatchCard';

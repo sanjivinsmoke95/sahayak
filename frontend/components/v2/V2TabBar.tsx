@@ -31,7 +31,7 @@ export function V2TabBar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="shrink-0 border-t border-[#D8D0C7] bg-white"
+      className="shrink-0 border-t border-[#EDE9E3] bg-white"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="grid grid-cols-5">
@@ -46,14 +46,12 @@ export function V2TabBar() {
               aria-current={active ? 'page' : undefined}
               onClick={() => { buzz(); setDirection('tab'); }}
               className={cn(
-                'flex flex-col items-center gap-1 pb-1.5 pt-2 transition',
+                'flex flex-col items-center gap-0.5 pb-1.5 pt-2 transition',
                 active ? 'text-[#0C6E6B]' : 'text-[#7A6E68]',
               )}
             >
-              <span className={cn('rounded-full px-4 py-0.5 transition', active && 'bg-[#E1F0EF]')}>
-                <Icon name={tab.icon} className="h-6 w-6" strokeWidth={active ? 2.4 : 2} />
-              </span>
-              <span className={cn('text-[0.6875rem] leading-tight', active ? 'font-bold' : 'font-medium')}>
+              <Icon name={tab.icon} className="h-6 w-6" strokeWidth={active ? 2.4 : 1.8} />
+              <span className={cn('text-[0.625rem] leading-tight', active ? 'font-bold' : 'font-medium')}>
                 {t(tab.labelKey)}
               </span>
             </Link>

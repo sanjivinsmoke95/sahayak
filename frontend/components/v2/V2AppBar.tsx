@@ -9,14 +9,13 @@ import type { StringKey } from '@/lib/i18n';
 const TAB_ROOTS = ['/v2', '/v2/documents', '/v2/schemes', '/v2/applications', '/v2/assistant'];
 
 const TITLE_BY_ROUTE: Record<string, StringKey> = {
-  '/v2': 'brand',
   '/v2/upload': 'btnUpload',
   '/v2/analyzing': 'anTitle',
-  '/v2/documents': 'docsTitle',
-  '/v2/schemes': 'schBrowse',
+  '/v2/documents': 'shortDocs',
+  '/v2/schemes': 'tabSchemes',
   '/v2/applications': 'appMyTitle',
-  '/v2/assistant': 'askTitle',
-  '/v2/settings': 'setTitle',
+  '/v2/assistant': 'navAsk',
+  '/v2/settings': 'navSettings',
   '/v2/profiles': 'famTitle',
 };
 
@@ -32,21 +31,45 @@ export function V2AppBar() {
   const isHome = pathname === '/v2';
   const titleKey = TITLE_BY_ROUTE[pathname]
     ?? (pathname.startsWith('/v2/documents/') ? 'navDocs'
-    : pathname.startsWith('/v2/schemes/') ? 'schBrowse'
+    : pathname.startsWith('/v2/schemes/') ? 'tabSchemes'
     : pathname.startsWith('/v2/applications/') ? 'appMyTitle'
     : pathname.startsWith('/v2/services/') ? 'appsStartService'
     : 'brand');
 
-  const goBack = () => {
-    setDirection('pop');
-    router.back();
-  };
-
+  const goBack = () => { setDirection('pop'); router.back(); };
   const initial = (displayName || 'S')[0].toUpperCase();
+
+  if (isHome) {
+    return (
+      <header
+        className="shrink-0 bg-white"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#0C6E6B] text-white">
+            <span className="v2-heading text-sm font-bold">{initial}</span>
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="v2-heading text-base font-bold text-[#19120E]">{t('brand')}</p>
+            <p className="text-xs text-[#7A6E68]">{t('tagline')}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setLanguageSheetOpen(true)}
+            aria-label={t('language')}
+            className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#0C6E6B] active:bg-[#E1F0EF]"
+          >
+            <Icon name="globe" className="h-5 w-5" />
+            <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#C0392B]" />
+          </button>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
-      className="shrink-0 border-b border-[#D8D0C7] bg-white"
+      className="shrink-0 bg-white"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       <div className="flex items-center gap-2 px-3 py-2.5">
@@ -59,32 +82,23 @@ export function V2AppBar() {
           >
             <Icon name="left" className="h-6 w-6" strokeWidth={2.4} />
           </button>
-        ) : isHome ? (
-          <button
-            type="button"
-            onClick={() => { setDirection('push'); router.push('/v2/settings'); }}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#0C6E6B] text-white"
-            aria-label={t('navSettings')}
-          >
-            <span className="v2-heading text-sm font-bold">{initial}</span>
-          </button>
         ) : (
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-[#E1F0EF] text-[#0C6E6B]">
             <Icon name="home" className="h-5 w-5" />
           </div>
         )}
 
-        <p className="v2-heading min-w-0 flex-1 truncate px-1 text-xl font-bold text-[#19120E]" aria-hidden="true">
-          {isHome ? '' : t(titleKey)}
+        <p className="v2-heading min-w-0 flex-1 truncate px-1 text-lg font-bold text-[#19120E]">
+          {t(titleKey)}
         </p>
 
         <button
           type="button"
           onClick={() => setLanguageSheetOpen(true)}
           aria-label={t('language')}
-          className="grid h-10 shrink-0 place-items-center rounded-full bg-[#E1F0EF] px-3 text-sm font-bold text-[#0C6E6B] active:bg-[#D8D0C7]"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#7A6E68] active:bg-[#E1F0EF]"
         >
-          {t('language').slice(0, 2)}
+          <Icon name="settings" className="h-5 w-5" />
         </button>
       </div>
     </header>
