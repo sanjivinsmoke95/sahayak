@@ -30,13 +30,20 @@ export function V2Shell({ children }: { children: ReactNode }) {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [pathname]);
 
+  const isHome = pathname === '/v2';
+
   return (
     <div className="v2-wrap">
       <div className="v2-device">
         <span className="v2-notch" aria-hidden="true" />
-        <V2AppBar />
+        {!isHome && <V2AppBar />}
         <BackendStatusBanner />
-        <main id="main" ref={scrollRef} tabIndex={-1} className="v2-scroll px-4 pb-10 pt-5">
+        <main
+          id="main"
+          ref={scrollRef}
+          tabIndex={-1}
+          className={isHome ? 'v2-scroll' : 'v2-scroll px-4 pb-10 pt-5'}
+        >
           {children}
         </main>
         <V2TabBar />
