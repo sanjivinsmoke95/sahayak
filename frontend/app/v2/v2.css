@@ -1,21 +1,21 @@
 /*
- * Sahayak 2.0 — Teal & Stone design tokens
+ * Sahayak 2.0 — Navy & Saffron design tokens
  *
- * Primary:       #0C6E6B   deep teal
- * Primary light: #E1F0EF   teal wash
- * Accent:        #C97B1A   warm gold (attention, not alarm)
- * Accent light:  #FDF3E1
- * Background:    #F6F3EF   warm stone
+ * Primary:       #102D63   deep navy
+ * Primary light: #EAF1FF   pale blue
+ * Accent:        #F4A340   saffron/orange
+ * Accent light:  #FFF3E3   pale orange
+ * Background:    #F8FAFC   cool white
  * Surface:       #FFFFFF
- * Surface 2:     #EDE9E3
- * Text:          #19120E   warm near-black
- * Muted:         #7A6E68   warm grey
- * Border:        #D8D0C7
- * Danger:        #C0392B
- * Good:          #2D7A4F
+ * Surface 2:     #E8EDF5
+ * Text:          #101828   near black
+ * Muted:         #667085   cool grey
+ * Border:        #D6DDE8
+ * Danger:        #DC3545
+ * Good/Success:  #2E9B67
  */
 
-/* ─── Phone frame (mirrors globals.css but teal-themed) ─── */
+/* ─── Phone frame ─── */
 .v2-wrap {
   min-height: 100dvh;
 }
@@ -27,7 +27,7 @@
   width: 100%;
   flex-direction: column;
   overflow: hidden;
-  background: #F6F3EF;
+  background: #F8FAFC;
 }
 
 .v2-notch {
@@ -49,7 +49,7 @@
 
 @media (min-width: 760px) {
   body:has(.v2-wrap) {
-    background: radial-gradient(1200px 700px at 50% -10%, #0E3533 0%, #071A19 60%, #040E0D 100%);
+    background: radial-gradient(1200px 700px at 50% -10%, #0B2352 0%, #071533 60%, #040C1F 100%);
   }
 
   .v2-wrap {
@@ -63,8 +63,8 @@
     height: min(858px, calc(100dvh - 44px));
     border-radius: 46px;
     box-shadow:
-      0 0 0 11px #0A1F1E,
-      0 0 0 13px #1E4341,
+      0 0 0 11px #0A1530,
+      0 0 0 13px #1E3560,
       0 42px 90px -24px rgba(0, 0, 0, 0.75);
   }
 
@@ -78,19 +78,19 @@
     width: 104px;
     transform: translateX(-50%);
     border-radius: 999px;
-    background: #0A1F1E;
+    background: #0A1530;
     pointer-events: none;
   }
 }
 
 /* ─── V2 heading font ─── */
 .v2-heading {
-  font-family: var(--font-v2-heading), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-v2-heading), 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* ─── Focus ring override for v2 ─── */
 .v2-device :focus-visible {
-  outline: 3px solid #0C6E6B;
+  outline: 3px solid #102D63;
   outline-offset: 3px;
   border-radius: 6px;
 }

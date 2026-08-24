@@ -16,12 +16,12 @@ function SettingRow({ icon, title, description, children }: {
   return (
     <V2Card className="p-4">
       <div className="flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-[#E1F0EF] text-[#0C6E6B]">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-[#EAF1FF] text-[#102D63]">
           <Icon name={icon} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="v2-heading text-base font-semibold text-[#19120E]">{title}</p>
-          {description && <p className="mt-0.5 text-sm text-[#7A6E68]">{description}</p>}
+          <p className="v2-heading text-base font-semibold text-[#101828]">{title}</p>
+          {description && <p className="mt-0.5 text-sm text-[#667085]">{description}</p>}
         </div>
       </div>
       <div className="mt-3">{children}</div>
@@ -45,7 +45,7 @@ function OptionChips<T extends string | boolean>({ value, onChange, options, col
             className={cn(
               'rounded-[12px] border px-3 py-2.5 text-sm font-semibold transition',
               opt.className,
-              active ? 'border-[#0C6E6B] bg-[#E1F0EF] text-[#0C6E6B]' : 'border-[#D8D0C7] bg-white text-[#19120E]',
+              active ? 'border-[#102D63] bg-[#EAF1FF] text-[#102D63]' : 'border-[#D6DDE8] bg-white text-[#101828]',
             )}
           >
             {opt.label}
@@ -70,8 +70,8 @@ export default function V2SettingsPage() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="v2-heading text-2xl font-bold text-[#19120E]">{t('setTitle')}</h1>
-        <p className="mt-1 text-sm text-[#7A6E68]">{t('setSub')}</p>
+        <h1 className="v2-heading text-2xl font-bold text-[#101828]">{t('setTitle')}</h1>
+        <p className="mt-1 text-sm text-[#667085]">{t('setSub')}</p>
       </header>
 
       <SettingRow icon="shrink" title={t('autoShrink')} description={t('autoShrinkS')}>
@@ -128,17 +128,17 @@ export default function V2SettingsPage() {
       </SettingRow>
 
       <SettingRow icon="lock" title={t('privacyTitle')} description={t('privacyBody')}>
-        <p className="mb-4 text-sm text-[#7A6E68]">{t('storageNote')}</p>
+        <p className="mb-4 text-sm text-[#667085]">{t('storageNote')}</p>
         <V2Button variant="danger" size="md" onClick={() => setDeleteSheetOpen(true)}>
           <Icon name="trash" className="h-5 w-5" />
           {t('deleteAll')}
         </V2Button>
       </SettingRow>
 
-      <p className="text-center text-xs leading-relaxed text-[#7A6E68]">{t('disclaimer')}</p>
+      <p className="text-center text-xs leading-relaxed text-[#667085]">{t('disclaimer')}</p>
 
       <Sheet open={deleteSheetOpen} onOpenChange={setDeleteSheetOpen} title={t('deleteAll')} closeLabel={t('cancel')}>
-        <div className="rounded-[12px] bg-[#FDEEEC] p-4 text-sm leading-relaxed text-[#C0392B]">
+        <div className="rounded-[12px] bg-[#FDE8EA] p-4 text-sm leading-relaxed text-[#DC3545]">
           <p className="font-semibold">{t('deleteAllAsk')}</p>
           <p className="mt-1">{t('deleteAllNote')}</p>
         </div>

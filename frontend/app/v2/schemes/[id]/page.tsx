@@ -23,7 +23,7 @@ export default function V2SchemeDetailPage() {
     );
   }
   if (!scheme) {
-    return <p className="rounded-[16px] bg-[#FDEEEC] p-5 text-lg text-[#C0392B]">{t('notFound')}</p>;
+    return <p className="rounded-[16px] bg-[#FDE8EA] p-5 text-lg text-[#DC3545]">{t('notFound')}</p>;
   }
 
   const match = matches?.results.find((m) => m.id === scheme.id);
@@ -36,7 +36,7 @@ export default function V2SchemeDetailPage() {
   return (
     <div className="space-y-4 pb-4">
       <header>
-        <h1 className="v2-heading text-2xl font-bold leading-snug text-[#19120E]">{scheme.name}</h1>
+        <h1 className="v2-heading text-2xl font-bold leading-snug text-[#101828]">{scheme.name}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           <V2Badge tone="teal">{scheme.category}</V2Badge>
           <V2Badge tone="grey">{scheme.level === 'Central' ? t('schCentral') : t('schState')}</V2Badge>
@@ -44,9 +44,9 @@ export default function V2SchemeDetailPage() {
       </header>
 
       {match && (
-        <div className="rounded-[20px] bg-[#0C6E6B] p-5 text-white shadow-[0_4px_20px_rgba(25,18,14,0.10)]">
+        <div className="rounded-[20px] bg-[#102D63] p-5 text-white shadow-[0_4px_20px_rgba(25,18,14,0.10)]">
           <p className="flex items-center gap-2 text-sm font-semibold">
-            <span className={`h-2 w-2 rounded-full ${ready ? 'bg-[#2D7A4F]' : 'bg-[#C97B1A]'}`} />
+            <span className={`h-2 w-2 rounded-full ${ready ? 'bg-[#2E9B67]' : 'bg-[#F4A340]'}`} />
             {ready ? t('schDocsReady') : t('schMoreNeeded')}
           </p>
 
@@ -82,25 +82,25 @@ export default function V2SchemeDetailPage() {
 
       {scheme.benefit && (
         <V2Card className="p-4">
-          <h2 className="v2-heading text-base font-semibold text-[#19120E]">{t('schBenefit')}</h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#19120E]">{scheme.benefit}</p>
+          <h2 className="v2-heading text-base font-semibold text-[#101828]">{t('schBenefit')}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[#101828]">{scheme.benefit}</p>
         </V2Card>
       )}
 
       {scheme.summary && (
         <V2Card className="p-4">
-          <h2 className="v2-heading text-base font-semibold text-[#19120E]">{t('schAbout')}</h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#19120E]">{scheme.summary}</p>
+          <h2 className="v2-heading text-base font-semibold text-[#101828]">{t('schAbout')}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[#101828]">{scheme.summary}</p>
         </V2Card>
       )}
 
       {scheme.requiredDocuments.length > 0 && (
         <V2Card className="p-4">
-          <h2 className="v2-heading mb-2 text-base font-semibold text-[#19120E]">{t('schReqDocs')}</h2>
+          <h2 className="v2-heading mb-2 text-base font-semibold text-[#101828]">{t('schReqDocs')}</h2>
           <ul className="space-y-1.5">
             {scheme.requiredDocuments.map((doc, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-[#19120E]">
-                <Icon name="doc" className="mt-0.5 h-4 w-4 shrink-0 text-[#D8D0C7]" />
+              <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-[#101828]">
+                <Icon name="doc" className="mt-0.5 h-4 w-4 shrink-0 text-[#D6DDE8]" />
                 {doc}
               </li>
             ))}
@@ -113,16 +113,16 @@ export default function V2SchemeDetailPage() {
           href={scheme.officialUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[16px] border border-[#D8D0C7] bg-white px-4 text-base font-semibold text-[#0C6E6B] active:bg-[#E1F0EF]"
+          className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[16px] border border-[#D6DDE8] bg-white px-4 text-base font-semibold text-[#102D63] active:bg-[#EAF1FF]"
         >
           <Icon name="globe" className="h-5 w-5" />
           {t('schOfficial')}
-          <Icon name="right" className="h-4 w-4 text-[#D8D0C7]" />
+          <Icon name="right" className="h-4 w-4 text-[#D6DDE8]" />
         </a>
       )}
 
-      <div className="flex items-start gap-2 rounded-[12px] bg-[#E1F0EF] p-3 text-sm leading-relaxed text-[#7A6E68]">
-        <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-[#0C6E6B]" />
+      <div className="flex items-start gap-2 rounded-[12px] bg-[#EAF1FF] p-3 text-sm leading-relaxed text-[#667085]">
+        <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-[#102D63]" />
         <span>{t('provSchemeNote')}</span>
       </div>
     </div>

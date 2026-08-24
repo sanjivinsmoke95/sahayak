@@ -28,21 +28,21 @@ export function V2DocumentRow({ document: doc }: { document: SahayakDocument }) 
     <button
       type="button"
       onClick={() => { setDirection('push'); router.push(`/v2/documents/${doc.id}`); }}
-      className="flex w-full items-center gap-3 px-4 py-3.5 text-left active:bg-[#F6F3EF]"
+      className="flex w-full items-center gap-3 px-4 py-3.5 text-left active:bg-[#F8FAFC]"
     >
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-[#E1F0EF] text-[#0C6E6B]">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-[#EAF1FF] text-[#102D63]">
         <Icon name="doc" className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="truncate text-sm font-bold text-[#19120E]">{tr(doc.title)}</span>
+          <span className="truncate text-sm font-bold text-[#101828]">{tr(doc.title)}</span>
           {badge && <V2Badge tone={badge.tone}>{t(badge.key)}</V2Badge>}
         </span>
-        <span className="mt-0.5 block text-xs text-[#7A6E68]">
+        <span className="mt-0.5 block text-xs text-[#667085]">
           {received ? `Updated on ${received}` : tr(CATS[doc.cat])}
         </span>
       </span>
-      <span className="shrink-0 text-[#D8D0C7]">
+      <span className="shrink-0 text-[#D6DDE8]">
         <Icon name="more" className="h-5 w-5" />
       </span>
     </button>

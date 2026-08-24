@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE7FF"/>
+  </linearGradient>
+</defs>
+<!-- left hand -->
+<path d="M116 181 C91 171 67 155 51 133 C39 116 34 95 39 78 C41 70 48 66 55 70 C65 76 70 90 78 103
+C68 85 67 68 76 62 C85 56 93 63 99 74 L116 105 C110 88 109 71 118 66 C126 61 134 67 139 77
+L151 103 C150 85 155 69 165 68 C175 67 179 78 179 92 L179 130 C178 151 157 173 139 182 Z"
+ fill="url(#g)"/>
+<!-- right hand / arm -->
+<path d="M121 181 C145 172 168 156 184 133 C195 117 202 97 198 80 C196 71 190 67 183 71
+C173 77 168 91 160 104 C170 86 171 69 162 63 C153 57 145 64 139 75 L122 105
+C128 88 129 72 120 67 C112 62 104 68 99 78 L87 104 C88 86 83 71 73 70
+C63 69 59 80 59 94 L59 130 C60 151 81 173 99 182 Z" fill="url(#g)" opacity=".98"/>
+<!-- central person -->
+<circle cx="120" cy="49" r="24" fill="#F4A340"/>
+<path d="M84 104 C93 82 105 75 120 75 C135 75 147 82 156 104 C143 113 131 118 120 118
+C109 118 97 113 84 104 Z" fill="#F4A340"/>
+<!-- central separation -->
+<path d="M120 116 V187" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+</svg>

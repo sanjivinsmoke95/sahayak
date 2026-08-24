@@ -20,10 +20,10 @@ const TIMELINE_INDEX: Record<ApplicationStatus, number> = {
 
 function ReqIcon({ status }: { status: RequirementStatus }) {
   if (status === 'satisfied')
-    return <Icon name="check" className="h-4 w-4 shrink-0 text-[#2D7A4F]" strokeWidth={3} />;
+    return <Icon name="check" className="h-4 w-4 shrink-0 text-[#2E9B67]" strokeWidth={3} />;
   if (status === 'expired' || status === 'missing')
-    return <Icon name="alert" className="h-4 w-4 shrink-0 text-[#C97B1A]" />;
-  return <Icon name="help" className="h-4 w-4 shrink-0 text-[#D8D0C7]" />;
+    return <Icon name="alert" className="h-4 w-4 shrink-0 text-[#F4A340]" />;
+  return <Icon name="help" className="h-4 w-4 shrink-0 text-[#D6DDE8]" />;
 }
 
 export default function V2ApplicationDetailPage() {
@@ -45,7 +45,7 @@ export default function V2ApplicationDetailPage() {
     );
   }
   if (!app) {
-    return <p className="rounded-[16px] bg-[#FDEEEC] p-5 text-lg text-[#C0392B]">{t('notFound')}</p>;
+    return <p className="rounded-[16px] bg-[#FDE8EA] p-5 text-lg text-[#DC3545]">{t('notFound')}</p>;
   }
 
   const service = GOV_SERVICES.find((s) => s.id === app.serviceId);
@@ -60,12 +60,12 @@ export default function V2ApplicationDetailPage() {
   return (
     <div className="space-y-4 pb-4">
       <header className="flex items-start justify-between gap-3">
-        <h1 className="v2-heading text-2xl font-bold leading-snug text-[#19120E]">{serviceName}</h1>
+        <h1 className="v2-heading text-2xl font-bold leading-snug text-[#101828]">{serviceName}</h1>
         <V2Badge tone={statusTone(app.status)}>{t(STATUS_LABEL[app.status])}</V2Badge>
       </header>
 
       {readiness && (
-        <div className="rounded-[20px] bg-[#0C6E6B] p-5 text-white shadow-[0_4px_20px_rgba(25,18,14,0.10)]">
+        <div className="rounded-[20px] bg-[#102D63] p-5 text-white shadow-[0_4px_20px_rgba(25,18,14,0.10)]">
           <div className="flex items-center justify-between">
             <p className="text-base font-bold">{t('appStatusTitle')}</p>
             <span className="text-sm font-semibold text-white/60">
@@ -83,21 +83,21 @@ export default function V2ApplicationDetailPage() {
 
       {readiness && readiness.requirements.length > 0 && (
         <V2Card className="p-4">
-          <h2 className="v2-heading mb-2 text-base font-semibold text-[#19120E]">{t('secNeed')}</h2>
+          <h2 className="v2-heading mb-2 text-base font-semibold text-[#101828]">{t('secNeed')}</h2>
           <ul className="space-y-2">
             {readiness.requirements.map((r) => (
               <li key={r.index} className="flex items-center gap-2.5">
                 <ReqIcon status={r.status} />
-                <span className="flex-1 text-sm text-[#19120E]">{reqLabel(r.index, r.label)}</span>
+                <span className="flex-1 text-sm text-[#101828]">{reqLabel(r.index, r.label)}</span>
               </li>
             ))}
           </ul>
         </V2Card>
       )}
 
-      <div className="rounded-[16px] bg-[#E1F0EF] p-4">
-        <p className="text-sm font-bold text-[#0C6E6B]">{t('appNextStep')}</p>
-        <p className="mt-1 text-sm leading-relaxed text-[#19120E]">
+      <div className="rounded-[16px] bg-[#EAF1FF] p-4">
+        <p className="text-sm font-bold text-[#102D63]">{t('appNextStep')}</p>
+        <p className="mt-1 text-sm leading-relaxed text-[#101828]">
           {firstMissing
             ? fill(t('appNextUpload'), { name: reqLabel(firstMissing.index, firstMissing.label) })
             : t('appAllReady')}
@@ -127,22 +127,22 @@ export default function V2ApplicationDetailPage() {
       )}
 
       <section>
-        <h2 className="v2-heading mb-3 text-lg font-bold text-[#19120E]">{t('appTimelineTitle')}</h2>
+        <h2 className="v2-heading mb-3 text-lg font-bold text-[#101828]">{t('appTimelineTitle')}</h2>
         <Timeline steps={steps} current={TIMELINE_INDEX[app.status]} />
         {app.submittedAt && (
-          <p className="mt-3 text-center text-sm text-[#7A6E68]">
+          <p className="mt-3 text-center text-sm text-[#667085]">
             {t('appSubmittedOn').replace('{date}', formatDate(app.submittedAt.slice(0, 10), language))}
           </p>
         )}
       </section>
 
       <Sheet open={statusSheetOpen} onOpenChange={setStatusSheetOpen} title={t('appUpdate')} closeLabel={t('close')}>
-        <div className="mb-4 flex items-center justify-between rounded-[12px] bg-[#E1F0EF] px-3.5 py-3">
-          <span className="text-sm font-semibold text-[#7A6E68]">{t('appStatusCurrent')}</span>
+        <div className="mb-4 flex items-center justify-between rounded-[12px] bg-[#EAF1FF] px-3.5 py-3">
+          <span className="text-sm font-semibold text-[#667085]">{t('appStatusCurrent')}</span>
           <V2Badge tone={statusTone(app.status)}>{t(STATUS_LABEL[app.status])}</V2Badge>
         </div>
 
-        <p className="mb-2 text-sm font-semibold text-[#7A6E68]">{t('appChooseNext')}</p>
+        <p className="mb-2 text-sm font-semibold text-[#667085]">{t('appChooseNext')}</p>
         <div className="space-y-2" role="radiogroup" aria-label={t('appChooseNext')}>
           {ADVANCE[app.status].map((option) => {
             const selected = pickedStatus === option.status;
@@ -156,15 +156,15 @@ export default function V2ApplicationDetailPage() {
                 className={cn(
                   'flex w-full items-center gap-3 rounded-[12px] border px-3.5 py-3.5 text-left text-sm font-semibold transition',
                   selected
-                    ? 'border-[#0C6E6B] bg-[#E1F0EF] text-[#0C6E6B]'
-                    : 'border-[#D8D0C7] bg-white text-[#19120E]',
+                    ? 'border-[#102D63] bg-[#EAF1FF] text-[#102D63]'
+                    : 'border-[#D6DDE8] bg-white text-[#101828]',
                 )}
               >
                 <span className={cn(
                   'grid h-6 w-6 shrink-0 place-items-center rounded-full border-2',
-                  selected ? 'border-[#0C6E6B]' : 'border-[#D8D0C7]',
+                  selected ? 'border-[#102D63]' : 'border-[#D6DDE8]',
                 )}>
-                  {selected && <span className="h-3 w-3 rounded-full bg-[#0C6E6B]" />}
+                  {selected && <span className="h-3 w-3 rounded-full bg-[#102D63]" />}
                 </span>
                 <span className="flex-1">{t(option.labelKey)}</span>
               </button>

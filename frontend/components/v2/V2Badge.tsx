@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils';
 type Tone = 'teal' | 'good' | 'warn' | 'danger' | 'grey';
 
 const tones: Record<Tone, string> = {
-  teal: 'bg-[#E1F0EF] text-[#0C6E6B]',
-  good: 'bg-[#ECF7F1] text-[#2D7A4F]',
-  warn: 'bg-[#FDF3E1] text-[#C97B1A]',
-  danger: 'bg-[#FDEEEC] text-[#C0392B]',
-  grey: 'bg-[#EDE9E3] text-[#7A6E68]',
+  teal: 'bg-[#EAF1FF] text-[#102D63]',
+  good: 'bg-[#EAF7EF] text-[#2E9B67]',
+  warn: 'bg-[#FFF3E3] text-[#F4A340]',
+  danger: 'bg-[#FDE8EA] text-[#DC3545]',
+  grey: 'bg-[#E8EDF5] text-[#667085]',
 };
 
 interface V2BadgeProps {

@@ -9,9 +9,9 @@ export function V2Input({ className, ...props }: V2InputProps) {
     <input
       {...props}
       className={cn(
-        'w-full rounded-[12px] border border-[#D8D0C7] bg-white px-4 py-3 text-base text-[#19120E]',
-        'placeholder:text-[#7A6E68] outline-none transition',
-        'focus:border-[#0C6E6B] focus:ring-2 focus:ring-[#E1F0EF]',
+        'w-full rounded-[12px] border border-[#D6DDE8] bg-white px-4 py-3 text-base text-[#101828]',
+        'placeholder:text-[#667085] outline-none transition',
+        'focus:border-[#102D63] focus:ring-2 focus:ring-[#EAF1FF]',
         className,
       )}
     />
@@ -23,9 +23,9 @@ export function V2Textarea({ className, ...props }: React.TextareaHTMLAttributes
     <textarea
       {...props}
       className={cn(
-        'w-full rounded-[12px] border border-[#D8D0C7] bg-white px-4 py-3 text-base text-[#19120E]',
-        'placeholder:text-[#7A6E68] outline-none transition resize-none',
-        'focus:border-[#0C6E6B] focus:ring-2 focus:ring-[#E1F0EF]',
+        'w-full rounded-[12px] border border-[#D6DDE8] bg-white px-4 py-3 text-base text-[#101828]',
+        'placeholder:text-[#667085] outline-none transition resize-none',
+        'focus:border-[#102D63] focus:ring-2 focus:ring-[#EAF1FF]',
         className,
       )}
     />
