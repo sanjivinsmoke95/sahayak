@@ -55,7 +55,7 @@ export function TabBar() {
               <span className={cn('rounded-full px-4 py-0.5 transition', active && 'bg-navy-50')}>
                 <Icon name={tab.icon} className="h-6 w-6" strokeWidth={active ? 2.4 : 2} />
               </span>
-              <span className={cn('text-[11px] leading-tight', active ? 'font-bold' : 'font-medium')}>
+              <span className={cn('text-[0.6875rem] leading-tight', active ? 'font-bold' : 'font-medium')}>
                 {t(tab.labelKey)}
               </span>
             </Link>

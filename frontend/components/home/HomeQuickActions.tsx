@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
-import { useTranslation } from '@/hooks';
+import { useDocuments, useTranslation } from '@/hooks';
 import type { StringKey } from '@/lib/i18n';
 import { useUiStore } from '@/store';
 
@@ -13,15 +13,22 @@ const ACTIONS: { icon: string; labelKey: StringKey; href: string }[] = [
   { icon: 'chat', labelKey: 'qaAsk', href: '/assistant' },
 ];
 
-/** Four compact quick actions into the app's main destinations. */
+/**
+ * Onboarding quick-actions — shown only when the user has no documents yet.
+ * Once they have documents the tab bar provides the same navigation, so
+ * showing these as a permanent fixture just duplicates it.
+ */
 export function HomeQuickActions() {
   const router = useRouter();
   const { t } = useTranslation();
   const setDirection = useUiStore((s) => s.setDirection);
+  const { data: documents } = useDocuments();
+
+  if (documents && documents.length > 0) return null;
 
   return (
     <section aria-labelledby="qa-heading">
-      <h2 id="qa-heading" className="mb-3 text-lg font-bold">
+      <h2 id="qa-heading" className="mb-3 text-base font-bold text-muted">
         {t('helpTitle')}
       </h2>
       <div className="grid grid-cols-4 gap-2.5">

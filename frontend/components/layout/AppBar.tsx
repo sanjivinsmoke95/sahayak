@@ -27,6 +27,7 @@ const TITLE_BY_ROUTE: Record<string, StringKey> = {
   '/assistant': 'askTitle',
   '/settings': 'setTitle',
   '/shrink': 'navShrink',
+  '/mee-seva': 'msTitle',
 };
 
 export function AppBar() {
@@ -64,7 +65,7 @@ export function AppBar() {
           <Logo className="ml-1 h-10 w-10" />
         )}
 
-        <h1 className="min-w-0 flex-1 truncate px-1 text-xl font-bold">{t(titleKey)}</h1>
+        <p className="min-w-0 flex-1 truncate px-1 text-xl font-bold" aria-hidden="true">{t(titleKey)}</p>
 
         <button
           type="button"

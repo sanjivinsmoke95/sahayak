@@ -81,14 +81,13 @@ export default function ApplicationDetailPage() {
         <section className="rounded-xl2 border border-navy-100 bg-white p-4 shadow-soft">
           <div className="flex items-center justify-between">
             <p className="text-base font-bold">{t('appStatusTitle')}</p>
-            <span className="text-sm font-bold text-navy-700">{readiness.score}%</span>
+            <span className="text-sm font-semibold text-muted">
+              {readiness.satisfied} {t('of')} {readiness.total}
+            </span>
           </div>
           <div className="mt-2">
             <Progress value={readiness.satisfied} total={readiness.total} />
           </div>
-          <p className="mt-1 text-sm text-muted">
-            {readiness.satisfied} {t('of')} {readiness.total} {t('appReqsReady')}
-          </p>
         </section>
       )}
 
@@ -166,19 +165,6 @@ export default function ApplicationDetailPage() {
           </p>
         )}
       </section>
-
-      <Button
-        full
-        size="md"
-        variant="secondary"
-        onClick={() => {
-          setDirection('pop');
-          router.push('/applications');
-        }}
-      >
-        <Icon name="left" className="h-5 w-5" />
-        {t('back')}
-      </Button>
 
       {/* Controlled status change. */}
       <Sheet

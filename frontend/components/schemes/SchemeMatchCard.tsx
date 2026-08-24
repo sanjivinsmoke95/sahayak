@@ -63,8 +63,8 @@ export function SchemeMatchCard({ scheme }: { scheme: SchemeMatch }) {
         ))}
       </ul>
 
-      <Button className="mt-3.5" full size="md" onClick={open}>
-        {t('schCheckEligibility')}
+      <Button className="mt-3.5" full size="md" variant="secondary" onClick={open}>
+        {t('schViewScheme')}
         <Icon name="right" className="h-5 w-5" />
       </Button>
     </div>

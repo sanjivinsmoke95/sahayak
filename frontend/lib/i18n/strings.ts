@@ -75,16 +75,16 @@ export const T = {
   disclaimer:   L("SAHAYAK is an independent assistance tool. It does not represent the Government of India or any government department. It does not give legal advice. Always confirm important details with the office named in your document.",
                   "सहायक एक स्वतंत्र सहायता उपकरण है। यह भारत सरकार या किसी सरकारी विभाग का प्रतिनिधित्व नहीं करता। यह कानूनी सलाह नहीं देता। ज़रूरी बातें अपने दस्तावेज़ में लिखे कार्यालय से ज़रूर जाँच लें।",
                   "సహాయక్ ఒక స్వతంత్ర సహాయక సాధనం. ఇది భారత ప్రభుత్వానికి లేదా ఏ ప్రభుత్వ శాఖకు ప్రాతినిధ్యం వహించదు. ఇది చట్టపరమైన సలహా ఇవ్వదు. ముఖ్యమైన వివరాలను మీ పత్రంలో పేర్కొన్న కార్యాలయంలో నిర్ధారించుకోండి."),
-  prototypeNote: L("Prototype for a student hackathon. Sample documents are for demonstration only.",
-                  "छात्र हैकाथॉन के लिए प्रोटोटाइप। नमूना दस्तावेज़ केवल प्रदर्शन के लिए हैं।",
-                  "విద్యార్థి హ్యాకథాన్ కోసం ప్రోటోటైప్. నమూనా పత్రాలు ప్రదర్శన కోసం మాత్రమే."),
+  prototypeNote: L("Sample documents included are for demonstration only.",
+                  "शामिल किए गए नमूना दस्तावेज़ केवल प्रदर्शन के लिए हैं।",
+                  "చేర్చిన నమూనా పత్రాలు ప్రదర్శన కోసం మాత్రమే."),
 
   upTitle:      L("Let's understand your document.", "आइए, आपका दस्तावेज़ समझते हैं।", "మీ పత్రాన్ని అర్థం చేసుకుందాం."),
   upSub:        L("You can upload a PDF, take a photo, or choose an image.", "आप PDF अपलोड कर सकते हैं, फ़ोटो ले सकते हैं, या कोई तस्वीर चुन सकते हैं।", "మీరు PDF అప్‌లోడ్ చేయవచ్చు, ఫోటో తీయవచ్చు, లేదా చిత్రాన్ని ఎంచుకోవచ్చు."),
   upPdf:        L("Upload PDF", "PDF अपलोड करें", "PDF అప్‌లోడ్ చేయండి"),
   upImage:      L("Choose an image", "तस्वीर चुनें", "చిత్రాన్ని ఎంచుకోండి"),
   upOr:         L("Or try one of our sample documents", "या हमारे नमूना दस्तावेज़ों में से एक देखिए", "లేదా మా నమూనా పత్రాలలో ఒకదాన్ని చూడండి"),
-  upSafe:       L("Nothing is uploaded to the internet in this prototype.", "इस प्रोटोटाइप में कुछ भी इंटरनेट पर नहीं भेजा जाता।", "ఈ ప్రోటోటైప్‌లో ఏదీ ఇంటర్నెట్‌కు పంపబడదు."),
+  upSafe:       L("Your documents are stored securely and used only to help you.", "आपके दस्तावेज़ सुरक्षित रूप से संग्रहीत हैं और केवल आपकी मदद के लिए उपयोग किए जाते हैं।", "మీ పత్రాలు సురక్షితంగా నిల్వ చేయబడతాయి మరియు మీకు సహాయం చేయడానికి మాత్రమే ఉపయోగించబడతాయి."),
   sampleBadge:  L("Sample", "नमूना", "నమూనా"),
 
   anTitle:      L("Understanding your document…", "आपका दस्तावेज़ समझा जा रहा है…", "మీ పత్రాన్ని అర్థం చేసుకుంటున్నాము…"),
@@ -115,7 +115,7 @@ export const T = {
   demoDoc:      L("Sample document", "नमूना दस्तावेज़", "నమూనా పత్రం"),
   addReminder:  L("Remind me", "मुझे याद दिलाइए", "నాకు గుర్తు చేయండి"),
   reminderOn:   L("Reminder is on", "याद दिलाना चालू है", "గుర్తు చేయడం ఆన్‌లో ఉంది"),
-  reminderSet:  L("Reminder set. It will show on your Deadlines page. In this prototype no SMS or email is sent.", "याद दिलाना चालू हो गया। यह आपके अंतिम तिथियाँ पेज पर दिखेगा। इस प्रोटोटाइप में कोई SMS या ईमेल नहीं भेजा जाता।", "గుర్తు చేయడం ఆన్ అయింది. ఇది మీ గడువుల పేజీలో కనిపిస్తుంది. ఈ ప్రోటోటైప్‌లో SMS లేదా ఇమెయిల్ పంపబడదు."),
+  reminderSet:  L("Reminder set. It will show on your Deadlines page.", "याद दिलाना चालू हो गया। यह आपके अंतिम तिथियाँ पेज पर दिखेगा।", "గుర్తు చేయడం ఆన్ అయింది. ఇది మీ గడువుల పేజీలో కనిపిస్తుంది."),
   daysLeft:     L("days left", "दिन बाकी", "రోజులు మిగిలాయి"),
   dayLeft:      L("day left", "दिन बाकी", "రోజు మిగిలింది"),
   today:        L("Last date is today", "अंतिम तारीख आज है", "చివరి తేదీ ఈ రోజే"),
@@ -588,7 +588,18 @@ export const T = {
 ,
   pairsTitle:   L("What the letter says, and what it means",
                   "पत्र में क्या लिखा है, और उसका मतलब क्या है",
-                  "లేఖలో ఏమి రాశారు, దాని అర్థం ఏమిటి")
+                  "లేఖలో ఏమి రాశారు, దాని అర్థం ఏమిటి"),
+
+  /* ---------- Scheme card ---------- */
+  schViewScheme: L("View scheme details", "योजना विवरण देखिए", "పథకం వివరాలు చూడండి"),
+
+  /* ---------- Confirmation strings ---------- */
+  deleteAllNote: L("This will permanently remove all documents from this device. This cannot be undone.",
+                   "यह सभी दस्तावेज़ इस डिवाइस से हमेशा के लिए हटा देगा। इसे वापस नहीं किया जा सकता।",
+                   "ఇది ఈ పరికరం నుండి అన్ని పత్రాలను శాశ్వతంగా తొలగిస్తుంది. దీన్ని రద్దు చేయలేరు."),
+
+  /* ---------- Mee Seva ---------- */
+  msTitle:       L("Nearby Mee Seva", "नज़दीकी मी सेवा", "సమీప మీ‌సేవ"),
 };
 
 export type StringKey = keyof typeof T;

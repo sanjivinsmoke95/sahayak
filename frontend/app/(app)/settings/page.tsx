@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Input } from '@/components/ui';
+import { useState } from 'react';
+import { Button, Input, Sheet } from '@/components/ui';
 import { Icon } from '@/components/common';
 import { InstallCard, OptionGrid, SettingsSection } from '@/components/settings';
 import { useClearDocuments, useTranslation, useUpdateSettings } from '@/hooks';
@@ -13,8 +14,8 @@ export default function SettingsPage() {
   const settings = useSettingsStore();
   const updateSettings = useUpdateSettings();
   const clearDocuments = useClearDocuments();
+  const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
 
-  // Every change writes locally first for instant feedback, then syncs.
   const save = <K extends keyof typeof settings>(key: K, value: unknown) => {
     updateSettings.mutate({ [key]: value } as Record<string, unknown>);
   };
@@ -103,9 +104,7 @@ export default function SettingsPage() {
         <Button
           variant="danger"
           size="md"
-          onClick={() => {
-            if (window.confirm(t('deleteAllAsk'))) clearDocuments.mutate();
-          }}
+          onClick={() => setDeleteSheetOpen(true)}
         >
           <Icon name="trash" className="h-5 w-5" />
           {t('deleteAll')}
@@ -113,7 +112,31 @@ export default function SettingsPage() {
       </SettingsSection>
 
       <p className="text-base leading-relaxed text-muted">{t('disclaimer')}</p>
-      <p className="text-base text-muted">{t('prototypeNote')}</p>
+
+      {/* Confirmation sheet for destructive delete-all action. */}
+      <Sheet open={deleteSheetOpen} onOpenChange={setDeleteSheetOpen} title={t('deleteAll')} closeLabel={t('cancel')}>
+        <div className="rounded-xl bg-alert-50 p-4 text-sm leading-relaxed text-alert-700">
+          <p className="font-semibold">{t('deleteAllAsk')}</p>
+          <p className="mt-1 text-alert-600">{t('deleteAllNote')}</p>
+        </div>
+        <div className="mt-4 space-y-2">
+          <Button
+            full
+            size="lg"
+            variant="danger"
+            disabled={clearDocuments.isPending}
+            onClick={() => {
+              clearDocuments.mutate(undefined, { onSuccess: () => setDeleteSheetOpen(false) });
+            }}
+          >
+            <Icon name="trash" className="h-5 w-5" />
+            {t('deleteAll')}
+          </Button>
+          <Button full size="lg" variant="secondary" onClick={() => setDeleteSheetOpen(false)}>
+            {t('cancel')}
+          </Button>
+        </div>
+      </Sheet>
     </div>
   );
 }
