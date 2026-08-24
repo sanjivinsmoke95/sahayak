@@ -1,40 +1,113 @@
 'use client';
 
-import Link from 'next/link';
+/* eslint-disable @next/next/no-img-element */
+
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { Icon } from '@/components/common';
-import { SampleDocumentList, UploadTiles } from '@/components/upload';
-import { V2Illustration } from '@/components/v2';
-import { useTranslation } from '@/hooks';
-import { useSettingsStore } from '@/store';
+import { useAuthToken } from '@/hooks';
+import { filesService } from '@/services';
+import { useUiStore } from '@/store';
+import { buzz } from '@/utils/format';
 
 export default function V2UploadPage() {
-  const { t } = useTranslation();
-  const autoShrink = useSettingsStore((s) => s.autoShrink);
+  const router = useRouter();
+  const getToken = useAuthToken();
+  const setDirection = useUiStore((s) => s.setDirection);
+  const [busy, setBusy] = useState(false);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const scanRef = useRef<HTMLInputElement>(null);
+
+  const handle = async (file: File | null | undefined) => {
+    if (!file || busy) return;
+    setBusy(true);
+    try {
+      const uploaded = await filesService.upload(
+        { blob: file, name: file.name, originalSize: file.size },
+        await getToken(),
+      );
+      setDirection('push');
+      router.push(`/v2/analyzing?fileId=${uploaded.id}&name=${encodeURIComponent(file.name)}`);
+    } catch {
+      toast.error('Could not upload the document. Make sure the backend is running.');
+      setBusy(false);
+    }
+  };
 
   return (
-    <div className="space-y-5">
-      <header className="flex flex-col items-center pt-2 text-center">
-        <V2Illustration name="upload" className="mb-4 h-32 w-32" />
-        <h1 className="v2-heading text-2xl font-extrabold leading-snug text-[#101828]">{t('upTitle')}</h1>
-        <p className="mt-2 text-base leading-relaxed text-[#667085]">{t('upSub')}</p>
-      </header>
+    <div className="flex min-h-full flex-col">
+      <div className="flex flex-1 flex-col items-center">
+        {/* Illustration */}
+        <img
+          src="/v2-assets/illustration-upload.svg"
+          alt=""
+          className="mt-4 h-52 w-52"
+          draggable={false}
+        />
 
-      <UploadTiles />
-
-      <div className="space-y-1.5">
-        <p className="flex items-center gap-2 text-sm text-[#2E9B67]">
-          <Icon name="lock" className="h-4 w-4 shrink-0" />
-          {t('upSafe')}
+        <h1 className="v2-heading mt-2 text-2xl font-extrabold text-[#101828]">Upload your document</h1>
+        <p className="mt-2 max-w-[16rem] text-center text-base leading-relaxed text-[#667085]">
+          We&apos;ll read it and explain in simple words.
         </p>
-        {autoShrink && (
-          <Link href="/v2/settings" className="flex items-center gap-2 text-sm font-medium text-[#102D63]">
-            <Icon name="shrink" className="h-4 w-4 shrink-0" />
-            {t('autoShrink')} · {t('voiceOn')}
-          </Link>
-        )}
+
+        {/* Actions */}
+        <div className="mt-7 w-full space-y-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => { buzz(); galleryRef.current?.click(); }}
+            className="flex w-full items-center justify-center gap-2.5 rounded-[16px] bg-[#102D63] px-4 py-4 text-base font-bold text-white shadow-[0_4px_20px_rgba(16,40,99,0.22)] transition active:translate-y-px disabled:opacity-60"
+          >
+            <Icon name="upload" className="h-5 w-5" />
+            {busy ? 'Uploading…' : 'Choose from Gallery'}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => { buzz(); scanRef.current?.click(); }}
+            className="flex w-full items-center justify-center gap-2.5 rounded-[16px] border border-[#F4A340] bg-[#FFF9F0] px-4 py-4 text-base font-bold text-[#B5760F] active:bg-[#FFF3E3] disabled:opacity-60"
+          >
+            <Icon name="camera" className="h-5 w-5" />
+            Scan Document
+          </button>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-[#667085]">
+          Supported formats: PDF, PNG, JPG
+          <br />
+          Max file size: 10MB
+        </p>
+
+        <input
+          ref={galleryRef}
+          type="file"
+          accept="image/*,application/pdf"
+          className="sr-only"
+          onChange={(e) => { void handle(e.target.files?.[0]); e.target.value = ''; }}
+        />
+        <input
+          ref={scanRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          onChange={(e) => { void handle(e.target.files?.[0]); e.target.value = ''; }}
+        />
       </div>
 
-      <SampleDocumentList />
+      {/* Safety note */}
+      <div className="mt-6 flex items-start gap-3 rounded-[18px] bg-[#EAF1FF] p-4">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#102D63]">
+          <Icon name="info" className="h-5 w-5" />
+        </span>
+        <div>
+          <p className="text-sm font-bold text-[#102D63]">Your data is safe with us.</p>
+          <p className="mt-0.5 text-sm leading-relaxed text-[#667085]">
+            We never share your documents with anyone.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
