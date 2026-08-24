@@ -27,15 +27,12 @@ function daysAgo(iso?: string | null): number | null {
   return Math.max(0, Math.round((Date.now() - then) / 86_400_000));
 }
 
-const DOC_TINT: Record<string, { bg: string; ink: string }> = {
-  education: { bg: GREEN_SOFT, ink: GREEN_INK },
-  scheme: { bg: GREEN_SOFT, ink: GREEN_INK },
-  pension: { bg: GREEN_SOFT, ink: GREEN_INK },
-  tax: { bg: PEACH_SOFT, ink: ORANGE_INK },
-  property: { bg: PEACH_SOFT, ink: ORANGE_INK },
-  identity: { bg: BLUE_SOFT, ink: NAVY },
-};
-const docTint = (cat: string) => DOC_TINT[cat] ?? { bg: BLUE_SOFT, ink: NAVY };
+// Rotated green/orange/blue tints for icon variety, matching the mockup.
+const TINTS = [
+  { bg: GREEN_SOFT, ink: GREEN_INK },
+  { bg: PEACH_SOFT, ink: ORANGE_INK },
+  { bg: BLUE_SOFT, ink: NAVY },
+];
 
 const STATUS_PILL: Record<string, { label: string; bg: string; ink: string }> = {
   action: { label: 'Action Needed', bg: GREEN_SOFT, ink: GREEN_INK },
@@ -164,10 +161,10 @@ export default function V2HomePage() {
               </button>
             </div>
             <div className="space-y-2.5">
-              {recent.map((doc) => {
+              {recent.map((doc, i) => {
                 const ago = daysAgo(doc.received);
                 const pill = STATUS_PILL[doc.status] ?? STATUS_PILL.done;
-                const tint = docTint(doc.cat);
+                const tint = TINTS[i % 3];
                 return (
                   <button
                     key={doc.id}
