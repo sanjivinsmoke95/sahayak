@@ -1,81 +1,114 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+/* eslint-disable @next/next/no-img-element */
+
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/components/common';
-import { V2Illustration } from '@/components/v2';
-import { useTranslation } from '@/hooks';
+import { useAnalyzeDocument } from '@/hooks';
 import { useUiStore } from '@/store';
-import type { StringKey } from '@/lib/i18n';
 
-const STEP_KEYS: StringKey[] = ['an1', 'an2', 'an5'];
+const STEPS = [
+  'Reading document',
+  'Extracting important info',
+  'Understanding content',
+  'Preparing your answer',
+];
 
 function AnalyzingScreen() {
   const router = useRouter();
   const params = useSearchParams();
-  const { t } = useTranslation();
+  const analyze = useAnalyzeDocument();
   const setDirection = useUiStore((s) => s.setDirection);
-  const docId = params.get('doc');
-  const [step, setStep] = useState(0);
+
+  const sampleId = params.get('sampleId') ?? undefined;
+  const fileId = params.get('fileId') ?? undefined;
+  const fileName = params.get('name') ?? undefined;
+  const docParam = params.get('doc') ?? undefined;
+
+  const [stage, setStage] = useState(0);
+  const finished = stage >= STEPS.length;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStep((s) => Math.min(s + 1, STEP_KEYS.length));
-    }, 900);
-    return () => clearInterval(interval);
+    let current = 0;
+    const id = setInterval(() => {
+      current += 1;
+      setStage(current);
+      if (current >= STEPS.length) clearInterval(id);
+    }, 850);
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
-    if (docId) {
+    // When arriving with an already-analysed document id, just wait and open it.
+    if (!docParam) analyze.mutate({ sampleId, fileId, fileName });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const id = docParam ?? analyze.data?.id ?? sampleId;
+    if (finished && id && (docParam || analyze.isSuccess)) {
       const timer = setTimeout(() => {
         setDirection('push');
-        router.replace(`/v2/documents/${docId}`);
-      }, 3000);
+        router.replace(`/v2/documents/${id}`);
+      }, 700);
       return () => clearTimeout(timer);
     }
-  }, [docId, router, setDirection]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finished, analyze.isSuccess, docParam]);
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-      <V2Illustration name="processing" className="mb-7 h-40 w-40 animate-[pulse_2s_ease-in-out_infinite]" />
+    <div className="flex min-h-full flex-col items-center pt-6 text-center">
+      <h1 className="v2-heading text-2xl font-extrabold text-[#101828]">Processing...</h1>
 
-      <h1 className="v2-heading text-xl font-extrabold text-[#101828]">{t('anTitle')}</h1>
-      <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-[#667085]">{t('anCalm')}</p>
+      <img
+        src="/v2-assets/illustration-processing.svg"
+        alt=""
+        className="mt-6 h-44 w-44"
+        draggable={false}
+      />
 
-      <ul className="mt-7 w-full max-w-[17rem] space-y-2.5 text-left">
-        {STEP_KEYS.map((key, i) => {
-          const done = i < step;
-          const active = i === step;
+      <h2 className="v2-heading mt-6 max-w-[18rem] text-xl font-bold leading-snug text-[#101828]">
+        Extracting and understanding your document
+      </h2>
+      <p className="mt-2 text-base text-[#667085]">This may take a few seconds...</p>
+
+      {/* Steps */}
+      <ul className="mt-6 w-full space-y-3 rounded-[20px] bg-[#FFF9F0] p-5 text-left">
+        {STEPS.map((label, i) => {
+          const state = i < stage ? 'done' : i === stage ? 'now' : 'wait';
           return (
-            <li key={key} className="flex items-center gap-3">
+            <li key={label} className={`flex items-center gap-3 ${state === 'wait' ? 'opacity-45' : ''}`}>
               <span
-                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full transition ${
-                  done
+                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
+                  state === 'done'
                     ? 'bg-[#2E9B67] text-white'
-                    : active
-                      ? 'bg-[#EAF1FF] text-[#102D63]'
-                      : 'bg-[#E8EDF5] text-[#667085]'
+                    : state === 'now'
+                      ? 'animate-spin border-2 border-[#F4A340] border-t-transparent'
+                      : 'border-2 border-[#D9E2F0]'
                 }`}
               >
-                {done ? (
-                  <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />
-                ) : active ? (
-                  <span className="h-2 w-2 animate-ping rounded-full bg-[#102D63]" />
-                ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#B9C4D6]" />
-                )}
+                {state === 'done' && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}
               </span>
-              <span
-                className={`text-sm font-medium transition ${
-                  done || active ? 'text-[#101828]' : 'text-[#667085]'
-                }`}
-              >
-                {t(key)}
-              </span>
+              <span className="text-[15px] text-[#101828]">{label}</span>
             </li>
           );
         })}
       </ul>
+
+      {/* Safety */}
+      <div className="mt-4 flex w-full items-center gap-3 rounded-[18px] bg-[#EAF7EF] p-4 text-left">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#2E9B67]">
+          <Icon name="lock" className="h-5 w-5" />
+        </span>
+        <p className="text-sm font-bold text-[#2E9B67]">Your data is safe and secure.</p>
+      </div>
+
+      {analyze.isError && (
+        <p className="mt-5 w-full rounded-[14px] bg-[#FDE8EA] p-4 text-sm text-[#DC3545]">
+          Something went wrong while reading this document. Please try again.
+        </p>
+      )}
     </div>
   );
 }
