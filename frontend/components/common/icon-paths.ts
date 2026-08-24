@@ -6,6 +6,7 @@ export const ICON_PATHS: Record<string, string[]> = {
   calendar: ["M4 6h16v15H4z","M4 10.5h16","M8.5 3v4","M15.5 3v4"],
   chat:     ["M21 14.5a2 2 0 0 1-2 2H8.5L4 20.5V5.5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"],
   sliders:  ["M4 7h16","M4 12h16","M4 17h16","M9 4.5v5","M15 9.5v5","M7 14.5v5"],
+  menu:     ["M4 7h16","M4 12h16","M4 17h16"],
   upload:   ["M12 16.5V4","M7 9l5-5 5 5","M4 16.5V20h16v-3.5"],
   camera:   ["M4 8h3.2l1.8-2h6l1.8 2H20v12H4z","M8.5 14a3.5 3.5 0 1 0 7 0 3.5 3.5 0 1 0-7 0"],
   image:    ["M4 5h16v14H4z","M4 16l5-5 4 4 3-3 4 4"],
