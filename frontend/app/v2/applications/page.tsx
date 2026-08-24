@@ -21,7 +21,7 @@ export default function V2ApplicationsPage() {
   return (
     <div className="space-y-5">
       <header>
-        <h1 className="v2-heading text-2xl font-bold text-[#19120E]">{t('appMyTitle')}</h1>
+        <h1 className="v2-heading text-2xl font-bold text-[#101828]">{t('appMyTitle')}</h1>
       </header>
 
       {isLoading ? (
@@ -32,10 +32,10 @@ export default function V2ApplicationsPage() {
             const service = GOV_SERVICES.find((s) => s.id === app.serviceId);
             return (
               <V2Card key={app.id} onClick={() => open(`/v2/applications/${app.id}`)} className="flex items-center gap-3.5 p-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#E1F0EF] text-[#0C6E6B]">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#102D63]">
                   <Icon name={service?.icon ?? 'tasks'} className="h-5 w-5" />
                 </span>
-                <span className="min-w-0 flex-1 text-base font-bold leading-snug text-[#19120E]">
+                <span className="min-w-0 flex-1 text-base font-bold leading-snug text-[#101828]">
                   {service ? tr(service.title) : app.serviceId}
                 </span>
                 <V2Badge tone={statusTone(app.status)}>{t(STATUS_LABEL[app.status])}</V2Badge>
@@ -44,25 +44,25 @@ export default function V2ApplicationsPage() {
           })}
         </div>
       ) : (
-        <p className="rounded-[16px] border border-[#D8D0C7] bg-white p-4 text-base text-[#7A6E68]">
+        <p className="rounded-[16px] border border-[#D6DDE8] bg-white p-4 text-base text-[#667085]">
           {t('appNoApps')}
         </p>
       )}
 
       <section aria-labelledby="start-service">
-        <h2 id="start-service" className="v2-heading mb-3 text-lg font-bold text-[#19120E]">
+        <h2 id="start-service" className="v2-heading mb-3 text-lg font-bold text-[#101828]">
           {t('appsStartService')}
         </h2>
         <div className="space-y-2.5">
           {GOV_SERVICES.map((service) => (
             <V2Card key={service.id} onClick={() => open(`/v2/services/${service.id}`)} className="flex items-center gap-3.5 p-3.5">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#E1F0EF] text-[#0C6E6B]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#102D63]">
                 <Icon name={service.icon} className="h-5 w-5" />
               </span>
-              <span className="min-w-0 flex-1 text-base font-bold leading-snug text-[#19120E]">
+              <span className="min-w-0 flex-1 text-base font-bold leading-snug text-[#101828]">
                 {tr(service.title)}
               </span>
-              <Icon name="right" className="h-5 w-5 shrink-0 text-[#D8D0C7]" />
+              <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />
             </V2Card>
           ))}
         </div>

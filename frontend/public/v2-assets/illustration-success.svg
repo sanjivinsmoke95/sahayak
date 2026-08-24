@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360">
+<circle cx="180" cy="180" r="112" fill="#2E9B67" opacity=".14"/>
+<circle cx="180" cy="180" r="82" fill="#2E9B67"/>
+<path d="M137 181l28 28 59-67" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M77 91l-10-18M283 91l10-18M180 47V25M70 250l-18 12M290 250l18 12" stroke="#F4A340" stroke-width="10" stroke-linecap="round"/>
+</svg>

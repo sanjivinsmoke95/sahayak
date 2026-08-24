@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "primary": "#102D63",
+    "accent": "#F4A340",
+    "success": "#2E9B67",
+    "ink": "#101828",
+    "muted": "#667085",
+    "background": "#F8FAFC",
+    "white": "#FFFFFF",
+    "paleBlue": "#EAF1FF",
+    "paleGreen": "#EAF7EF",
+    "paleOrange": "#FFF3E3"
+  },
+  "typography": {
+    "font": "Inter",
+    "headingWeight": 750,
+    "bodyWeight": 500
+  },
+  "radius": {
+    "card": 18,
+    "button": 14,
+    "pill": 999
+  },
+  "spacing": {
+    "base": 4,
+    "screenPadding": 20,
+    "sectionGap": 24
+  },
+  "assets": [
+    "avatar-default.svg",
+    "icon-alert.svg",
+    "icon-bell.svg",
+    "icon-check.svg",
+    "icon-document.svg",
+    "icon-home.svg",
+    "icon-info.svg",
+    "icon-profile.svg",
+    "icon-scan.svg",
+    "icon-search.svg",
+    "icon-settings.svg",
+    "icon-upload.svg",
+    "illustration-certificate.svg",
+    "illustration-processing.svg",
+    "illustration-success.svg",
+    "illustration-upload.svg",
+    "illustration-voice.svg",
+    "india-ribbon.svg",
+    "logo-full.svg",
+    "logo-mark-white.svg",
+    "logo-mark.svg"
+  ]
+}

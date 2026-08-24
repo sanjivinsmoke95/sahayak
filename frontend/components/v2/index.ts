@@ -10,3 +10,5 @@ export { V2EmptyState } from './V2EmptyState';
 export { V2DocumentRow } from './V2DocumentRow';
 export { V2DocumentCard } from './V2DocumentCard';
 export { V2SchemeMatchCard } from './V2SchemeMatchCard';
+export { V2Logo } from './V2Logo';
+export { V2Illustration, V2IndiaRibbon } from './V2Illustration';

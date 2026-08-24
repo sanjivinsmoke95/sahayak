@@ -44,9 +44,9 @@ export default function V2SchemesPage() {
     <div className="space-y-5">
       {/* Search */}
       <div className="relative">
-        <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#D8D0C7]" />
+        <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#D6DDE8]" />
         <V2Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('schSearchPh')} className="pl-11 pr-11" />
-        <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7A6E68]">
+        <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085]">
           <Icon name="sliders" className="h-5 w-5" />
         </button>
       </div>
@@ -55,11 +55,11 @@ export default function V2SchemesPage() {
       {browsing && matches.length > 0 && (
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="v2-heading text-lg font-bold text-[#19120E]">Best matches for you</h2>
+            <h2 className="v2-heading text-lg font-bold text-[#101828]">Best matches for you</h2>
             <button
               type="button"
               onClick={() => { /* show all matches */ }}
-              className="text-sm font-semibold text-[#0C6E6B]"
+              className="text-sm font-semibold text-[#102D63]"
             >
               {t('viewAll')}
             </button>
@@ -76,11 +76,11 @@ export default function V2SchemesPage() {
       {browsing && topCategories.length > 0 && (
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="v2-heading text-lg font-bold text-[#19120E]">Browse by category</h2>
+            <h2 className="v2-heading text-lg font-bold text-[#101828]">Browse by category</h2>
             <button
               type="button"
               onClick={() => {}}
-              className="text-sm font-semibold text-[#0C6E6B]"
+              className="text-sm font-semibold text-[#102D63]"
             >
               {t('viewAll')}
             </button>
@@ -91,12 +91,12 @@ export default function V2SchemesPage() {
                 key={cat}
                 type="button"
                 onClick={() => setCategory(cat)}
-                className="flex flex-col items-center gap-2 rounded-[16px] border border-[#D8D0C7] bg-white p-3 active:bg-[#F6F3EF]"
+                className="flex flex-col items-center gap-2 rounded-[16px] border border-[#D6DDE8] bg-white p-3 active:bg-[#F8FAFC]"
               >
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-[#E1F0EF] text-[#0C6E6B]">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-[#EAF1FF] text-[#102D63]">
                   <Icon name={CAT_ICONS[cat] || 'globe'} className="h-5 w-5" />
                 </span>
-                <span className="text-center text-xs font-semibold leading-tight text-[#19120E]">{cat}</span>
+                <span className="text-center text-xs font-semibold leading-tight text-[#101828]">{cat}</span>
               </button>
             ))}
           </div>
@@ -111,20 +111,20 @@ export default function V2SchemesPage() {
               <button
                 type="button"
                 onClick={() => setCategory('')}
-                className="flex items-center gap-1 text-sm font-semibold text-[#0C6E6B]"
+                className="flex items-center gap-1 text-sm font-semibold text-[#102D63]"
               >
                 <Icon name="left" className="h-4 w-4" />
                 All categories
               </button>
             )}
-            <p className="text-sm text-[#7A6E68]">{data?.total ?? 0} schemes</p>
+            <p className="text-sm text-[#667085]">{data?.total ?? 0} schemes</p>
           </div>
           {isLoading ? (
             <div className="space-y-2">
               {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full rounded-[16px]" />)}
             </div>
           ) : results.length === 0 ? (
-            <p className="rounded-[16px] border border-[#D8D0C7] bg-white p-4 text-sm text-[#7A6E68]">
+            <p className="rounded-[16px] border border-[#D6DDE8] bg-white p-4 text-sm text-[#667085]">
               {t('schNoResults')}
             </p>
           ) : (
@@ -133,13 +133,13 @@ export default function V2SchemesPage() {
                 <li key={s.id}>
                   <V2Card onClick={() => open(s.id)} className="flex items-start gap-3 p-3.5">
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-bold leading-snug text-[#19120E]">{s.name}</span>
+                      <span className="block text-sm font-bold leading-snug text-[#101828]">{s.name}</span>
                       <span className="mt-1 flex flex-wrap items-center gap-1.5">
                         <V2Badge tone="teal">{s.category}</V2Badge>
                         <V2Badge tone="grey">{s.level === 'Central' ? t('schCentral') : t('schState')}</V2Badge>
                       </span>
                     </span>
-                    <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-[#D8D0C7]" />
+                    <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-[#D6DDE8]" />
                   </V2Card>
                 </li>
               ))}

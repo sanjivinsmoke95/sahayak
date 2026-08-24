@@ -16,9 +16,9 @@ export function V2Card({ children, className, onClick, as }: V2CardProps) {
       type={Tag === 'button' ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'rounded-[16px] border border-[#D8D0C7] bg-white text-left',
+        'rounded-[16px] border border-[#D6DDE8] bg-white text-left',
         'shadow-[0_1px_4px_rgba(25,18,14,0.06),0_2px_12px_rgba(25,18,14,0.04)]',
-        onClick && 'w-full active:bg-[#EDE9E3] transition',
+        onClick && 'w-full active:bg-[#E8EDF5] transition',
         className,
       )}
     >

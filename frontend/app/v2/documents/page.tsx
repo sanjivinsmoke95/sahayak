@@ -61,7 +61,7 @@ export default function V2DocumentsPage() {
     <div className="space-y-4">
       {/* Search bar */}
       <div className="relative">
-        <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#D8D0C7]" />
+        <Icon name="search" className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#D6DDE8]" />
         <V2Input
           type="search"
           value={query}
@@ -71,7 +71,7 @@ export default function V2DocumentsPage() {
         />
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7A6E68]"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085]"
           onClick={() => setCatFilter('all')}
         >
           <Icon name="sliders" className="h-5 w-5" />
@@ -89,8 +89,8 @@ export default function V2DocumentsPage() {
             className={cn(
               'shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition',
               catFilter === c.key
-                ? 'border-[#0C6E6B] bg-[#0C6E6B] text-white'
-                : 'border-[#D8D0C7] bg-white text-[#19120E]',
+                ? 'border-[#102D63] bg-[#102D63] text-white'
+                : 'border-[#D6DDE8] bg-white text-[#101828]',
             )}
           >
             {c.label}
@@ -106,17 +106,17 @@ export default function V2DocumentsPage() {
       ) : all.length === 0 ? (
         <V2EmptyState icon="folder" title={t('noDocs')} actionLabel={t('addDoc')} onAction={goUpload} />
       ) : docs.length === 0 ? (
-        <div className="flex flex-col items-center rounded-[16px] border border-[#D8D0C7] bg-white p-8 text-center">
-          <Icon name="search" className="h-8 w-8 text-[#D8D0C7]" />
-          <p className="mt-3 text-sm text-[#7A6E68]">{t('docsNoMatch')}</p>
+        <div className="flex flex-col items-center rounded-[16px] border border-[#D6DDE8] bg-white p-8 text-center">
+          <Icon name="search" className="h-8 w-8 text-[#D6DDE8]" />
+          <p className="mt-3 text-sm text-[#667085]">{t('docsNoMatch')}</p>
         </div>
       ) : (
         Object.entries(grouped).map(([label, groupDocs]) => (
           <section key={label}>
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-[#7A6E68]">{label}</h3>
-            <div className="overflow-hidden rounded-[16px] border border-[#D8D0C7] bg-white shadow-[0_1px_4px_rgba(25,18,14,0.06)]">
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-[#667085]">{label}</h3>
+            <div className="overflow-hidden rounded-[16px] border border-[#D6DDE8] bg-white shadow-[0_1px_4px_rgba(25,18,14,0.06)]">
               {(groupDocs as any[]).map((doc, i) => (
-                <div key={doc.id} className={i > 0 ? 'border-t border-[#EDE9E3]' : ''}>
+                <div key={doc.id} className={i > 0 ? 'border-t border-[#E8EDF5]' : ''}>
                   <V2DocumentRow document={doc} />
                 </div>
               ))}

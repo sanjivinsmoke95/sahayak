@@ -18,7 +18,7 @@ export default function V2ServiceDetailPage() {
   if (!service) {
     return (
       <div className="space-y-4">
-        <p className="rounded-[16px] bg-[#FDEEEC] p-5 text-lg text-[#C0392B]">{t('notFound')}</p>
+        <p className="rounded-[16px] bg-[#FDE8EA] p-5 text-lg text-[#DC3545]">{t('notFound')}</p>
         <V2Button
           size="md"
           variant="secondary"

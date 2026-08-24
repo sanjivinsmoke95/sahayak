@@ -33,17 +33,17 @@ export default function V2HomePage() {
     <div className="space-y-6">
       {/* Greeting */}
       <section>
-        <h1 className="v2-heading text-2xl font-bold leading-tight text-[#19120E]">
+        <h1 className="v2-heading text-2xl font-bold leading-tight text-[#101828]">
           {t(greetKey)}{displayName ? `, ${displayName}` : ''}
         </h1>
-        <p className="mt-1 text-sm text-[#7A6E68]">{t('homeHelp')}</p>
+        <p className="mt-1 text-sm text-[#667085]">{t('homeHelp')}</p>
       </section>
 
       {/* Upload CTA */}
       <button
         type="button"
         onClick={() => go('/v2/upload')}
-        className="flex w-full items-center gap-4 rounded-[20px] bg-[#0C6E6B] p-4 text-left text-white shadow-[0_4px_20px_rgba(12,110,107,0.25)] transition active:translate-y-px"
+        className="flex w-full items-center gap-4 rounded-[20px] bg-[#102D63] p-4 text-left text-white shadow-[0_4px_20px_rgba(12,110,107,0.25)] transition active:translate-y-px"
       >
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-white/15">
           <Icon name="upload" className="h-6 w-6" />
@@ -59,11 +59,11 @@ export default function V2HomePage() {
       {recent.length > 0 && (
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="v2-heading text-lg font-bold text-[#19120E]">{t('recentDocs')}</h2>
+            <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('recentDocs')}</h2>
             <button
               type="button"
               onClick={() => go('/v2/documents')}
-              className="text-sm font-semibold text-[#0C6E6B]"
+              className="text-sm font-semibold text-[#102D63]"
             >
               {t('viewAll')}
             </button>
@@ -80,11 +80,11 @@ export default function V2HomePage() {
       {matches.length > 0 && (
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="v2-heading text-lg font-bold text-[#19120E]">{t('schRecommended')}</h2>
+            <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('schRecommended')}</h2>
             <button
               type="button"
               onClick={() => go('/v2/schemes')}
-              className="text-sm font-semibold text-[#0C6E6B]"
+              className="text-sm font-semibold text-[#102D63]"
             >
               {t('viewAll')}
             </button>
@@ -99,19 +99,19 @@ export default function V2HomePage() {
 
       {/* Quick actions grid */}
       <section>
-        <h2 className="v2-heading mb-3 text-lg font-bold text-[#19120E]">{t('helpTitle')}</h2>
+        <h2 className="v2-heading mb-3 text-lg font-bold text-[#101828]">{t('helpTitle')}</h2>
         <div className="grid grid-cols-4 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <button
               key={action.href}
               type="button"
               onClick={() => go(action.href)}
-              className="flex flex-col items-center gap-2 rounded-[16px] border border-[#D8D0C7] bg-white p-3 active:bg-[#F6F3EF]"
+              className="flex flex-col items-center gap-2 rounded-[16px] border border-[#D6DDE8] bg-white p-3 active:bg-[#F8FAFC]"
             >
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-[#E1F0EF] text-[#0C6E6B]">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-[#EAF1FF] text-[#102D63]">
                 <Icon name={action.icon} className="h-5 w-5" />
               </span>
-              <span className="text-center text-xs font-semibold leading-tight text-[#19120E]">
+              <span className="text-center text-xs font-semibold leading-tight text-[#101828]">
                 {t(action.labelKey)}
               </span>
             </button>
@@ -122,15 +122,15 @@ export default function V2HomePage() {
       {/* Empty state: help cards if no docs */}
       {(documents ?? []).length === 0 && (
         <section className="space-y-2">
-          <h2 className="v2-heading text-lg font-bold text-[#19120E]">{t('helpTitle')}</h2>
+          <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('helpTitle')}</h2>
           {(['help1', 'help2', 'help3', 'help4'] as const).map((key) => (
-            <div key={key} className="flex items-start gap-3 rounded-[16px] border border-[#D8D0C7] bg-white p-3.5">
-              <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#E1F0EF] text-[#0C6E6B]">
+            <div key={key} className="flex items-start gap-3 rounded-[16px] border border-[#D6DDE8] bg-white p-3.5">
+              <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#EAF1FF] text-[#102D63]">
                 <Icon name="check" className="h-4 w-4" strokeWidth={2.5} />
               </span>
               <div>
-                <p className="text-sm font-bold text-[#19120E]">{t(key)}</p>
-                <p className="mt-0.5 text-xs text-[#7A6E68]">{t(`${key}s` as any)}</p>
+                <p className="text-sm font-bold text-[#101828]">{t(key)}</p>
+                <p className="mt-0.5 text-xs text-[#667085]">{t(`${key}s` as any)}</p>
               </div>
             </div>
           ))}
@@ -138,7 +138,7 @@ export default function V2HomePage() {
       )}
 
       {/* Footer */}
-      <p className="text-center text-xs leading-relaxed text-[#7A6E68]">{t('disclaimer')}</p>
+      <p className="text-center text-xs leading-relaxed text-[#667085]">{t('disclaimer')}</p>
     </div>
   );
 }

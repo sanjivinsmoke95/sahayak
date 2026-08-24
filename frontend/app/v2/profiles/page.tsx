@@ -30,8 +30,8 @@ export default function V2ProfilesPage() {
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="v2-heading text-2xl font-bold text-[#19120E]">{t('famTitle')}</h1>
-          <p className="mt-1 text-sm leading-relaxed text-[#7A6E68]">{t('famSub')}</p>
+          <h1 className="v2-heading text-2xl font-bold text-[#101828]">{t('famTitle')}</h1>
+          <p className="mt-1 text-sm leading-relaxed text-[#667085]">{t('famSub')}</p>
         </div>
         <V2Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}>
           <Icon name="plus" className="h-4 w-4" />
@@ -42,12 +42,12 @@ export default function V2ProfilesPage() {
       <div className="space-y-2.5">
         {(profiles ?? []).map((p) => (
           <V2Card key={p.id} className="flex items-center gap-3 p-4">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#E1F0EF] text-[#0C6E6B]">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#102D63]">
               <Icon name="user" className="h-5 w-5" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-bold leading-snug text-[#19120E]">{p.name}</p>
-              <p className="text-sm text-[#7A6E68]">
+              <p className="font-bold leading-snug text-[#101828]">{p.name}</p>
+              <p className="text-sm text-[#667085]">
                 {p.isSelf ? t('famSelf') : t(relationshipKey(p.relationship))}
               </p>
             </div>
@@ -55,7 +55,7 @@ export default function V2ProfilesPage() {
               <button
                 type="button"
                 onClick={() => setRemoveTarget({ id: p.id, name: p.name })}
-                className="shrink-0 rounded-[8px] px-3 py-2 text-sm font-semibold text-[#C0392B] active:bg-[#FDEEEC]"
+                className="shrink-0 rounded-[8px] px-3 py-2 text-sm font-semibold text-[#DC3545] active:bg-[#FDE8EA]"
               >
                 {t('famRemove')}
               </button>
@@ -73,7 +73,7 @@ export default function V2ProfilesPage() {
             aria-label={t('famName')}
           />
           <div>
-            <p className="mb-2 text-sm font-semibold text-[#7A6E68]">{t('famRelationship')}</p>
+            <p className="mb-2 text-sm font-semibold text-[#667085]">{t('famRelationship')}</p>
             <div className="grid grid-cols-2 gap-2">
               {RELATIONSHIPS.map((r) => (
                 <button
@@ -84,8 +84,8 @@ export default function V2ProfilesPage() {
                   className={cn(
                     'rounded-[12px] border px-3 py-2.5 text-sm font-semibold transition',
                     relationship === r.value
-                      ? 'border-[#0C6E6B] bg-[#E1F0EF] text-[#0C6E6B]'
-                      : 'border-[#D8D0C7] bg-white text-[#19120E]',
+                      ? 'border-[#102D63] bg-[#EAF1FF] text-[#102D63]'
+                      : 'border-[#D6DDE8] bg-white text-[#101828]',
                   )}
                 >
                   {t(r.key)}
@@ -108,7 +108,7 @@ export default function V2ProfilesPage() {
       >
         {removeTarget && (
           <>
-            <p className="rounded-[12px] bg-[#FDEEEC] p-4 text-sm leading-relaxed text-[#C0392B]">
+            <p className="rounded-[12px] bg-[#FDE8EA] p-4 text-sm leading-relaxed text-[#DC3545]">
               {t('famRemoveAsk')}
             </p>
             <div className="mt-4 space-y-2">

@@ -33,23 +33,23 @@ export function V2DocumentCard({ document: doc }: Props) {
     <button
       type="button"
       onClick={() => { setDirection('push'); router.push(`/v2/documents/${doc.id}`); }}
-      className="flex w-[140px] shrink-0 flex-col rounded-[16px] border border-[#D8D0C7] bg-white p-3 text-left shadow-[0_1px_4px_rgba(25,18,14,0.06)] active:bg-[#F6F3EF]"
+      className="flex w-[140px] shrink-0 flex-col rounded-[16px] border border-[#D6DDE8] bg-white p-3 text-left shadow-[0_1px_4px_rgba(25,18,14,0.06)] active:bg-[#F8FAFC]"
     >
-      <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#E1F0EF] text-[#0C6E6B]">
+      <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#EAF1FF] text-[#102D63]">
         <Icon name="doc" className="h-5 w-5" />
       </span>
-      <span className="mt-2 block truncate text-sm font-bold text-[#19120E]">{tr(doc.title)}</span>
+      <span className="mt-2 block truncate text-sm font-bold text-[#101828]">{tr(doc.title)}</span>
       {validityLabel && (
         <span className="mt-1.5">
           <V2Badge tone={validityTone as any}>{validityLabel}</V2Badge>
         </span>
       )}
       {days !== null && days >= 0 && days <= 90 && (
-        <span className="mt-1 text-xs text-[#C97B1A]">
+        <span className="mt-1 text-xs text-[#F4A340]">
           Expires in {days} {days === 1 ? 'day' : 'days'}
         </span>
       )}
-      <span className="mt-1 text-xs text-[#7A6E68]">
+      <span className="mt-1 text-xs text-[#667085]">
         {doc.received ? formatDate(doc.received, language) : tr(CATS[doc.cat])}
       </span>
     </button>
