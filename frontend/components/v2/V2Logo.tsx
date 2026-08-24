@@ -6,6 +6,9 @@ interface V2LogoProps {
 }
 
 const SRC: Record<NonNullable<V2LogoProps['variant']>, string> = {
+  // Clean vector of the exact Sahayak mark (navy hands + saffron figure).
+  // The reference pack's PNG crop carries a stray notch corner, so we use the
+  // matching vector, which reproduces the reference's clean logo appearance.
   mark: '/v2-assets/logo-mark.svg',
   'mark-white': '/v2-assets/logo-mark-white.svg',
   full: '/v2-assets/logo-full.svg',
