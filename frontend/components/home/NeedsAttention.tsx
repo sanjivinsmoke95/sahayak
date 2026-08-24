@@ -27,7 +27,7 @@ export function NeedsAttention() {
 
   return (
     <section aria-labelledby="attn-heading" className="space-y-2">
-      <h2 id="attn-heading" className="sr-only">
+      <h2 id="attn-heading" className="text-sm font-bold text-amberx-700">
         {t('attnTitle')}
       </h2>
       {items.map(({ doc, days }) => (

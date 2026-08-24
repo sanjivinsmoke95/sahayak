@@ -17,7 +17,7 @@ export function GreetingHero() {
 
   return (
     <section>
-      <h1 className="text-[1.6rem] font-bold leading-tight">
+      <h1 className="text-2xl font-bold leading-tight">
         {t(greetKey)}
         {displayName ? `, ${displayName}` : ''} <span aria-hidden>👋</span>
       </h1>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Icon } from '@/components/common';
-import { Button, Input } from '@/components/ui';
+import { Button, Input, Sheet } from '@/components/ui';
 import { useCreateProfile, useDeleteProfile, useProfiles, useTranslation } from '@/hooks';
 import { RELATIONSHIPS, relationshipKey } from '@/lib/relationships';
 
@@ -13,17 +13,28 @@ export default function ProfilesPage() {
   const remove = useDeleteProfile();
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('mother');
+  const [addOpen, setAddOpen] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
 
   const add = () => {
     if (!name.trim()) return;
-    create.mutate({ name: name.trim(), relationship }, { onSuccess: () => setName('') });
+    create.mutate(
+      { name: name.trim(), relationship },
+      { onSuccess: () => { setName(''); setAddOpen(false); } },
+    );
   };
 
   return (
     <div className="space-y-5">
-      <header>
-        <h1 className="text-2xl font-bold">{t('famTitle')}</h1>
-        <p className="mt-2 text-lg leading-relaxed text-muted">{t('famSub')}</p>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{t('famTitle')}</h1>
+          <p className="mt-2 text-lg leading-relaxed text-muted">{t('famSub')}</p>
+        </div>
+        <Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}>
+          <Icon name="plus" className="h-4 w-4" />
+          {t('famAdd')}
+        </Button>
       </header>
 
       <div className="space-y-2.5">
@@ -44,9 +55,7 @@ export default function ProfilesPage() {
             {!p.isSelf && (
               <button
                 type="button"
-                onClick={() => {
-                  if (window.confirm(t('famRemoveAsk'))) remove.mutate(p.id);
-                }}
+                onClick={() => setRemoveTarget({ id: p.id, name: p.name })}
                 className="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold text-alert-600 active:bg-alert-50"
               >
                 {t('famRemove')}
@@ -56,33 +65,74 @@ export default function ProfilesPage() {
         ))}
       </div>
 
-      <section className="space-y-3 rounded-xl2 border border-navy-100 bg-white p-5 shadow-soft">
-        <h2 className="text-lg font-bold">{t('famAdd')}</h2>
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t('famName')}
-          aria-label={t('famName')}
-        />
-        <label className="block">
-          <span className="mb-1 block text-sm font-semibold text-muted">{t('famRelationship')}</span>
-          <select
-            value={relationship}
-            onChange={(e) => setRelationship(e.target.value)}
-            className="min-h-[52px] w-full rounded-2xl border border-navy-200 bg-white px-4 text-base"
-          >
-            {RELATIONSHIPS.map((r) => (
-              <option key={r.value} value={r.value}>
-                {t(r.key)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <Button full size="md" disabled={!name.trim() || create.isPending} onClick={add}>
-          <Icon name="plus" className="h-5 w-5" />
-          {t('famAdd')}
-        </Button>
-      </section>
+      {/* Add member sheet */}
+      <Sheet open={addOpen} onOpenChange={setAddOpen} title={t('famAdd')} closeLabel={t('cancel')}>
+        <div className="space-y-3">
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t('famName')}
+            aria-label={t('famName')}
+          />
+          <div>
+            <p className="mb-2 text-sm font-semibold text-muted">{t('famRelationship')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {RELATIONSHIPS.map((r) => (
+                <button
+                  key={r.value}
+                  type="button"
+                  aria-pressed={relationship === r.value}
+                  onClick={() => setRelationship(r.value)}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                    relationship === r.value
+                      ? 'border-navy-600 bg-navy-50 text-navy-700'
+                      : 'border-navy-200 bg-white text-ink'
+                  }`}
+                >
+                  {t(r.key)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Button full size="lg" disabled={!name.trim() || create.isPending} onClick={add}>
+            <Icon name="plus" className="h-5 w-5" />
+            {t('famAdd')}
+          </Button>
+        </div>
+      </Sheet>
+
+      {/* Remove confirmation sheet */}
+      <Sheet
+        open={!!removeTarget}
+        onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}
+        title={t('famRemove')}
+        closeLabel={t('cancel')}
+      >
+        {removeTarget && (
+          <>
+            <p className="rounded-xl bg-alert-50 p-4 text-sm leading-relaxed text-alert-700">
+              {t('famRemoveAsk')}
+            </p>
+            <div className="mt-4 space-y-2">
+              <Button
+                full
+                size="lg"
+                variant="danger"
+                disabled={remove.isPending}
+                onClick={() => {
+                  remove.mutate(removeTarget.id, { onSuccess: () => setRemoveTarget(null) });
+                }}
+              >
+                <Icon name="trash" className="h-5 w-5" />
+                {t('famRemove')}
+              </Button>
+              <Button full size="lg" variant="secondary" onClick={() => setRemoveTarget(null)}>
+                {t('cancel')}
+              </Button>
+            </div>
+          </>
+        )}
+      </Sheet>
     </div>
   );
 }

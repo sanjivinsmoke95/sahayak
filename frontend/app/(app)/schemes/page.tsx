@@ -29,6 +29,10 @@ export default function SchemesPage() {
   const results = data?.results ?? [];
   const matches = matchData?.results ?? [];
   const browsing = !q.trim() && !category;
+
+  // When browsing, hide recommended schemes from the full list to avoid showing the same scheme twice.
+  const matchIds = new Set(matches.slice(0, 4).map((m) => m.id));
+  const browseResults = browsing ? results.filter((s) => !matchIds.has(s.id)) : results;
   const open = (id: string) => {
     setDirection('push');
     router.push(`/schemes/${id}`);
@@ -114,7 +118,7 @@ export default function SchemesPage() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {results.map((s) => (
+            {browseResults.map((s) => (
               <li key={s.id}>
                 <button
                   type="button"

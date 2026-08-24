@@ -46,6 +46,8 @@ export function CompareDocuments({ document: doc }: { document: SahayakDocument 
 
   const others = (documents ?? []).filter((d) => d.id !== doc.id);
 
+  if (others.length === 0) return null;
+
   function buildRows(): Row[] {
     if (!other) return [];
     const rows = new Map<string, Row>();

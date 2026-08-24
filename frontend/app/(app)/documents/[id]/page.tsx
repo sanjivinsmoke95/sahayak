@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ExpandableSection, Icon } from '@/components/common';
-import { Skeleton } from '@/components/ui';
+import { Button, Sheet, Skeleton } from '@/components/ui';
 import {
   BelongsTo,
   CompareDocuments,
@@ -41,6 +41,7 @@ export default function DocumentDetailPage() {
   const remove = useDeleteDocument();
   const setDirection = useUiStore((s) => s.setDirection);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
+  const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
 
   // So the assistant knows what "this document" means.
   useEffect(() => {
@@ -104,24 +105,45 @@ export default function DocumentDetailPage() {
         <OriginalWording document={document} />
       </ExpandableSection>
 
-      {/* Quiet, out of the way — deleting is rare and not undoable. */}
+      {/* Quiet delete trigger — placed at the bottom since it's rare and destructive. */}
       <button
         type="button"
-        onClick={() => {
-          if (!window.confirm(t('removeAsk'))) return;
-          remove.mutate(document.id, {
-            onSuccess: () => {
-              setDirection('pop');
-              router.push('/documents');
-            },
-          });
-        }}
-        disabled={remove.isPending}
-        className="mx-auto mt-2 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-semibold text-alert-600 active:bg-alert-50 disabled:opacity-50"
+        onClick={() => setDeleteSheetOpen(true)}
+        className="mx-auto mt-2 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-semibold text-alert-600 active:bg-alert-50"
       >
         <Icon name="trash" className="h-5 w-5" />
         {t('removeDoc')}
       </button>
+
+      {/* Delete confirmation sheet. */}
+      <Sheet open={deleteSheetOpen} onOpenChange={setDeleteSheetOpen} title={t('removeDoc')} closeLabel={t('cancel')}>
+        <p className="rounded-xl bg-alert-50 p-4 text-sm leading-relaxed text-alert-700">
+          {t('removeAsk')}
+        </p>
+        <div className="mt-4 space-y-2">
+          <Button
+            full
+            size="lg"
+            variant="danger"
+            disabled={remove.isPending}
+            onClick={() => {
+              remove.mutate(document.id, {
+                onSuccess: () => {
+                  setDeleteSheetOpen(false);
+                  setDirection('pop');
+                  router.push('/documents');
+                },
+              });
+            }}
+          >
+            <Icon name="trash" className="h-5 w-5" />
+            {t('removeDoc')}
+          </Button>
+          <Button full size="lg" variant="secondary" onClick={() => setDeleteSheetOpen(false)}>
+            {t('cancel')}
+          </Button>
+        </div>
+      </Sheet>
     </div>
   );
 }

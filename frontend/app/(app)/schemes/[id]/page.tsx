@@ -44,12 +44,6 @@ export default function SchemeDetailPage() {
         </div>
       </header>
 
-      {/* Provenance — this is reference data, not verified official data. */}
-      <div className="flex items-start gap-2 rounded-xl bg-amberx-50 p-3 text-sm leading-relaxed text-amberx-700">
-        <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>{t('provSchemeNote')}</span>
-      </div>
-
       {/* Readiness + why this was suggested — only when recommended for this reader. */}
       {match && (
         <section className="rounded-xl2 border border-navy-100 bg-white p-4 shadow-soft">
@@ -125,12 +119,19 @@ export default function SchemeDetailPage() {
           href={scheme.officialUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-navy-600 px-4 text-base font-semibold text-white"
+          className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-navy-200 bg-white px-4 text-base font-semibold text-navy-700 active:bg-navy-50"
         >
           <Icon name="globe" className="h-5 w-5" />
           {t('schOfficial')}
+          <Icon name="right" className="h-4 w-4 text-navy-400" />
         </a>
       )}
+
+      {/* Provenance — kept at bottom so it doesn't front-load anxiety before the user sees any content. */}
+      <div className="flex items-start gap-2 rounded-xl bg-navy-50 p-3 text-sm leading-relaxed text-muted">
+        <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-navy-400" />
+        <span>{t('provSchemeNote')}</span>
+      </div>
     </div>
   );
 }

@@ -32,20 +32,20 @@ function AssistantScreen() {
             onClick={() => reset()}
             className="flex shrink-0 items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1.5 text-sm font-semibold text-navy-700 active:bg-navy-50"
           >
-            <Icon name="plus" className="h-4 w-4" />
+            <Icon name="close" className="h-4 w-4" />
             {t('newChat')}
           </button>
         )}
       </header>
 
-      {/* Context banner — which document the assistant is answering about. */}
-      <div className="mb-3 flex items-center gap-2 rounded-xl2 border border-navy-100 bg-white px-3.5 py-2.5 shadow-soft">
-        <Icon name="doc" className="h-4 w-4 shrink-0 text-navy-600" />
-        <span className="shrink-0 text-sm text-muted">{t('chatContext')}:</span>
-        <span className="min-w-0 flex-1 truncate text-sm font-bold text-navy-700">
-          {activeDoc ? tr(activeDoc.title) : t('askAllDocs')}
-        </span>
-        {activeDoc && (
+      {/* Context banner — only shown when a specific document is pinned. */}
+      {activeDoc && (
+        <div className="mb-3 flex items-center gap-2 rounded-xl2 border border-navy-100 bg-white px-3.5 py-2.5 shadow-soft">
+          <Icon name="doc" className="h-4 w-4 shrink-0 text-navy-600" />
+          <span className="shrink-0 text-sm text-muted">{t('chatContext')}:</span>
+          <span className="min-w-0 flex-1 truncate text-sm font-bold text-navy-700">
+            {tr(activeDoc.title)}
+          </span>
           <button
             type="button"
             onClick={() => setActiveDocumentId(null)}
@@ -53,8 +53,8 @@ function AssistantScreen() {
           >
             {t('chatChange')}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="flex-1 space-y-3">
         {messages.length === 0 && (
@@ -87,7 +87,7 @@ function AssistantScreen() {
 
       <div className="sticky bottom-0 mt-4 space-y-3 bg-paper pb-1 pt-2">
         {messages.length === 0 && <SuggestedQuestions onPick={(q) => ask.mutate(q)} />}
-        <div className="flex items-center justify-start">
+        <div className="flex items-center gap-2">
           <ChatUpload />
         </div>
         <PromptBox
