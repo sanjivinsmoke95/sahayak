@@ -5,14 +5,6 @@ import { Icon } from '@/components/common';
 import { V2Card, V2DocumentCard, V2SchemeMatchCard } from '@/components/v2';
 import { useDocuments, useSchemeMatches, useTranslation } from '@/hooks';
 import { useSettingsStore, useUiStore } from '@/store';
-import { daysUntil, isValidIsoDate } from '@/utils/format';
-
-const QUICK_ACTIONS = [
-  { icon: 'search', labelKey: 'tabSchemes', href: '/v2/schemes' },
-  { icon: 'doc', labelKey: 'shortDocs', href: '/v2/documents' },
-  { icon: 'tasks', labelKey: 'tabApps', href: '/v2/applications' },
-  { icon: 'chat', labelKey: 'navAsk', href: '/v2/assistant' },
-] as const;
 
 export default function V2HomePage() {
   const router = useRouter();
@@ -43,7 +35,7 @@ export default function V2HomePage() {
       <button
         type="button"
         onClick={() => go('/v2/upload')}
-        className="flex w-full items-center gap-4 rounded-[20px] bg-[#102D63] p-4 text-left text-white shadow-[0_4px_20px_rgba(12,110,107,0.25)] transition active:translate-y-px"
+        className="flex w-full items-center gap-4 rounded-[24px] bg-[#102D63] p-4 text-left text-white shadow-[0_4px_20px_rgba(16,40,99,0.25)] transition active:translate-y-px"
       >
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-white/15">
           <Icon name="upload" className="h-6 w-6" />
@@ -96,28 +88,6 @@ export default function V2HomePage() {
           </div>
         </section>
       )}
-
-      {/* Quick actions grid */}
-      <section>
-        <h2 className="v2-heading mb-3 text-lg font-bold text-[#101828]">{t('helpTitle')}</h2>
-        <div className="grid grid-cols-4 gap-3">
-          {QUICK_ACTIONS.map((action) => (
-            <button
-              key={action.href}
-              type="button"
-              onClick={() => go(action.href)}
-              className="flex flex-col items-center gap-2 rounded-[16px] border border-[#D6DDE8] bg-white p-3 active:bg-[#F8FAFC]"
-            >
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-[#EAF1FF] text-[#102D63]">
-                <Icon name={action.icon} className="h-5 w-5" />
-              </span>
-              <span className="text-center text-xs font-semibold leading-tight text-[#101828]">
-                {t(action.labelKey)}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
 
       {/* Empty state: help cards if no docs */}
       {(documents ?? []).length === 0 && (

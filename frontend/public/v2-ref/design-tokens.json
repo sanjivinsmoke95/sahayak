@@ -1,0 +1,27 @@
+{
+  "colors": {
+    "navy": "#102D63",
+    "navyDeep": "#0A1836",
+    "orange": "#F4A340",
+    "green": "#2E9B67",
+    "bg": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "text": "#101828",
+    "muted": "#667085",
+    "border": "#D9E2F0",
+    "softBlue": "#EAF1FF",
+    "softGreen": "#EAF7F0",
+    "softOrange": "#FFF3E3"
+  },
+  "geometry": {
+    "radiusCard": 24,
+    "radiusButton": 18,
+    "radiusPill": 999,
+    "borderWidth": 1,
+    "pagePadding": 16,
+    "bottomNavHeight": 84
+  },
+  "typography": {
+    "family": "Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  }
+}
