@@ -22,7 +22,6 @@ export default function V2ProfilePage() {
   const displayName = useSettingsStore((s) => s.displayName);
   const language = useSettingsStore((s) => s.language);
   const setDirection = useUiStore((s) => s.setDirection);
-  const setLanguageSheetOpen = useUiStore((s) => s.setLanguageSheetOpen);
   const { data: documents } = useDocuments();
   const { data: profiles } = useProfiles();
 
@@ -40,7 +39,7 @@ export default function V2ProfilePage() {
   ];
 
   const account: Row[] = [
-    { icon: 'globe', label: 'Language', value: language.toUpperCase(), onClick: () => setLanguageSheetOpen(true) },
+    { icon: 'globe', label: 'Language', value: language.toUpperCase(), onClick: () => go('/v2/language') },
     { icon: 'help', label: 'Help & Support', onClick: () => go('/v2/assistant') },
     { icon: 'info', label: 'About Sahayak', onClick: () => go('/v2/settings') },
     { icon: 'star', label: 'Rate Us', onClick: () => toast('Thanks for using Sahayak!') },

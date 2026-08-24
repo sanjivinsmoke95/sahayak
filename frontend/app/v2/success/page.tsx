@@ -19,17 +19,20 @@ function SuccessScreen() {
     <div className="relative flex min-h-[72vh] flex-col items-center justify-center text-center">
       <V2Illustration name="success" className="mb-6 h-44 w-44" />
 
-      <h1 className="v2-heading text-2xl font-extrabold text-[#101828]">{t('successTitle')}</h1>
-      <p className="mt-2 max-w-[17rem] text-base leading-relaxed text-[#667085]">{t('successSub')}</p>
+      <h1 className="v2-heading text-3xl font-extrabold text-[#101828]">Great!</h1>
+      <p className="mt-2 max-w-[17rem] text-lg font-semibold leading-relaxed text-[#101828]">
+        Your document has been explained.
+      </p>
+      <p className="mt-2 text-sm text-[#667085]">Sahayak is here to help.</p>
 
       <div className="mt-8 w-full max-w-[19rem] space-y-2.5">
         {docId && (
-          <V2Button full size="lg" onClick={() => router.replace(`/v2/documents/${docId}`)}>
+          <V2Button full size="lg" variant="secondary" onClick={() => router.replace(`/v2/documents/${docId}`)}>
             {t('successView')}
           </V2Button>
         )}
-        <V2Button full size="lg" variant="secondary" onClick={() => go('/v2')}>
-          {t('successHome')}
+        <V2Button full size="lg" onClick={() => go('/v2')}>
+          Back to Home
         </V2Button>
       </div>
 

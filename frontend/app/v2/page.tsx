@@ -55,7 +55,7 @@ export default function V2HomePage() {
   const quickTiles = [
     { icon: 'folder', label: 'My Docs', tint: 'bg-[#EAF1FF] text-[#102D63]', href: '/v2/documents' },
     { icon: 'bell', label: 'Alerts', tint: 'bg-[#FFF3E3] text-[#F4A340]', href: '/v2/alerts' },
-    { icon: 'mic', label: 'Voice Ask', tint: 'bg-[#FFF3E3] text-[#F4A340]', href: '/v2/assistant' },
+    { icon: 'mic', label: 'Voice Ask', tint: 'bg-[#FFF3E3] text-[#F4A340]', href: '/v2/voice' },
   ];
 
   return (

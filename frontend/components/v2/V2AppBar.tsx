@@ -21,6 +21,8 @@ const TITLE_BY_ROUTE: Record<string, StringKey> = {
   '/v2/mee-seva': 'meeTitle',
   '/v2/applications': 'appMyTitle',
   '/v2/assistant': 'voiceTitle',
+  '/v2/voice': 'voiceTitle',
+  '/v2/language': 'language',
   '/v2/settings': 'navSettings',
   '/v2/profiles': 'famTitle',
 };
@@ -41,7 +43,9 @@ export function V2AppBar() {
     : pathname.startsWith('/v2/applications/') ? 'appMyTitle'
     : pathname.startsWith('/v2/services/') ? 'appsStartService'
     : 'brand');
-  const titleText = isDocDetail ? 'Document Explained' : t(titleKey);
+  const titleText = isDocDetail ? 'Document Explained'
+    : pathname === '/v2/voice' ? 'Sahayak Voice'
+    : t(titleKey);
 
   const share = () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
