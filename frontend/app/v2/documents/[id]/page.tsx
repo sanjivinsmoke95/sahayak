@@ -6,13 +6,47 @@ import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
 import { V2Button, V2Ribbon } from '@/components/v2';
 import {
-  useDeleteDocument, useDocument, useTranslation,
+  useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode } from '@/types';
 import { formatDate, isValidIsoDate } from '@/utils/format';
 
 const NAVY = '#173A78';
+
+type Tone = 'blue' | 'purple' | 'green' | 'orange';
+
+const TONE: Record<Tone, { card: string; icon: string; title: string }> = {
+  blue: { card: 'bg-[#EAF1FF]', icon: 'text-[#173A78]', title: 'text-[#173A78]' },
+  purple: { card: 'bg-[#F1ECFB]', icon: 'text-[#6B4EE6]', title: 'text-[#6B4EE6]' },
+  green: { card: 'bg-[#EAF7F0]', icon: 'text-[#2FA66A]', title: 'text-[#2FA66A]' },
+  orange: { card: 'bg-[#FFF4E7]', icon: 'text-[#C77A1B]', title: 'text-[#C77A1B]' },
+};
+
+/** One pastel explanation card. An optional › affordance opens the assistant. */
+function QACard({
+  tone, icon, title, children, onOpen,
+}: {
+  tone: Tone; icon: string; title: string; children: React.ReactNode; onOpen?: () => void;
+}) {
+  const s = TONE[tone];
+  const Tag = onOpen ? 'button' : 'div';
+  return (
+    <Tag
+      {...(onOpen ? { type: 'button' as const, onClick: onOpen } : {})}
+      className={`flex w-full items-start gap-3 rounded-[18px] ${s.card} p-4 text-left`}
+    >
+      <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-white/70 ${s.icon}`}>
+        <Icon name={icon} className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className={`block text-[15px] font-bold ${s.title}`}>{title}</span>
+        <span className="mt-1 block text-sm leading-relaxed text-[#101828]">{children}</span>
+      </span>
+      {onOpen && <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-[#6B7890]" />}
+    </Tag>
+  );
+}
 
 export default function V2DocumentDetailPage() {
   const params = useParams<{ id: string }>();
@@ -22,15 +56,17 @@ export default function V2DocumentDetailPage() {
 
   const { data: document, isLoading, isError } = useDocument(id);
   const remove = useDeleteDocument();
+  const speech = useSpeech();
   const setDirection = useUiStore((s) => s.setDirection);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [originalOpen, setOriginalOpen] = useState(false);
 
   useEffect(() => {
     setActiveDocumentId(id);
     return () => setActiveDocumentId(null);
   }, [id, setActiveDocumentId]);
+
+  useEffect(() => () => speech.stop(), [speech]);
 
   const goBack = () => { setDirection('pop'); router.back(); };
   const share = () => {
@@ -84,10 +120,10 @@ export default function V2DocumentDetailPage() {
           document={document}
           language={language}
           tr={tr}
+          speech={speech}
           onSchemes={() => { setDirection('push'); router.push('/v2/schemes'); }}
           onAsk={() => { setDirection('push'); router.push('/v2/assistant'); }}
-          originalOpen={originalOpen}
-          setOriginalOpen={setOriginalOpen}
+          onMeeSeva={() => { setDirection('push'); router.push('/v2/mee-seva'); }}
           onDelete={() => setDeleteOpen(true)}
         />
       )}
@@ -122,24 +158,32 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, language, tr, onSchemes, onAsk, originalOpen, setOriginalOpen, onDelete,
+  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onDelete,
 }: {
   document: any;
   language: LanguageCode;
   tr: (v: any) => string;
+  speech: ReturnType<typeof useSpeech>;
   onSchemes: () => void;
   onAsk: () => void;
-  originalOpen: boolean;
-  setOriginalOpen: (v: boolean) => void;
+  onMeeSeva: () => void;
   onDelete: () => void;
 }) {
+  const [originalOpen, setOriginalOpen] = useState(false);
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   const issuer = tr(document.issuer);
   const what = tr(document.what);
+  const why = tr(document.why);
+  const steps = (document.steps ?? []).map((s: any) => tr(s)).filter(Boolean);
   const personal = document.personal ?? [];
 
+  const listenText = [what, why, steps.join('. '), tr(document.explain)].filter(Boolean).join('. ');
+  const speaking = speech.state === 'speaking';
+
   return (
-    <div className="space-y-4 px-4 pb-6 pt-4">
+    <div className="space-y-3.5 px-4 pb-6 pt-4">
       {/* Status pill */}
       <span className="inline-flex items-center rounded-full bg-[#EAF7F0] px-3 py-1 text-xs font-bold text-[#2FA66A]">
         Explained
@@ -169,39 +213,56 @@ function DetailBody({
         </div>
       </div>
 
-      {/* Your details */}
-      {personal.length > 0 && (
-        <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
-          <h2 className="v2-heading text-base font-bold text-[#101828]">Your details</h2>
-          <dl className="mt-3 space-y-3">
-            {personal.map((field: any, i: number) => (
-              <div key={i} className="flex items-center justify-between gap-3">
-                <dt className="text-sm text-[#6B7890]">{tr(field.label)}</dt>
-                <dd className="text-right text-sm font-bold tabular-nums text-[#101828]">
-                  {field.sensitive ? '•••••' : field.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      )}
-
-      {/* What is this document? */}
+      {/* Q&A explanation cards */}
       {what && (
-        <div className="rounded-[20px] bg-[#EAF1FF] p-4">
-          <h2 className="v2-heading text-base font-bold text-[#101828]">What is this document?</h2>
-          <p className="mt-1 text-sm leading-relaxed text-[#101828]">{what}</p>
-          <button
-            type="button"
-            onClick={onSchemes}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[14px] px-4 py-3.5 text-sm font-bold text-white active:translate-y-px"
-            style={{ backgroundColor: NAVY }}
-          >
-            Find matching schemes
-            <Icon name="right" className="h-4 w-4" />
-          </button>
-        </div>
+        <QACard tone="blue" icon="doc" title="What is this?" onOpen={onAsk}>
+          {what}
+        </QACard>
       )}
+      {why && (
+        <QACard tone="purple" icon="help" title="Why did I receive this?" onOpen={onAsk}>
+          {why}
+        </QACard>
+      )}
+      {steps.length > 0 && (
+        <QACard tone="green" icon="tasks" title="What should I do?" onOpen={onAsk}>
+          <ol className="space-y-1.5">
+            {steps.map((step: string, i: number) => (
+              <li key={i} className="flex gap-2">
+                <span className="font-bold text-[#2FA66A]">{i + 1}.</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </QACard>
+      )}
+      <QACard tone="orange" icon="calendar" title="By when?">
+        {deadline
+          ? `Submit or renew by ${formatDate(deadline, language)}.`
+          : 'There is no deadline printed on this document.'}
+      </QACard>
+
+      {/* Listen to explanation */}
+      <button
+        type="button"
+        disabled={!speech.supported || !listenText}
+        onClick={() => (speaking ? speech.stop() : speech.speak(listenText))}
+        className="flex w-full items-center justify-center gap-2.5 rounded-[16px] px-4 py-4 text-base font-bold text-white shadow-[0_4px_20px_rgba(23,58,120,0.22)] transition active:translate-y-px disabled:opacity-50"
+        style={{ backgroundColor: NAVY }}
+      >
+        <Icon name={speaking ? 'close' : 'play'} className="h-5 w-5" />
+        {speaking ? 'Stop' : 'Listen to explanation'}
+      </button>
+
+      {/* Find matching schemes */}
+      <button
+        type="button"
+        onClick={onSchemes}
+        className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-[#D6E0F5] bg-[#EAF1FF] px-4 py-4 text-base font-bold text-[#173A78] active:bg-[#DDE8FB]"
+      >
+        Find matching schemes
+        <Icon name="right" className="h-4 w-4" />
+      </button>
 
       {/* Ask about this document */}
       <button
@@ -213,6 +274,35 @@ function DetailBody({
         <span className="flex-1 text-[15px] font-semibold text-[#101828]">Ask about this document</span>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
+
+      {/* Your details (extracted information) */}
+      {personal.length > 0 && (
+        <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+          <h2 className="v2-heading text-base font-bold text-[#101828]">Your details</h2>
+          <dl className="mt-3 space-y-3">
+            {personal.map((field: any, i: number) => {
+              const show = revealed[i];
+              return (
+                <div key={i} className="flex items-center justify-between gap-3">
+                  <dt className="text-sm text-[#6B7890]">{tr(field.label)}</dt>
+                  <dd className="flex items-center gap-2 text-right text-sm font-bold tabular-nums text-[#101828]">
+                    <span>{field.sensitive && !show ? '•••••' : field.value}</span>
+                    {field.sensitive && (
+                      <button
+                        type="button"
+                        onClick={() => setRevealed((r) => ({ ...r, [i]: !r[i] }))}
+                        className="text-xs font-semibold text-[#173A78]"
+                      >
+                        {show ? 'Hide' : 'Show'}
+                      </button>
+                    )}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
+        </div>
+      )}
 
       {/* See the original document */}
       {document.original && (
@@ -236,6 +326,22 @@ function DetailBody({
           )}
         </div>
       )}
+
+      {/* Nearby Mee Seva */}
+      <button
+        type="button"
+        onClick={onMeeSeva}
+        className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+      >
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#FFF4E7] text-[#F6A23A]">
+          <Icon name="scan" className="h-5 w-5" />
+        </span>
+        <span className="flex-1">
+          <span className="block text-[15px] font-bold text-[#101828]">Visit a nearby Mee Seva centre</span>
+          <span className="mt-0.5 block text-xs text-[#6B7890]">Find the closest centre to submit this in person</span>
+        </span>
+        <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+      </button>
 
       {/* Delete */}
       <button
