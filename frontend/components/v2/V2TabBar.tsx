@@ -49,7 +49,7 @@ export function V2TabBar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="shrink-0 border-t border-[#E8EDF5] bg-white"
+      className="relative z-10 shrink-0 border-t border-[#E8EDF5] bg-white"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="grid grid-cols-4">
