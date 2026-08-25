@@ -5,6 +5,7 @@ import { Icon } from '@/components/common';
 import { useTranslation } from '@/hooks';
 import { useUiStore } from '@/store';
 import { V2Logo } from './V2Logo';
+import { V2Ribbon } from './V2Ribbon';
 import type { StringKey } from '@/lib/i18n';
 
 const TAB_ROOTS = ['/v2', '/v2/documents', '/v2/alerts', '/v2/profile'];
@@ -53,10 +54,11 @@ export function V2AppBar() {
   if (isHome) {
     return (
       <header
-        className="relative z-10 shrink-0 bg-white"
+        className="relative shrink-0 overflow-hidden bg-white"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="flex items-center gap-2.5 px-4 py-3">
+        <V2Ribbon placement="top" />
+        <div className="relative flex items-center gap-2.5 px-4 py-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF]">
             <V2Logo variant="mark" className="h-7 w-7" />
           </span>
@@ -79,10 +81,11 @@ export function V2AppBar() {
 
   return (
     <header
-      className="relative z-10 shrink-0 border-b border-[#EAF1FF] bg-white"
+      className="relative shrink-0 overflow-hidden border-b border-[#EAF1FF] bg-white"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
-      <div className="flex items-center gap-2 px-3 py-2.5">
+      <V2Ribbon placement="top" />
+      <div className="relative flex items-center gap-2 px-3 py-2.5">
         {!isTabRoot ? (
           <button
             type="button"
