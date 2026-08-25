@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
-import { V2Button, V2Ribbon } from '@/components/v2';
+import { V2Button } from '@/components/v2';
 import {
   useDeleteDocument, useDocument, useTranslation,
 } from '@/hooks';
@@ -45,11 +45,10 @@ export default function V2DocumentDetailPage() {
     <div className="min-h-full">
       {/* Header */}
       <header
-        className="relative overflow-hidden border-b border-[#EAF1FF] bg-white"
+        className="relative z-10 border-b border-[#EAF1FF] bg-white"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <V2Ribbon placement="top" />
-        <div className="relative flex items-center gap-2 px-3 py-2.5">
+        <div className="flex items-center gap-2 px-3 py-2.5">
           <button
             type="button"
             onClick={goBack}
