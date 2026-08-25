@@ -71,7 +71,7 @@ export default function V2HomePage() {
       {/* Inline header (no app bar) */}
       <header
         className="relative overflow-hidden px-4 pb-1 pt-4"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 2rem)' }}
       >
         <V2Ribbon placement="top" />
         <div className="relative flex items-center gap-2.5">
