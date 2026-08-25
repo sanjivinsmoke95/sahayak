@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { V2Logo, V2Ribbon } from '@/components/v2';
-import { useDocuments, useTranslation, useUpdateSettings } from '@/hooks';
+import { useDocuments, useSchemeMatches, useTranslation, useUpdateSettings } from '@/hooks';
 import { LANGS } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useSettingsStore, useUiStore } from '@/store';
@@ -49,8 +49,10 @@ export default function V2HomePage() {
   const updateSettings = useUpdateSettings();
   const setDirection = useUiStore((s) => s.setDirection);
   const { data: documents } = useDocuments();
+  const { data: matchData } = useSchemeMatches();
 
   const recent = (documents ?? []).slice(0, 3);
+  const matches = (matchData?.results ?? []).slice(0, 3);
   const go = (path: string) => { setDirection('push'); router.push(path); };
   const pickLanguage = (code: LanguageCode) => {
     buzz();
@@ -191,17 +193,66 @@ export default function V2HomePage() {
           </section>
         )}
 
-        {/* Quick tiles */}
+        {/* Recommended schemes */}
+        {matches.length > 0 && (
+          <section>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="v2-heading text-lg font-bold text-[#101828]">Recommended for you</h2>
+              <button type="button" onClick={() => go('/v2/schemes')} className="text-sm font-semibold text-[#01226F]">
+                View All
+              </button>
+            </div>
+            <div className="space-y-2.5">
+              {matches.map((m) => {
+                const pct = m.total > 0 ? Math.round((m.satisfied / m.total) * 100) : 0;
+                const ready = m.total > 0 && m.satisfied === m.total;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => go(`/v2/schemes/${m.id}`)}
+                    className="w-full rounded-[18px] border border-[#F0E9DF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#FBF7F1]"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="min-w-0 flex-1 text-[15px] font-bold leading-snug text-[#101828]">{m.name}</p>
+                      <span
+                        className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold"
+                        style={ready
+                          ? { backgroundColor: GREEN_SOFT, color: GREEN_INK }
+                          : { backgroundColor: PEACH_SOFT, color: ORANGE_INK }}
+                      >
+                        {ready ? 'Documents ready' : 'More documents needed'}
+                      </span>
+                    </div>
+                    {m.benefit && (
+                      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[#667085]">{m.benefit}</p>
+                    )}
+                    <div className="mt-3 flex items-center gap-3">
+                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-[#EDE8E0]">
+                        <span className="block h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: NAVY }} />
+                      </span>
+                      <span className="shrink-0 text-xs text-[#667085]">{m.satisfied}/{m.total} met</span>
+                      <span className="shrink-0 text-xs font-bold" style={{ color: NAVY }}>{pct}% match</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Quick tiles — whole box tinted */}
         <div className="grid grid-cols-3 gap-3">
           {quickTiles.map((tile) => (
             <button
               key={tile.label}
               type="button"
               onClick={() => go(tile.href)}
-              className="flex flex-col items-center gap-2 rounded-[18px] border border-[#F0E9DF] bg-white py-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#FBF7F1]"
+              className="flex flex-col items-center gap-2 rounded-[18px] py-5 shadow-[0_1px_4px_rgba(16,40,99,0.05)] transition active:translate-y-px"
+              style={{ backgroundColor: tile.bg }}
             >
-              <span className="grid h-11 w-11 place-items-center rounded-[14px]" style={{ backgroundColor: tile.bg, color: tile.ink }}>
-                <Icon name={tile.icon} className="h-5 w-5" />
+              <span style={{ color: tile.ink }}>
+                <Icon name={tile.icon} className="h-7 w-7" />
               </span>
               <span className="text-sm font-semibold text-[#101828]">{tile.label}</span>
             </button>
