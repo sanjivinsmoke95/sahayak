@@ -59,7 +59,7 @@ export default function V2HomePage() {
   };
 
   const quickTiles = [
-    { icon: 'folder', label: 'My Docs', bg: BLUE_SOFT, ink: NAVY, href: '/v2/documents' },
+    { icon: 'folder', label: 'My Docs', bg: GREEN_SOFT, ink: GREEN_INK, href: '/v2/documents' },
     { icon: 'bell', label: 'Alerts', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/alerts' },
     { icon: 'mic', label: 'Voice Ask', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/voice' },
   ];
