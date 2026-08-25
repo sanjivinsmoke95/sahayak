@@ -7,9 +7,11 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Icon } from '@/components/common';
 import { useAuthToken } from '@/hooks';
+import { GOV_DOCUMENT_TARGET_BYTES, GOV_TARGET_LABEL } from '@/lib/gov-upload-limits';
 import { filesService } from '@/services';
 import { useUiStore } from '@/store';
-import { buzz } from '@/utils/format';
+import { shrinkFile } from '@/utils/compression';
+import { buzz, humanBytes, isImageFile } from '@/utils/format';
 
 export default function V2UploadPage() {
   const router = useRouter();
@@ -23,12 +25,36 @@ export default function V2UploadPage() {
     if (!file || busy) return;
     setBusy(true);
     try {
+      let blob: Blob = file;
+      let name = file.name;
+      let reduced: { from: number; to: number } | null = null;
+
+      // Compress image uploads down to the government document limit (500 KB).
+      if (isImageFile(file) && file.size > GOV_DOCUMENT_TARGET_BYTES) {
+        const result = await shrinkFile(file, { targetBytes: GOV_DOCUMENT_TARGET_BYTES });
+        const outSize = result.size ?? file.size;
+        if (result.blob && outSize < file.size) {
+          blob = result.blob;
+          name = result.outName ?? file.name;
+          reduced = { from: file.size, to: outSize };
+          toast.success(
+            `Reduced ${humanBytes(reduced.from)} → ${humanBytes(reduced.to)} to meet government upload limits`,
+          );
+        }
+      }
+
       const uploaded = await filesService.upload(
-        { blob: file, name: file.name, originalSize: file.size },
+        { blob, name, originalSize: file.size },
         await getToken(),
       );
+
+      const q = new URLSearchParams({ fileId: uploaded.id, name });
+      if (reduced) {
+        q.set('from', String(reduced.from));
+        q.set('to', String(reduced.to));
+      }
       setDirection('push');
-      router.push(`/v2/analyzing?fileId=${uploaded.id}&name=${encodeURIComponent(file.name)}`);
+      router.push(`/v2/analyzing?${q.toString()}`);
     } catch {
       toast.error('Could not upload the document. Make sure the backend is running.');
       setBusy(false);
@@ -76,7 +102,7 @@ export default function V2UploadPage() {
         <p className="mt-4 text-center text-sm text-[#667085]">
           Supported formats: PDF, PNG, JPG
           <br />
-          Max file size: 10MB
+          Photos are auto-compressed to meet government limits (≤ {GOV_TARGET_LABEL})
         </p>
 
         <input

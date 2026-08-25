@@ -5,7 +5,6 @@ import { Icon } from '@/components/common';
 import { V2Logo, V2Ribbon } from '@/components/v2';
 import { useDocuments, useSchemeMatches, useTranslation, useUpdateSettings } from '@/hooks';
 import { LANGS } from '@/lib/i18n';
-import { cn } from '@/lib/utils';
 import { useSettingsStore, useUiStore } from '@/store';
 import type { LanguageCode } from '@/types';
 import { buzz } from '@/utils/format';
