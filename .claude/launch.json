@@ -3,7 +3,8 @@
   "configurations": [
     {
       "name": "frontend-dev",
-      "url": "http://localhost:3001",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend", "run", "dev", "--", "-p", "3001"],
       "port": 3001,
       "autoPort": false
     }
