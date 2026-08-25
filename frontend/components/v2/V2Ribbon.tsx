@@ -22,7 +22,7 @@ export function V2Ribbon({ placement = 'bottom', className }: V2RibbonProps) {
       className={cn(
         'pointer-events-none absolute select-none',
         placement === 'top'
-          ? 'right-0 top-0 h-[68px] w-[176px] object-cover object-top'
+          ? 'right-0 top-0 h-[70px] w-[205px] object-cover object-top'
           : 'inset-x-0 bottom-0 h-20 w-full object-cover',
         className,
       )}
