@@ -9,8 +9,10 @@ import {
   useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
 import { useUiStore, useWorkspaceStore } from '@/store';
-import type { LanguageCode } from '@/types';
+import type { LanguageCode, Localized, SahayakDocument } from '@/types';
 import { formatDate, isValidIsoDate } from '@/utils/format';
+
+type Tr = (value: Localized) => string;
 
 const NAVY = '#173A78';
 
@@ -60,6 +62,7 @@ export default function V2DocumentDetailPage() {
   const setDirection = useUiStore((s) => s.setDirection);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setActiveDocumentId(id);
@@ -76,6 +79,27 @@ export default function V2DocumentDetailPage() {
   };
 
   const title = document ? (document.docType || tr(document.title)) : '';
+  const listenText = document
+    ? [tr(document.what), tr(document.why),
+       (document.steps ?? []).map((s) => tr(s)).join('. '), tr(document.explain)]
+      .filter(Boolean).join('. ')
+    : '';
+  const speaking = speech.state === 'speaking';
+  const nav = (path: string) => { setMenuOpen(false); setDirection('push'); router.push(path); };
+
+  const menuItems: { icon: string; label: string; onClick: () => void; disabled?: boolean; danger?: boolean }[] = [
+    {
+      icon: speaking ? 'close' : 'play',
+      label: speaking ? 'Stop reading' : 'Listen to explanation',
+      disabled: !speech.supported || !listenText,
+      onClick: () => { setMenuOpen(false); if (speaking) speech.stop(); else speech.speak(listenText); },
+    },
+    { icon: 'search', label: 'Find matching schemes', onClick: () => nav('/v2/schemes') },
+    { icon: 'chat', label: 'Ask about this document', onClick: () => nav('/v2/assistant') },
+    { icon: 'scan', label: 'Visit a nearby Mee Seva centre', onClick: () => nav('/v2/mee-seva') },
+    { icon: 'share', label: 'Share', onClick: () => { setMenuOpen(false); share(); } },
+    { icon: 'trash', label: 'Delete this document', danger: true, onClick: () => { setMenuOpen(false); setDeleteOpen(true); } },
+  ];
 
   return (
     <div className="min-h-full">
@@ -99,8 +123,9 @@ export default function V2DocumentDetailPage() {
           </p>
           <button
             type="button"
-            onClick={share}
+            onClick={() => setMenuOpen(true)}
             aria-label="Options"
+            aria-haspopup="menu"
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
           >
             <Icon name="moreV" className="h-5 w-5" />
@@ -126,6 +151,30 @@ export default function V2DocumentDetailPage() {
           onMeeSeva={() => { setDirection('push'); router.push('/v2/mee-seva'); }}
           onDelete={() => setDeleteOpen(true)}
         />
+      )}
+
+      {document && (
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen} title={title || 'Options'} closeLabel={t('close')}>
+          <div className="space-y-1">
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                disabled={item.disabled}
+                onClick={item.onClick}
+                className={`flex w-full items-center gap-3 rounded-[14px] px-3 py-3.5 text-left text-[15px] font-semibold transition disabled:opacity-40 ${
+                  item.danger ? 'text-[#E5484D] active:bg-[#FDE8EA]' : 'text-[#101828] active:bg-[#F5F8FF]'
+                }`}
+              >
+                <Icon
+                  name={item.icon}
+                  className={`h-5 w-5 shrink-0 ${item.danger ? 'text-[#E5484D]' : 'text-[#173A78]'}`}
+                />
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </Sheet>
       )}
 
       {document && (
@@ -160,9 +209,9 @@ export default function V2DocumentDetailPage() {
 function DetailBody({
   document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onDelete,
 }: {
-  document: any;
+  document: SahayakDocument;
   language: LanguageCode;
-  tr: (v: any) => string;
+  tr: Tr;
   speech: ReturnType<typeof useSpeech>;
   onSchemes: () => void;
   onAsk: () => void;
@@ -176,7 +225,7 @@ function DetailBody({
   const issuer = tr(document.issuer);
   const what = tr(document.what);
   const why = tr(document.why);
-  const steps = (document.steps ?? []).map((s: any) => tr(s)).filter(Boolean);
+  const steps = (document.steps ?? []).map((s) => tr(s)).filter(Boolean);
   const personal = document.personal ?? [];
 
   const listenText = [what, why, steps.join('. '), tr(document.explain)].filter(Boolean).join('. ');
@@ -280,7 +329,7 @@ function DetailBody({
         <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
           <h2 className="v2-heading text-base font-bold text-[#101828]">Your details</h2>
           <dl className="mt-3 space-y-3">
-            {personal.map((field: any, i: number) => {
+            {personal.map((field, i) => {
               const show = revealed[i];
               return (
                 <div key={i} className="flex items-center justify-between gap-3">

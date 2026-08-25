@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { useAnalyzeDocument } from '@/hooks';
 import { useUiStore } from '@/store';
+import { humanBytes } from '@/utils/format';
 
 const STEPS = [
   'Reading document',
@@ -25,6 +26,8 @@ function AnalyzingScreen() {
   const fileId = params.get('fileId') ?? undefined;
   const fileName = params.get('name') ?? undefined;
   const docParam = params.get('doc') ?? undefined;
+  const fromBytes = Number(params.get('from')) || 0;
+  const toBytes = Number(params.get('to')) || 0;
 
   const [stage, setStage] = useState(0);
   const finished = stage >= STEPS.length;
@@ -72,6 +75,13 @@ function AnalyzingScreen() {
         Extracting and understanding your document
       </h2>
       <p className="mt-2 text-base text-[#667085]">This may take a few seconds...</p>
+
+      {fromBytes > 0 && toBytes > 0 && toBytes < fromBytes && (
+        <div className="mt-4 flex items-center gap-2 rounded-full bg-[#EAF7F0] px-4 py-2 text-sm font-semibold text-[#2FA66A]">
+          <Icon name="check" className="h-4 w-4" strokeWidth={3} />
+          Compressed {humanBytes(fromBytes)} → {humanBytes(toBytes)} for government upload
+        </div>
+      )}
 
       {/* Steps */}
       <ul className="mt-6 w-full space-y-3 rounded-[20px] bg-[#FFF9F0] p-5 text-left">
