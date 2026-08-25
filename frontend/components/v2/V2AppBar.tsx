@@ -47,11 +47,6 @@ export function V2AppBar() {
     : pathname === '/v2/voice' ? 'Sahayak Voice'
     : t(titleKey);
 
-  const share = () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      navigator.share({ title: 'Sahayak', url: window.location.href }).catch(() => {});
-    }
-  };
 
   const goBack = () => { setDirection('pop'); router.back(); };
   const goProfile = () => { setDirection('push'); router.push('/v2/profile'); };
@@ -86,48 +81,36 @@ export function V2AppBar() {
 
   return (
     <header
-      className="shrink-0 border-b border-[#EAF1FF] bg-white"
+      className="relative shrink-0 overflow-hidden border-b border-[#EAF1FF] bg-white"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
-      <div className="flex items-center gap-2 px-3 py-2.5">
+      <V2Ribbon placement="top" />
+      <div className="relative flex items-center gap-2 px-3 py-2.5">
         {!isTabRoot ? (
           <button
             type="button"
             onClick={goBack}
             aria-label={t('back')}
-            className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#102D63] active:bg-[#EAF1FF]"
+            className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
           >
             <Icon name="left" className="h-6 w-6" strokeWidth={2.4} />
           </button>
         ) : (
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF]">
-            <V2Logo variant="mark" className="h-6 w-6" />
-          </div>
+          <V2Logo variant="mark" className="h-10 w-10 shrink-0" />
         )}
 
-        <p className="v2-heading min-w-0 flex-1 truncate px-1 text-lg font-bold text-[#102D63]">
+        <p className="v2-heading min-w-0 flex-1 truncate px-1 text-lg font-bold text-[#173A78]">
           {titleText}
         </p>
 
-        {isDocDetail ? (
-          <button
-            type="button"
-            onClick={share}
-            aria-label="Share"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#102D63] active:bg-[#EAF1FF]"
-          >
-            <Icon name="share" className="h-5 w-5" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setLanguageSheetOpen(true)}
-            aria-label={t('language')}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#667085] active:bg-[#EAF1FF]"
-          >
-            <Icon name="globe" className="h-5 w-5" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setLanguageSheetOpen(true)}
+          aria-label={t('language')}
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#667085] active:bg-[#EAF1FF]"
+        >
+          <Icon name="globe" className="h-5 w-5" />
+        </button>
       </div>
     </header>
   );

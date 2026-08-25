@@ -31,18 +31,20 @@ export function V2Shell({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   const isHome = pathname === '/v2';
+  const isDocDetail = pathname.startsWith('/v2/documents/') && pathname !== '/v2/documents';
+  const ownHeader = isHome || isDocDetail;
 
   return (
     <div className="v2-wrap">
       <div className="v2-device">
         <span className="v2-notch" aria-hidden="true" />
-        {!isHome && <V2AppBar />}
+        {!ownHeader && <V2AppBar />}
         <BackendStatusBanner />
         <main
           id="main"
           ref={scrollRef}
           tabIndex={-1}
-          className={isHome ? 'v2-scroll' : 'v2-scroll px-4 pb-10 pt-5'}
+          className={ownHeader ? 'v2-scroll' : 'v2-scroll px-4 pb-10 pt-5'}
         >
           {children}
         </main>

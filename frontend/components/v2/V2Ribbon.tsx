@@ -15,7 +15,7 @@ interface V2RibbonProps {
 export function V2Ribbon({ placement = 'bottom', className }: V2RibbonProps) {
   return (
     <img
-      src="/v2-assets/india-ribbon.svg"
+      src="/v2-assets/tricolor-wave.svg"
       alt=""
       aria-hidden="true"
       draggable={false}
