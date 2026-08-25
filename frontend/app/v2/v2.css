@@ -67,20 +67,6 @@
       0 0 0 13px #1E3560,
       0 42px 90px -24px rgba(0, 0, 0, 0.75);
   }
-
-  .v2-notch {
-    position: absolute;
-    top: 9px;
-    left: 50%;
-    z-index: 60;
-    display: block;
-    height: 26px;
-    width: 104px;
-    transform: translateX(-50%);
-    border-radius: 999px;
-    background: #0A1530;
-    pointer-events: none;
-  }
 }
 
 /* ─── V2 heading font ─── */

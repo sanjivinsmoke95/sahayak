@@ -37,7 +37,6 @@ export function V2Shell({ children }: { children: ReactNode }) {
   return (
     <div className="v2-wrap">
       <div className="v2-device">
-        <span className="v2-notch" aria-hidden="true" />
         {!ownHeader && <V2AppBar />}
         <BackendStatusBanner />
         <main
