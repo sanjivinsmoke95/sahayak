@@ -9,7 +9,6 @@ import { LanguageSheet } from '@/components/layout/LanguageSheet';
 import { BackendStatusBanner } from '@/components/common';
 import { V2AppBar } from './V2AppBar';
 import { V2TabBar } from './V2TabBar';
-import { V2Ribbon } from './V2Ribbon';
 
 export function V2Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -39,15 +38,13 @@ export function V2Shell({ children }: { children: ReactNode }) {
     <div className="v2-wrap">
       <div className="v2-device">
         <span className="v2-notch" aria-hidden="true" />
-        {/* Faint tricolour watermark behind the whole app */}
-        <V2Ribbon placement="watermark" />
         {!ownHeader && <V2AppBar />}
         <BackendStatusBanner />
         <main
           id="main"
           ref={scrollRef}
           tabIndex={-1}
-          className={ownHeader ? 'v2-scroll relative z-10' : 'v2-scroll relative z-10 px-4 pb-10 pt-5'}
+          className={ownHeader ? 'v2-scroll' : 'v2-scroll px-4 pb-10 pt-5'}
         >
           {children}
         </main>

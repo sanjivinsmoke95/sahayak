@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
-import { V2Logo } from '@/components/v2';
+import { V2Logo, V2Ribbon } from '@/components/v2';
 import { useDocuments, useSchemeMatches, useTranslation, useUpdateSettings } from '@/hooks';
 import { LANGS } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -67,13 +67,14 @@ export default function V2HomePage() {
   ];
 
   return (
-    <div className="min-h-full">
+    <div className="min-h-full bg-[#FEF9F3]">
       {/* Inline header (no app bar) */}
       <header
-        className="px-4 pb-1 pt-4"
+        className="relative overflow-hidden px-4 pb-1 pt-4"
         style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}
       >
-        <div className="flex items-center gap-2.5">
+        <V2Ribbon placement="top" />
+        <div className="relative flex items-center gap-2.5">
           <V2Logo variant="mark" className="h-9 w-9 shrink-0" />
           <div className="min-w-0 flex-1">
             <p className="v2-heading text-lg font-extrabold leading-tight text-[#01226F]">Sahayak</p>
