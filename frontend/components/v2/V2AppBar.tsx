@@ -86,7 +86,7 @@ export function V2AppBar() {
 
   return (
     <header
-      className="relative shrink-0 overflow-hidden border-b border-[#EAF1FF] bg-white"
+      className="relative shrink-0 overflow-hidden bg-[#FEF9F3]"
       style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
     >
       <V2Ribbon placement="top" />
