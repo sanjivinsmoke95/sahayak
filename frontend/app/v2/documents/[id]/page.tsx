@@ -106,7 +106,7 @@ export default function V2DocumentDetailPage() {
     <div className="min-h-full">
       {/* Header */}
       <header
-        className="relative overflow-hidden border-b border-[#EAF1FF] bg-white"
+        className="relative overflow-hidden bg-[#FEF9F3]"
         style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
       >
         <V2Ribbon placement="top" />
