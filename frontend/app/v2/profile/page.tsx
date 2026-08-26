@@ -33,8 +33,10 @@ export default function V2ProfilePage() {
     { icon: 'folder', label: 'My documents', value: String(docCount), onClick: () => go('/v2/documents') },
     { icon: 'user', label: 'Family profiles', value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
     { icon: 'search', label: 'Schemes for me', onClick: () => go('/v2/schemes') },
+    { icon: 'spark', label: 'Discover services', onClick: () => go('/v2/discover') },
     { icon: 'tasks', label: 'My applications', onClick: () => go('/v2/applications') },
     { icon: 'scan', label: 'Nearby Mee Seva', onClick: () => go('/v2/mee-seva') },
+    { icon: 'shrink', label: 'Compress a file', onClick: () => go('/v2/shrink') },
     { icon: 'chat', label: 'Ask Sahayak', onClick: () => go('/v2/assistant') },
   ];
 

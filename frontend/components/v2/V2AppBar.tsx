@@ -25,6 +25,8 @@ const TITLE_BY_ROUTE: Record<string, StringKey> = {
   '/v2/language': 'language',
   '/v2/settings': 'navSettings',
   '/v2/profiles': 'famTitle',
+  '/v2/shrink': 'shrinkTitle',
+  '/v2/discover': 'discTitle',
 };
 
 export function V2AppBar() {
@@ -36,9 +38,11 @@ export function V2AppBar() {
 
   const isTabRoot = TAB_ROOTS.includes(pathname);
   const isHome = pathname === '/v2';
-  const isDocDetail = pathname.startsWith('/v2/documents/') && pathname !== '/v2/documents';
+  const isDocDetail = /^\/v2\/documents\/[^/]+$/.test(pathname);
+  const isPlan = pathname.endsWith('/plan');
   const titleKey = TITLE_BY_ROUTE[pathname]
-    ?? (pathname.startsWith('/v2/documents/') ? 'navDocs'
+    ?? (isPlan ? 'planTitle'
+    : pathname.startsWith('/v2/documents/') ? 'navDocs'
     : pathname.startsWith('/v2/schemes/') ? 'tabSchemes'
     : pathname.startsWith('/v2/applications/') ? 'appMyTitle'
     : pathname.startsWith('/v2/services/') ? 'appsStartService'

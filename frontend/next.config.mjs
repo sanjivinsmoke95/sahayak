@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: false },
+  async redirects() {
+    // The V2 experience is the app; open into it.
+    return [{ source: '/', destination: '/v2', permanent: false }];
+  },
   async rewrites() {
     // Lets the browser call /api/... same-origin while FastAPI runs elsewhere.
     // Avoids CORS in development and keeps one origin in production.

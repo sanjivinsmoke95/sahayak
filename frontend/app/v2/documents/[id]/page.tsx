@@ -95,6 +95,7 @@ export default function V2DocumentDetailPage() {
       onClick: () => { setMenuOpen(false); if (speaking) speech.stop(); else speech.speak(listenText); },
     },
     { icon: 'search', label: 'Find matching schemes', onClick: () => nav('/v2/schemes') },
+    { icon: 'tasks', label: 'Document plan', onClick: () => nav(`/v2/documents/${id}/plan`) },
     { icon: 'chat', label: 'Ask about this document', onClick: () => nav('/v2/assistant') },
     { icon: 'scan', label: 'Visit a nearby Mee Seva centre', onClick: () => nav('/v2/mee-seva') },
     { icon: 'share', label: 'Share', onClick: () => { setMenuOpen(false); share(); } },

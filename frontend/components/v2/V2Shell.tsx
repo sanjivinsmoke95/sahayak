@@ -31,7 +31,9 @@ export function V2Shell({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   const isHome = pathname === '/v2';
-  const isDocDetail = pathname.startsWith('/v2/documents/') && pathname !== '/v2/documents';
+  // Only the exact document detail owns its header; sub-routes (e.g. /plan)
+  // keep the shared app bar.
+  const isDocDetail = /^\/v2\/documents\/[^/]+$/.test(pathname);
   const ownHeader = isHome || isDocDetail;
 
   return (
