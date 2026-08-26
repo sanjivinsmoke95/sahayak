@@ -236,8 +236,7 @@ function DetailBody({
 
   // Fetch the user's uploaded file (authenticated) as a blob URL once opened.
   useEffect(() => {
-    if (!originalOpen || !document.originalFile || fileUrl) return;
-    let objectUrl: string | null = null;
+    if (!originalOpen || !document.originalFile || fileUrl || fileError) return;
     let cancelled = false;
     (async () => {
       try {
@@ -247,15 +246,17 @@ function DetailBody({
         });
         if (!res.ok) throw new Error(String(res.status));
         const blob = await res.blob();
-        if (cancelled) return;
-        objectUrl = URL.createObjectURL(blob);
-        setFileUrl(objectUrl);
+        if (!cancelled) setFileUrl(URL.createObjectURL(blob));
       } catch {
         if (!cancelled) setFileError(true);
       }
     })();
-    return () => { cancelled = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
-  }, [originalOpen, slug, getToken, document.originalFile, fileUrl]);
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [originalOpen, slug]);
+
+  // Release the blob URL only when it changes or the screen unmounts.
+  useEffect(() => () => { if (fileUrl) URL.revokeObjectURL(fileUrl); }, [fileUrl]);
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   const issuer = tr(document.issuer);
