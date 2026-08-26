@@ -5,9 +5,10 @@ import { Icon } from '@/components/common';
 import { V2Logo, V2Ribbon } from '@/components/v2';
 import { useDocuments, useSchemeMatches, useTranslation, useUpdateSettings } from '@/hooks';
 import { LANGS } from '@/lib/i18n';
+import type { StringKey } from '@/lib/i18n';
 import { useSettingsStore, useUiStore } from '@/store';
 import type { LanguageCode } from '@/types';
-import { buzz } from '@/utils/format';
+import { buzz, fill } from '@/utils/format';
 
 /* Colours sampled directly from the reference slide */
 const NAVY = '#01226F';
@@ -26,17 +27,16 @@ function daysAgo(iso?: string | null): number | null {
   return Math.max(0, Math.round((Date.now() - then) / 86_400_000));
 }
 
-// Rotated green/orange/blue tints for icon variety, matching the mockup.
 const TINTS = [
   { bg: GREEN_SOFT, ink: GREEN_INK },
   { bg: PEACH_SOFT, ink: ORANGE_INK },
   { bg: BLUE_SOFT, ink: NAVY },
 ];
 
-const STATUS_PILL: Record<string, { label: string; bg: string; ink: string }> = {
-  action: { label: 'Action Needed', bg: GREEN_SOFT, ink: GREEN_INK },
-  done: { label: 'Explained', bg: GREEN_SOFT, ink: GREEN_INK },
-  info: { label: 'Info', bg: GREY_SOFT, ink: GREY_INK },
+const STATUS_PILL: Record<string, { key: StringKey; bg: string; ink: string }> = {
+  action: { key: 'pillActionNeeded', bg: GREEN_SOFT, ink: GREEN_INK },
+  done: { key: 'pillExplained', bg: GREEN_SOFT, ink: GREEN_INK },
+  info: { key: 'pillInfo', bg: GREY_SOFT, ink: GREY_INK },
 };
 
 export default function V2HomePage() {
@@ -59,11 +59,14 @@ export default function V2HomePage() {
     updateSettings.mutate({ language: code });
   };
 
-  const quickTiles = [
-    { icon: 'folder', label: 'My Docs', bg: GREEN_SOFT, ink: GREEN_INK, href: '/v2/documents' },
-    { icon: 'bell', label: 'Alerts', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/alerts' },
-    { icon: 'mic', label: 'Voice Ask', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/voice' },
+  const quickTiles: { icon: string; labelKey: StringKey; bg: string; ink: string; href: string }[] = [
+    { icon: 'folder', labelKey: 'tileMyDocs', bg: GREEN_SOFT, ink: GREEN_INK, href: '/v2/documents' },
+    { icon: 'bell', labelKey: 'tileAlerts', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/alerts' },
+    { icon: 'mic', labelKey: 'tileVoice', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/voice' },
   ];
+
+  const agoLabel = (ago: number | null) =>
+    ago === null ? '' : ago === 0 ? t('agoToday') : fill(t('agoDays'), { n: ago });
 
   return (
     <div className="min-h-full bg-[#FEF9F3]">
@@ -76,8 +79,8 @@ export default function V2HomePage() {
         <div className="relative flex items-center gap-2.5">
           <V2Logo variant="mark" className="h-9 w-9 shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="v2-heading text-lg font-extrabold leading-tight text-[#01226F]">Sahayak</p>
-            <p className="text-xs text-[#667085]">Your Government Assistant</p>
+            <p className="v2-heading text-lg font-extrabold leading-tight text-[#01226F]">{t('brand')}</p>
+            <p className="text-xs text-[#667085]">{t('tagline')}</p>
           </div>
           <button
             type="button"
@@ -95,10 +98,10 @@ export default function V2HomePage() {
         {/* Greeting */}
         <section>
           <h1 className="v2-heading text-xl font-bold leading-tight text-[#101828]">
-            Namaste{displayName ? `, ${displayName}` : ''} <span aria-hidden="true">👋</span>
+            {t('homeNamaste')}{displayName ? `, ${displayName}` : ''} <span aria-hidden="true">👋</span>
           </h1>
           <p className="v2-heading mt-2 text-[26px] font-extrabold leading-snug text-[#101828]">
-            Let&apos;s make government documents easy to understand.
+            {t('homeLead')}
           </p>
         </section>
 
@@ -109,7 +112,7 @@ export default function V2HomePage() {
           className="flex w-full items-center gap-3 rounded-full border border-[#ECE4D8] bg-white px-4 py-3.5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#FBF7F1]"
         >
           <Icon name="search" className="h-5 w-5 shrink-0 text-[#98A2B3]" />
-          <span className="flex-1 text-base text-[#98A2B3]">Ask Sahayak anything...</span>
+          <span className="flex-1 text-base text-[#98A2B3]">{t('askAnything')}</span>
           <Icon name="mic" className="h-5 w-5 shrink-0 text-[#01226F]" />
         </button>
 
@@ -146,8 +149,8 @@ export default function V2HomePage() {
             <Icon name="upload" className="h-6 w-6" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-lg font-bold leading-tight">Upload a document</span>
-            <span className="mt-0.5 block text-sm text-white/70">Photo, PDF or scan</span>
+            <span className="block text-lg font-bold leading-tight">{t('btnUpload')}</span>
+            <span className="mt-0.5 block text-sm text-white/70">{t('uploadSubtitle')}</span>
           </span>
           <Icon name="right" className="h-5 w-5 shrink-0 text-white/60" />
         </button>
@@ -156,9 +159,9 @@ export default function V2HomePage() {
         {recent.length > 0 && (
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="v2-heading text-lg font-bold text-[#101828]">Recent Documents</h2>
+              <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('homeRecent')}</h2>
               <button type="button" onClick={() => go('/v2/documents')} className="text-sm font-semibold text-[#01226F]">
-                View All
+                {t('viewAll')}
               </button>
             </div>
             <div className="space-y-2.5">
@@ -179,11 +182,11 @@ export default function V2HomePage() {
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[15px] font-bold text-[#101828]">{tr(doc.title)}</span>
                       <span className="mt-0.5 block text-xs text-[#667085]">
-                        Explained{ago !== null ? ` · ${ago === 0 ? 'today' : `${ago} day${ago === 1 ? '' : 's'} ago`}` : ''}
+                        {t('pillExplained')}{ago !== null ? ` · ${agoLabel(ago)}` : ''}
                       </span>
                     </span>
                     <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold" style={{ backgroundColor: pill.bg, color: pill.ink }}>
-                      {pill.label}
+                      {t(pill.key)}
                     </span>
                   </button>
                 );
@@ -196,9 +199,9 @@ export default function V2HomePage() {
         {matches.length > 0 && (
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="v2-heading text-lg font-bold text-[#101828]">Recommended for you</h2>
+              <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('homeRecommended')}</h2>
               <button type="button" onClick={() => go('/v2/schemes')} className="text-sm font-semibold text-[#01226F]">
-                View All
+                {t('viewAll')}
               </button>
             </div>
             <div className="space-y-2.5">
@@ -220,7 +223,7 @@ export default function V2HomePage() {
                           ? { backgroundColor: GREEN_SOFT, color: GREEN_INK }
                           : { backgroundColor: PEACH_SOFT, color: ORANGE_INK }}
                       >
-                        {ready ? 'Documents ready' : 'More documents needed'}
+                        {ready ? t('schemeReady') : t('schemeMoreNeeded')}
                       </span>
                     </div>
                     {m.benefit && (
@@ -230,8 +233,8 @@ export default function V2HomePage() {
                       <span className="h-2 flex-1 overflow-hidden rounded-full bg-[#EDE8E0]">
                         <span className="block h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: NAVY }} />
                       </span>
-                      <span className="shrink-0 text-xs text-[#667085]">{m.satisfied}/{m.total} met</span>
-                      <span className="shrink-0 text-xs font-bold" style={{ color: NAVY }}>{pct}% match</span>
+                      <span className="shrink-0 text-xs text-[#667085]">{fill(t('reqMet'), { a: m.satisfied, b: m.total })}</span>
+                      <span className="shrink-0 text-xs font-bold" style={{ color: NAVY }}>{fill(t('pctMatch'), { n: pct })}</span>
                     </div>
                   </button>
                 );
@@ -244,7 +247,7 @@ export default function V2HomePage() {
         <div className="grid grid-cols-3 gap-3">
           {quickTiles.map((tile) => (
             <button
-              key={tile.label}
+              key={tile.labelKey}
               type="button"
               onClick={() => go(tile.href)}
               className="flex flex-col items-center gap-2 rounded-[18px] py-5 shadow-[0_1px_4px_rgba(16,40,99,0.05)] transition active:translate-y-px"
@@ -253,7 +256,7 @@ export default function V2HomePage() {
               <span style={{ color: tile.ink }}>
                 <Icon name={tile.icon} className="h-7 w-7" />
               </span>
-              <span className="text-sm font-semibold text-[#101828]">{tile.label}</span>
+              <span className="text-sm font-semibold text-[#101828]">{t(tile.labelKey)}</span>
             </button>
           ))}
         </div>
