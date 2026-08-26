@@ -635,6 +635,52 @@ export const T = {
 
   /* ---------- Mee Seva ---------- */
   msTitle:       L("Nearby Mee Seva", "नज़दीकी मी सेवा", "సమీప మీ‌సేవ"),
+
+  /* ---------- V2 home ---------- */
+  homeNamaste:   L("Namaste", "नमस्ते", "నమస్తే"),
+  homeLead:      L("Let's make government documents easy to understand.",
+                   "आइए सरकारी दस्तावेज़ों को समझना आसान बनाएँ।",
+                   "ప్రభుత్వ పత్రాలను సులభంగా అర్థం చేసుకుందాం."),
+  askAnything:   L("Ask Sahayak anything...", "सहायक से कुछ भी पूछें...", "సహాయక్‌ను ఏదైనా అడగండి..."),
+  uploadSubtitle: L("Photo, PDF or scan", "फोटो, PDF या स्कैन", "ఫోటో, PDF లేదా స్కాన్"),
+  tileMyDocs:    L("My Docs", "मेरे दस्तावेज़", "నా పత్రాలు"),
+  tileAlerts:    L("Alerts", "अलर्ट", "హెచ్చరికలు"),
+  tileVoice:     L("Voice Ask", "आवाज़ से पूछें", "వాయిస్‌తో అడగండి"),
+  homeRecent:    L("Recent Documents", "हाल के दस्तावेज़", "ఇటీవలి పత్రాలు"),
+  homeRecommended: L("Recommended for you", "आपके लिए सुझाव", "మీ కోసం సిఫార్సులు"),
+  pillExplained: L("Explained", "समझाया गया", "వివరించబడింది"),
+  pillInfo:      L("Info", "जानकारी", "సమాచారం"),
+  pillActionNeeded: L("Action Needed", "कार्रवाई ज़रूरी", "చర్య అవసరం"),
+  agoToday:      L("today", "आज", "ఈరోజు"),
+  agoDays:       L("{n} days ago", "{n} दिन पहले", "{n} రోజుల క్రితం"),
+  schemeReady:   L("Documents ready", "दस्तावेज़ तैयार", "పత్రాలు సిద్ధం"),
+  schemeMoreNeeded: L("More documents needed", "और दस्तावेज़ चाहिए", "మరిన్ని పత్రాలు అవసరం"),
+  reqMet:        L("{a}/{b} met", "{a}/{b} पूरे", "{a}/{b} పూర్తయ్యాయి"),
+  pctMatch:      L("{n}% match", "{n}% मेल", "{n}% సరిపోలిక"),
+
+  /* ---------- V2 sign up ---------- */
+  signupTitle:   L("Create your profile", "अपनी प्रोफ़ाइल बनाएँ", "మీ ప్రొఫైల్ సృష్టించండి"),
+  signupSub:     L("Tell us a little about you so Sahayak can help better.",
+                   "सहायक बेहतर मदद कर सके, इसके लिए अपने बारे में बताएँ।",
+                   "సహాయక్ మెరుగ్గా సహాయం చేయడానికి మీ గురించి కొంచెం చెప్పండి."),
+  fieldName:     L("Full name", "पूरा नाम", "పూర్తి పేరు"),
+  fieldEmail:    L("Email", "ईमेल", "ఇమెయిల్"),
+  fieldPhone:    L("Phone number", "फ़ोन नंबर", "ఫోన్ నంబర్"),
+  signupSave:    L("Save & continue", "सहेजें और जारी रखें", "సేవ్ చేసి కొనసాగండి"),
+  signupSkip:    L("Skip for now", "अभी छोड़ें", "ప్రస్తుతానికి దాటవేయి"),
+  profileComplete: L("Complete your profile", "अपनी प्रोफ़ाइल पूरी करें", "మీ ప్రొఫైల్ పూర్తి చేయండి"),
+  profileWelcome: L("Welcome", "स्वागत है", "స్వాగతం"),
+
+  /* ---------- V2 profile menu ---------- */
+  schemesForMe:  L("Schemes for me", "मेरे लिए योजनाएँ", "నా కోసం పథకాలు"),
+  discoverServices: L("Discover services", "सेवाएँ खोजें", "సేవలను కనుగొనండి"),
+  compressFile:  L("Compress a file", "फ़ाइल छोटी करें", "ఫైల్‌ను కుదించండి"),
+  helpSupport:   L("Help & Support", "मदद और सहायता", "సహాయం & మద్దతు"),
+  aboutSahayak:  L("About Sahayak", "सहायक के बारे में", "సహాయక్ గురించి"),
+  rateUs:        L("Rate Us", "हमें रेटिंग दें", "మమ్మల్ని రేట్ చేయండి"),
+  logout:        L("Logout", "लॉग आउट", "లాగ్ అవుట్"),
+  rateThanks:    L("Thanks for using Sahayak!", "सहायक उपयोग करने के लिए धन्यवाद!", "సహాయక్ ఉపయోగించినందుకు ధన్యవాదాలు!"),
+  logoutNote:    L("You're signed in privately on this device.", "आप इस डिवाइस पर निजी रूप से साइन-इन हैं।", "మీరు ఈ పరికరంలో ప్రైవేట్‌గా సైన్ ఇన్ అయ్యారు."),
 };
 
 export type StringKey = keyof typeof T;

@@ -20,6 +20,7 @@ export default function V2ProfilePage() {
   const router = useRouter();
   const { t } = useTranslation();
   const displayName = useSettingsStore((s) => s.displayName);
+  const email = useSettingsStore((s) => s.email);
   const language = useSettingsStore((s) => s.language);
   const setDirection = useUiStore((s) => s.setDirection);
   const { data: documents } = useDocuments();
@@ -30,22 +31,22 @@ export default function V2ProfilePage() {
   const famCount = (profiles ?? []).length;
 
   const services: Row[] = [
-    { icon: 'folder', label: 'My documents', value: String(docCount), onClick: () => go('/v2/documents') },
-    { icon: 'user', label: 'Family profiles', value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
-    { icon: 'search', label: 'Schemes for me', onClick: () => go('/v2/schemes') },
-    { icon: 'spark', label: 'Discover services', onClick: () => go('/v2/discover') },
-    { icon: 'tasks', label: 'My applications', onClick: () => go('/v2/applications') },
-    { icon: 'scan', label: 'Nearby Mee Seva', onClick: () => go('/v2/mee-seva') },
-    { icon: 'shrink', label: 'Compress a file', onClick: () => go('/v2/shrink') },
-    { icon: 'chat', label: 'Ask Sahayak', onClick: () => go('/v2/assistant') },
+    { icon: 'folder', label: t('navDocs'), value: String(docCount), onClick: () => go('/v2/documents') },
+    { icon: 'user', label: t('famTitle'), value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
+    { icon: 'search', label: t('schemesForMe'), onClick: () => go('/v2/schemes') },
+    { icon: 'spark', label: t('discoverServices'), onClick: () => go('/v2/discover') },
+    { icon: 'tasks', label: t('appMyTitle'), onClick: () => go('/v2/applications') },
+    { icon: 'scan', label: t('msTitle'), onClick: () => go('/v2/mee-seva') },
+    { icon: 'shrink', label: t('compressFile'), onClick: () => go('/v2/shrink') },
+    { icon: 'chat', label: t('navAsk'), onClick: () => go('/v2/assistant') },
   ];
 
   const account: Row[] = [
-    { icon: 'globe', label: 'Language', value: language.toUpperCase(), onClick: () => go('/v2/language') },
-    { icon: 'help', label: 'Help & Support', onClick: () => go('/v2/assistant') },
-    { icon: 'info', label: 'About Sahayak', onClick: () => go('/v2/settings') },
-    { icon: 'star', label: 'Rate Us', onClick: () => toast('Thanks for using Sahayak!') },
-    { icon: 'logout', label: 'Logout', danger: true, onClick: () => toast("You're signed in privately on this device.") },
+    { icon: 'globe', label: t('language'), value: language.toUpperCase(), onClick: () => go('/v2/language') },
+    { icon: 'help', label: t('helpSupport'), onClick: () => go('/v2/assistant') },
+    { icon: 'info', label: t('aboutSahayak'), onClick: () => go('/v2/settings') },
+    { icon: 'star', label: t('rateUs'), onClick: () => toast(t('rateThanks')) },
+    { icon: 'logout', label: t('logout'), danger: true, onClick: () => toast(t('logoutNote')) },
   ];
 
   const List = ({ rows }: { rows: Row[] }) => (
@@ -77,16 +78,22 @@ export default function V2ProfilePage() {
       {/* Profile card */}
       <button
         type="button"
-        onClick={() => go('/v2/settings')}
+        onClick={() => go('/v2/signup')}
         className="flex w-full items-center gap-4 rounded-[20px] border border-[#E8EDF5] bg-white p-5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F8FAFC]"
       >
-        <img src="/v2-assets/avatar-default.svg" alt="" className="h-16 w-16 shrink-0 rounded-full" draggable={false} />
+        <img
+          src="/v2-assets/avatar-user.jpg"
+          alt=""
+          className="h-16 w-16 shrink-0 rounded-full object-cover"
+          draggable={false}
+          onError={(e) => { e.currentTarget.src = '/v2-assets/avatar-default.svg'; }}
+        />
         <div className="min-w-0 flex-1">
           <p className="v2-heading truncate text-xl font-extrabold text-[#101828]">
-            {displayName || 'Welcome'}
+            {displayName || t('profileWelcome')}
           </p>
-          <p className="mt-0.5 text-sm text-[#667085]">
-            {displayName ? 'View and edit your profile' : 'Tap to add your name'}
+          <p className="mt-0.5 truncate text-sm text-[#667085]">
+            {email || t('profileComplete')}
           </p>
         </div>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />
