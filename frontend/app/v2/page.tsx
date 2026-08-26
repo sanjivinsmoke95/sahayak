@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { V2Logo, V2Ribbon } from '@/components/v2';
@@ -50,6 +51,7 @@ export default function V2HomePage() {
   const { data: documents } = useDocuments();
   const { data: matchData } = useSchemeMatches();
 
+  const [search, setSearch] = useState('');
   const recent = (documents ?? []).slice(0, 3);
   const matches = (matchData?.results ?? []).slice(0, 3);
   const go = (path: string) => { setDirection('push'); router.push(path); };
@@ -105,16 +107,29 @@ export default function V2HomePage() {
           </p>
         </section>
 
-        {/* Search bar */}
-        <button
-          type="button"
-          onClick={() => go('/v2/voice')}
-          className="flex w-full items-center gap-3 rounded-full border border-[#ECE4D8] bg-white px-4 py-3.5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#FBF7F1]"
+        {/* Search bar — type to search documents & schemes */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const q = search.trim();
+            setDirection('push');
+            router.push(q ? `/v2/search?q=${encodeURIComponent(q)}` : '/v2/search');
+          }}
+          className="flex w-full items-center gap-3 rounded-full border border-[#ECE4D8] bg-white px-4 py-3.5 shadow-[0_1px_4px_rgba(16,40,99,0.05)] focus-within:border-[#173A78]"
         >
-          <Icon name="search" className="h-5 w-5 shrink-0 text-[#98A2B3]" />
-          <span className="flex-1 text-base text-[#98A2B3]">{t('askAnything')}</span>
-          <Icon name="mic" className="h-5 w-5 shrink-0 text-[#01226F]" />
-        </button>
+          <button type="submit" aria-label={t('searchTitle')} className="shrink-0 text-[#98A2B3]">
+            <Icon name="search" className="h-5 w-5" />
+          </button>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('askAnything')}
+            className="flex-1 bg-transparent text-base text-[#101828] placeholder:text-[#98A2B3] outline-none"
+          />
+          <button type="button" onClick={() => go('/v2/voice')} aria-label={t('tileVoice')} className="shrink-0 text-[#01226F]">
+            <Icon name="mic" className="h-5 w-5" />
+          </button>
+        </form>
 
         {/* Language chips */}
         <div className="flex gap-2.5">

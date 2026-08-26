@@ -22,9 +22,9 @@ export function V2Ribbon({ placement = 'bottom', className }: V2RibbonProps) {
       className={cn(
         'pointer-events-none absolute select-none',
         placement === 'top'
-          ? 'right-[-12px] top-[10px] h-[82px] w-[224px] origin-top-right -rotate-[7deg] object-cover object-top '
-            + '[mask-image:linear-gradient(to_bottom_right,#000_28%,transparent_88%)] '
-            + '[-webkit-mask-image:linear-gradient(to_bottom_right,#000_28%,transparent_88%)]'
+          ? 'right-0 top-[2px] h-[80px] w-[272px] origin-top-right -rotate-[5deg] object-cover object-top '
+            + '[mask-image:linear-gradient(to_right,#000_42%,transparent_97%)] '
+            + '[-webkit-mask-image:linear-gradient(to_right,#000_42%,transparent_97%)]'
           : 'inset-x-0 bottom-0 h-20 w-full object-cover',
         className,
       )}

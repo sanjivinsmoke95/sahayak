@@ -6,7 +6,7 @@ import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
 import { V2Button, V2Ribbon } from '@/components/v2';
 import {
-  useDeleteDocument, useDocument, useSpeech, useTranslation,
+  useAuthToken, useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode, Localized, SahayakDocument } from '@/types';
@@ -25,19 +25,15 @@ const TONE: Record<Tone, { card: string; icon: string; title: string }> = {
   orange: { card: 'bg-[#FFF4E7]', icon: 'text-[#C77A1B]', title: 'text-[#C77A1B]' },
 };
 
-/** One pastel explanation card. An optional › affordance opens the assistant. */
+/** One pastel explanation card, with an optional speaker to hear just this part. */
 function QACard({
-  tone, icon, title, children, onOpen,
+  tone, icon, title, children, onListen,
 }: {
-  tone: Tone; icon: string; title: string; children: React.ReactNode; onOpen?: () => void;
+  tone: Tone; icon: string; title: string; children: React.ReactNode; onListen?: () => void;
 }) {
   const s = TONE[tone];
-  const Tag = onOpen ? 'button' : 'div';
   return (
-    <Tag
-      {...(onOpen ? { type: 'button' as const, onClick: onOpen } : {})}
-      className={`flex w-full items-start gap-3 rounded-[18px] ${s.card} p-4 text-left`}
-    >
+    <div className={`flex w-full items-start gap-3 rounded-[18px] ${s.card} p-4`}>
       <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-white/70 ${s.icon}`}>
         <Icon name={icon} className="h-5 w-5" />
       </span>
@@ -45,8 +41,17 @@ function QACard({
         <span className={`block text-[15px] font-bold ${s.title}`}>{title}</span>
         <span className="mt-1 block text-sm leading-relaxed text-[#101828]">{children}</span>
       </span>
-      {onOpen && <Icon name="right" className="mt-1 h-5 w-5 shrink-0 text-[#6B7890]" />}
-    </Tag>
+      {onListen && (
+        <button
+          type="button"
+          onClick={onListen}
+          aria-label="Listen to this section"
+          className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/70 ${s.icon} active:translate-y-px`}
+        >
+          <Icon name="speaker" className="h-4 w-4" />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -144,6 +149,7 @@ export default function V2DocumentDetailPage() {
       ) : (
         <DetailBody
           document={document}
+          slug={id}
           language={language}
           tr={tr}
           speech={speech}
@@ -208,9 +214,10 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onDelete,
+  document, slug, language, tr, speech, onSchemes, onAsk, onMeeSeva, onDelete,
 }: {
   document: SahayakDocument;
+  slug: string;
   language: LanguageCode;
   tr: Tr;
   speech: ReturnType<typeof useSpeech>;
@@ -219,8 +226,36 @@ function DetailBody({
   onMeeSeva: () => void;
   onDelete: () => void;
 }) {
+  const getToken = useAuthToken();
   const [originalOpen, setOriginalOpen] = useState(false);
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [fileError, setFileError] = useState(false);
+
+  const isImage = (document.originalFile?.mime ?? '').startsWith('image/');
+
+  // Fetch the user's uploaded file (authenticated) as a blob URL once opened.
+  useEffect(() => {
+    if (!originalOpen || !document.originalFile || fileUrl) return;
+    let objectUrl: string | null = null;
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`/api/documents/${slug}/file`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const blob = await res.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setFileUrl(objectUrl);
+      } catch {
+        if (!cancelled) setFileError(true);
+      }
+    })();
+    return () => { cancelled = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [originalOpen, slug, getToken, document.originalFile, fileUrl]);
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   const issuer = tr(document.issuer);
@@ -229,8 +264,14 @@ function DetailBody({
   const steps = (document.steps ?? []).map((s) => tr(s)).filter(Boolean);
   const personal = document.personal ?? [];
 
-  const listenText = [what, why, steps.join('. '), tr(document.explain)].filter(Boolean).join('. ');
+  const byWhenText = deadline
+    ? `Submit or renew by ${formatDate(deadline, language)}.`
+    : 'There is no deadline printed on this document.';
+
+  const listenText = [what, why, steps.join('. '), byWhenText, tr(document.explain)].filter(Boolean).join('. ');
   const speaking = speech.state === 'speaking';
+  // Returns a click handler that speaks just this section, or undefined when TTS is unavailable.
+  const say = (text: string) => (speech.supported && text ? () => speech.speak(text) : undefined);
 
   return (
     <div className="space-y-3.5 px-4 pb-6 pt-4">
@@ -263,19 +304,19 @@ function DetailBody({
         </div>
       </div>
 
-      {/* Q&A explanation cards */}
+      {/* Q&A explanation cards — each with a speaker to hear just that part */}
       {what && (
-        <QACard tone="blue" icon="doc" title="What is this?" onOpen={onAsk}>
+        <QACard tone="blue" icon="doc" title="What is this?" onListen={say(what)}>
           {what}
         </QACard>
       )}
       {why && (
-        <QACard tone="purple" icon="help" title="Why did I receive this?" onOpen={onAsk}>
+        <QACard tone="purple" icon="help" title="Why did I receive this?" onListen={say(why)}>
           {why}
         </QACard>
       )}
       {steps.length > 0 && (
-        <QACard tone="green" icon="tasks" title="What should I do?" onOpen={onAsk}>
+        <QACard tone="green" icon="tasks" title="What should I do?" onListen={say(steps.map((s, i) => `${i + 1}. ${s}`).join('. '))}>
           <ol className="space-y-1.5">
             {steps.map((step: string, i: number) => (
               <li key={i} className="flex gap-2">
@@ -286,13 +327,11 @@ function DetailBody({
           </ol>
         </QACard>
       )}
-      <QACard tone="orange" icon="calendar" title="By when?">
-        {deadline
-          ? `Submit or renew by ${formatDate(deadline, language)}.`
-          : 'There is no deadline printed on this document.'}
+      <QACard tone="orange" icon="calendar" title="By when?" onListen={say(byWhenText)}>
+        {byWhenText}
       </QACard>
 
-      {/* Listen to explanation */}
+      {/* Listen to explanation — reads every key point */}
       <button
         type="button"
         disabled={!speech.supported || !listenText}
@@ -303,6 +342,11 @@ function DetailBody({
         <Icon name={speaking ? 'close' : 'play'} className="h-5 w-5" />
         {speaking ? 'Stop' : 'Listen to explanation'}
       </button>
+      {!speech.supported && (
+        <p className="-mt-1 text-center text-xs text-[#667085]">
+          Voice output isn&apos;t available in this browser.
+        </p>
+      )}
 
       {/* Find matching schemes */}
       <button
@@ -354,8 +398,8 @@ function DetailBody({
         </div>
       )}
 
-      {/* See the original document */}
-      {document.original && (
+      {/* See the original document — the uploaded file, then the read-off text */}
+      {(document.original || document.originalFile) && (
         <div className="overflow-hidden rounded-[18px] border border-[#EAF1FF] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
           <button
             type="button"
@@ -368,10 +412,35 @@ function DetailBody({
             <Icon name="down" className={`h-5 w-5 shrink-0 text-[#6B7890] transition-transform ${originalOpen ? 'rotate-180' : ''}`} />
           </button>
           {originalOpen && (
-            <div className="border-t border-[#EAF1FF] p-4">
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#101828]">
-                {document.original}
-              </pre>
+            <div className="space-y-4 border-t border-[#EAF1FF] p-4">
+              {document.originalFile && (
+                <div>
+                  {fileError ? (
+                    <p className="text-sm text-[#667085]">The uploaded file is no longer available.</p>
+                  ) : !fileUrl ? (
+                    <p className="text-sm text-[#667085]">Loading your uploaded file…</p>
+                  ) : isImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={fileUrl} alt={document.originalFile.name} className="w-full rounded-[12px] border border-[#EAF1FF]" />
+                  ) : (
+                    <a
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-[12px] bg-[#EAF1FF] p-3 text-sm font-semibold text-[#173A78]"
+                    >
+                      <Icon name="doc" className="h-5 w-5 shrink-0" />
+                      <span className="min-w-0 flex-1 truncate">Open the uploaded file — {document.originalFile.name}</span>
+                      <Icon name="right" className="h-4 w-4 shrink-0" />
+                    </a>
+                  )}
+                </div>
+              )}
+              {document.original && (
+                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#101828]">
+                  {document.original}
+                </pre>
+              )}
             </div>
           )}
         </div>
