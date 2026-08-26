@@ -680,6 +680,14 @@ export const T = {
   rateUs:        L("Rate Us", "हमें रेटिंग दें", "మమ్మల్ని రేట్ చేయండి"),
   logout:        L("Logout", "लॉग आउट", "లాగ్ అవుట్"),
   rateThanks:    L("Thanks for using Sahayak!", "सहायक उपयोग करने के लिए धन्यवाद!", "సహాయక్ ఉపయోగించినందుకు ధన్యవాదాలు!"),
+  searchTitle:   L("Search", "खोजें", "శోధన"),
+  searchHint:    L("Search your documents and government schemes.",
+                   "अपने दस्तावेज़ और सरकारी योजनाएँ खोजें।",
+                   "మీ పత్రాలు మరియు ప్రభుత్వ పథకాలను శోధించండి."),
+  searchNone:    L("No results found.", "कोई परिणाम नहीं मिला।", "ఎటువంటి ఫలితాలు కనబడలేదు."),
+  listenSection: L("Listen to this section", "इस भाग को सुनें", "ఈ విభాగాన్ని వినండి"),
+  originalFile:  L("Original file", "मूल फ़ाइल", "అసలు ఫైల్"),
+  openFile:      L("Open the uploaded file", "अपलोड की गई फ़ाइल खोलें", "అప్‌లోడ్ చేసిన ఫైల్‌ను తెరవండి"),
   logoutNote:    L("You're signed in privately on this device.", "आप इस डिवाइस पर निजी रूप से साइन-इन हैं।", "మీరు ఈ పరికరంలో ప్రైవేట్‌గా సైన్ ఇన్ అయ్యారు."),
 };
 

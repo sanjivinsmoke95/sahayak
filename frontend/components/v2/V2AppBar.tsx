@@ -28,6 +28,7 @@ const TITLE_BY_ROUTE: Record<string, StringKey> = {
   '/v2/shrink': 'shrinkTitle',
   '/v2/discover': 'discTitle',
   '/v2/signup': 'signupTitle',
+  '/v2/search': 'searchTitle',
 };
 
 export function V2AppBar() {
