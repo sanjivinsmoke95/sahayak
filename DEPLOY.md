@@ -44,6 +44,32 @@ Mee Seva, anonymous sign-in):
 
 > Never commit these — add them only in the Render dashboard.
 
+## Alternative: frontend on Vercel, backend + DB on Render
+
+Vercel is a great host for the Next.js frontend, but it can't run the FastAPI
+backend or Postgres. So deploy those two on Render first, then the frontend on
+Vercel.
+
+**1. Backend + database on Render.** Deploy the blueprint above, but you only
+need **sahayak-db** and **sahayak-api** (you can delete the **sahayak-web**
+service, since Vercel serves the frontend). Note the API's URL, e.g.
+`https://sahayak-api.onrender.com`.
+
+**2. Frontend on Vercel.**
+1. Vercel → **Add New → Project** → import the `sahayak` repo.
+2. Set **Root Directory** to **`frontend`** (important — the Next app lives
+   there, not at the repo root). Vercel auto-detects Next.js.
+3. Add an Environment Variable:
+   - **`BACKEND_URL`** = your Render API URL (e.g.
+     `https://sahayak-api.onrender.com`) — the frontend proxies `/api/*` to it.
+   - *(optional)* `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` for browser sign-in.
+4. **Deploy.** Your live link is the Vercel URL, e.g.
+   `https://sahayak.vercel.app`.
+
+If `BACKEND_URL` is missing or wrong, the app loads but every API call fails
+(no documents/schemes) — set it and redeploy. `BACKEND_URL` is read at build
+time, so a change needs a fresh deploy.
+
 ## Notes
 
 - The **government-data collector** service isn't in the blueprint (it needs
