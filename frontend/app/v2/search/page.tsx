@@ -61,14 +61,14 @@ function SearchScreen() {
         <section>
           <h2 className="v2-heading mb-2 text-sm font-bold uppercase tracking-wider text-[#667085]">{t('shortDocs')}</h2>
           <ul className="space-y-2.5">
-            {docs.map((doc) => (
+            {docs.map((doc, i) => (
               <li key={doc.id}>
                 <button
                   type="button"
                   onClick={() => go(`/v2/documents/${doc.id}`)}
                   className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-3.5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
                 >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#173A78]">
+                  <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${['bg-[#FFF4E7] text-[#F6A23A]', 'bg-[#EAF7F0] text-[#2FA66A]', 'bg-[#EAF1FF] text-[#173A78]'][i % 3]}`}>
                     <Icon name="doc" className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 flex-1 text-[15px] font-bold text-[#101828]">{tr(doc.title)}</span>
