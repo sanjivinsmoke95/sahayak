@@ -1,0 +1,78 @@
+# Render blueprint for Sahayak — one Postgres + FastAPI backend + Next.js frontend.
+# Deploy: Render Dashboard → New → Blueprint → pick this repo. See DEPLOY.md.
+#
+# Free plan notes:
+#  - Free web services sleep after ~15 min idle and cold-start on the next hit.
+#  - The free filesystem is ephemeral, so uploaded files reset on restart.
+#    For durable uploads set the Supabase env vars on sahayak-api (see DEPLOY.md).
+
+databases:
+  - name: sahayak-db
+    databaseName: sahayak
+    user: sahayak
+    plan: free
+
+services:
+  # ---- FastAPI backend ----
+  - type: web
+    name: sahayak-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sahayak-db
+          property: connectionString
+      # The frontend calls the API server-side (same origin proxy), so a
+      # permissive CORS list is safe for this anonymous app.
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DEFAULT_AI_PROVIDER
+        value: rule-based
+      # --- optional secrets: add real values in the Render dashboard ---
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_BROWSER_KEY
+        sync: false
+      - key: CLERK_ISSUER
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_AUDIENCE
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+
+  # ---- Next.js frontend ----
+  - type: web
+    name: sahayak-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    autoDeploy: true
+    envVars:
+      # Server-side proxy target. MUST be the backend's public URL. If Render
+      # renamed the API service (name already taken), update this to match and
+      # redeploy the frontend.
+      - key: BACKEND_URL
+        value: https://sahayak-api.onrender.com
+      # Enable Clerk sign-in in the browser (optional; blank = anonymous).
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        sync: false
