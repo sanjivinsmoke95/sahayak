@@ -12,7 +12,7 @@ import type { LanguageCode } from '@/types';
 import { buzz, fill } from '@/utils/format';
 
 /* Colours sampled directly from the reference slide */
-const NAVY = '#01226F';
+const NAVY = '#173A78';
 const GREEN_SOFT = '#D3E9D4';
 const GREEN_INK = '#3E8E5A';
 const PEACH_SOFT = '#FFE3C5';
@@ -74,21 +74,21 @@ export default function V2HomePage() {
     <div className="min-h-full bg-[#FEF9F3]">
       {/* Inline header (no app bar) */}
       <header
-        className="relative overflow-hidden px-4 pb-1 pt-4"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 2rem)' }}
+        className="relative overflow-hidden px-3 pb-1"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
       >
         <V2Ribbon placement="top" />
-        <div className="relative flex items-center gap-2.5">
-          <V2Logo variant="mark" className="h-9 w-9 shrink-0" />
+        <div className="relative flex items-center gap-2 py-2.5">
+          <V2Logo variant="mark" className="h-10 w-10 shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="v2-heading text-lg font-extrabold leading-tight text-[#01226F]">{t('brand')}</p>
+            <p className="v2-heading text-lg font-extrabold leading-tight text-[#173A78]">{t('brand')}</p>
             <p className="text-xs text-[#667085]">{t('tagline')}</p>
           </div>
           <button
             type="button"
             onClick={() => go('/v2/profile')}
             aria-label={t('tabProfile')}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#01226F] active:bg-black/5"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-black/5"
           >
             <Icon name="menu" className="h-6 w-6" strokeWidth={2.2} />
           </button>
@@ -96,7 +96,7 @@ export default function V2HomePage() {
       </header>
 
       {/* Body */}
-      <div className="space-y-5 px-4 pb-6 pt-3">
+      <div className="space-y-5 px-4 pb-10 pt-4">
         {/* Greeting */}
         <section>
           <h1 className="v2-heading text-xl font-bold leading-tight text-[#101828]">
@@ -126,7 +126,7 @@ export default function V2HomePage() {
             placeholder={t('askAnything')}
             className="flex-1 bg-transparent text-base text-[#101828] placeholder:text-[#98A2B3] outline-none"
           />
-          <button type="button" onClick={() => go('/v2/voice')} aria-label={t('tileVoice')} className="shrink-0 text-[#01226F]">
+          <button type="button" onClick={() => go('/v2/voice')} aria-label={t('tileVoice')} className="shrink-0 text-[#173A78]">
             <Icon name="mic" className="h-5 w-5" />
           </button>
         </form>
@@ -175,7 +175,7 @@ export default function V2HomePage() {
           <section>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('homeRecent')}</h2>
-              <button type="button" onClick={() => go('/v2/documents')} className="text-sm font-semibold text-[#01226F]">
+              <button type="button" onClick={() => go('/v2/documents')} className="text-sm font-semibold text-[#173A78]">
                 {t('viewAll')}
               </button>
             </div>
@@ -215,7 +215,7 @@ export default function V2HomePage() {
           <section>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="v2-heading text-lg font-bold text-[#101828]">{t('homeRecommended')}</h2>
-              <button type="button" onClick={() => go('/v2/schemes')} className="text-sm font-semibold text-[#01226F]">
+              <button type="button" onClick={() => go('/v2/schemes')} className="text-sm font-semibold text-[#173A78]">
                 {t('viewAll')}
               </button>
             </div>
