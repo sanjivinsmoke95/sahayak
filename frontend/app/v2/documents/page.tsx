@@ -22,6 +22,13 @@ const FILTERS: { key: FilterKey; label: string; dot?: boolean }[] = [
   { key: 'info', label: 'Others' },
 ];
 
+// Tricolour rotation for the document icons: saffron, green, navy.
+const TINTS = [
+  'bg-[#FFF4E7] text-[#F6A23A]', // saffron
+  'bg-[#EAF7F0] text-[#2FA66A]', // green
+  'bg-[#EAF1FF] text-[#173A78]', // navy
+];
+
 /** A document is "expiring soon" when its deadline is within the next 30 days. */
 function isExpiringSoon(doc: SahayakDocument): boolean {
   if (!isValidIsoDate(doc.deadline)) return false;
@@ -128,7 +135,7 @@ export default function V2DocumentsPage() {
           </div>
         ) : (
           <ul className="space-y-2.5">
-            {docs.map((doc) => {
+            {docs.map((doc, i) => {
               const pill = pillFor(doc);
               return (
                 <li key={doc.id}>
@@ -137,7 +144,7 @@ export default function V2DocumentsPage() {
                     onClick={() => go(`/v2/documents/${doc.id}`)}
                     className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-3.5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
                   >
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#173A78]">
+                    <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${TINTS[i % 3]}`}>
                       <Icon name="doc" className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
