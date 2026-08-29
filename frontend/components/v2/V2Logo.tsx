@@ -11,6 +11,9 @@ const SRC: Record<NonNullable<V2LogoProps['variant']>, string> = {
   // matching vector, which reproduces the reference's clean logo appearance.
   mark: '/v2-assets/logo-mark.svg',
   'mark-white': '/v2-assets/logo-mark-white.svg',
+  // The user's supplied horizontal lockup (icon + "Sahayak" wordmark). Derived
+  // from user-supplied-logo.svg: C2PA metadata stripped, the opaque white
+  // background removed, and the viewBox cropped tight to the artwork.
   full: '/v2-assets/logo-full.svg',
 };
 

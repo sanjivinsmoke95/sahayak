@@ -79,11 +79,9 @@ export default function V2HomePage() {
       >
         <V2Ribbon placement="top" />
         <div className="relative flex items-center gap-2 py-2.5">
-          <V2Logo variant="mark" className="h-10 w-10 shrink-0" />
-          <div className="min-w-0 flex-1">
-            <p className="v2-heading text-lg font-extrabold leading-tight text-[#173A78]">{t('brand')}</p>
-            <p className="text-xs text-[#667085]">{t('tagline')}</p>
-          </div>
+          {/* User-supplied horizontal lockup (icon + "Sahayak" wordmark). */}
+          <V2Logo variant="full" className="h-11 w-auto shrink-0" />
+          <div className="min-w-0 flex-1" />
           <button
             type="button"
             onClick={() => go('/v2/profile')}
