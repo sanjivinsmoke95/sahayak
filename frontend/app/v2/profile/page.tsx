@@ -75,29 +75,53 @@ export default function V2ProfilePage() {
 
   return (
     <div className="space-y-6">
-      {/* Profile card */}
-      <button
-        type="button"
-        onClick={() => go('/v2/signup')}
-        className="flex w-full items-center gap-4 rounded-[20px] border border-[#E8EDF5] bg-white p-5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F8FAFC]"
-      >
-        <img
-          src="/v2-assets/avatar-user.jpg"
-          alt=""
-          className="h-16 w-16 shrink-0 rounded-full object-cover"
-          draggable={false}
-          onError={(e) => { e.currentTarget.src = '/v2-assets/avatar-default.svg'; }}
-        />
-        <div className="min-w-0 flex-1">
-          <p className="v2-heading truncate text-xl font-extrabold text-[#101828]">
-            {displayName || t('profileWelcome')}
-          </p>
-          <p className="mt-0.5 truncate text-sm text-[#667085]">
-            {email || t('profileComplete')}
-          </p>
+      {/* Profile summary card */}
+      <section className="overflow-hidden rounded-[24px] bg-[#173A78] text-white shadow-[0_12px_26px_rgba(23,58,120,0.22)]">
+        <button
+          type="button"
+          onClick={() => go('/v2/signup')}
+          className="flex w-full items-center gap-4 p-5 text-left active:bg-white/5"
+        >
+          <img
+            src="/v2-assets/avatar-user.jpg"
+            alt=""
+            className="h-16 w-16 shrink-0 rounded-full bg-white/10 object-cover"
+            draggable={false}
+            onError={(e) => { e.currentTarget.src = '/v2-assets/avatar-default.svg'; }}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="v2-heading truncate text-xl font-extrabold">
+              {displayName || t('profileWelcome')}
+            </p>
+            <p className="mt-1 truncate text-sm text-white/70">
+              {email || t('profileComplete')}
+            </p>
+          </div>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10">
+            <Icon name="right" className="h-5 w-5" />
+          </span>
+        </button>
+        <div className="grid grid-cols-3 border-t border-white/15 bg-white/5 text-center">
+          <div className="py-3">
+            <b className="block text-lg">{docCount}</b>
+            <span className="text-xs text-white/70">{t('statDocuments')}</span>
+          </div>
+          <div className="border-x border-white/15 py-3">
+            <b className="block text-lg">{famCount}</b>
+            <span className="text-xs text-white/70">{t('statFamily')}</span>
+          </div>
+          <div className="py-3">
+            <b className="block text-lg">{language.toUpperCase()}</b>
+            <span className="text-xs text-white/70">{t('language')}</span>
+          </div>
         </div>
-        <Icon name="right" className="h-5 w-5 shrink-0 text-[#D6DDE8]" />
-      </button>
+      </section>
+
+      {/* Account note */}
+      <section className="rounded-[20px] border border-[#E8EDF5] bg-[#F7FAFF] p-4">
+        <p className="text-sm font-bold text-[#102D63]">{t('accountTitle')}</p>
+        <p className="mt-1 text-sm leading-relaxed text-[#667085]">{t('accountNote')}</p>
+      </section>
 
       <List rows={services} />
       <List rows={account} />

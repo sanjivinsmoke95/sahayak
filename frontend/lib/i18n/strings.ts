@@ -689,6 +689,16 @@ export const T = {
   originalFile:  L("Original file", "मूल फ़ाइल", "అసలు ఫైల్"),
   openFile:      L("Open the uploaded file", "अपलोड की गई फ़ाइल खोलें", "అప్‌లోడ్ చేసిన ఫైల్‌ను తెరవండి"),
   logoutNote:    L("You're signed in privately on this device.", "आप इस डिवाइस पर निजी रूप से साइन-इन हैं।", "మీరు ఈ పరికరంలో ప్రైవేట్‌గా సైన్ ఇన్ అయ్యారు."),
+
+  /* ---------- V2 profile summary card ---------- */
+  statDocuments: L("Documents", "दस्तावेज़", "పత్రాలు"),
+  statFamily:    L("Family", "परिवार", "కుటుంబం"),
+  accountTitle:  L("Your Sahayak account", "आपका सहायक खाता", "మీ సహాయక్ ఖాతా"),
+  accountNote:   L(
+    "Your profile and preferences stay on this device. You can update them anytime.",
+    "आपकी प्रोफ़ाइल और सेटिंग्स इसी डिवाइस पर रहती हैं। आप इन्हें कभी भी बदल सकते हैं।",
+    "మీ ప్రొఫైల్ మరియు ప్రాధాన్యతలు ఈ పరికరంలోనే ఉంటాయి. మీరు వాటిని ఎప్పుడైనా మార్చవచ్చు.",
+  ),
 };
 
 export type StringKey = keyof typeof T;
