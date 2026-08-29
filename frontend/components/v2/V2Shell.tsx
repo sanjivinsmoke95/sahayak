@@ -39,15 +39,12 @@ export function V2Shell({ children }: { children: ReactNode }) {
   return (
     <div className="v2-wrap">
       <div className="v2-device">
-        {!ownHeader && <V2AppBar />}
         <BackendStatusBanner />
-        <main
-          id="main"
-          ref={scrollRef}
-          tabIndex={-1}
-          className={ownHeader ? 'v2-scroll' : 'v2-scroll px-4 pb-10 pt-5'}
-        >
-          {children}
+        <main id="main" ref={scrollRef} tabIndex={-1} className="v2-scroll">
+          {/* The header scrolls inside the body so every page is one continuous
+              block — the app bar and content are never two separate panes. */}
+          {!ownHeader && <V2AppBar />}
+          {ownHeader ? children : <div className="px-4 pb-10 pt-4">{children}</div>}
         </main>
         <V2TabBar />
         <LanguageSheet />
