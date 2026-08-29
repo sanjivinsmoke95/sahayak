@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
-import { V2Logo, V2Ribbon } from '@/components/v2';
+import { V2Header } from '@/components/v2';
 import { useDocuments, useSchemeMatches, useTranslation, useUpdateSettings } from '@/hooks';
 import { LANGS } from '@/lib/i18n';
 import type { StringKey } from '@/lib/i18n';
@@ -72,26 +72,17 @@ export default function V2HomePage() {
 
   return (
     <div className="min-h-full bg-[#FEF9F3]">
-      {/* Inline header (no app bar) */}
-      <header
-        className="relative overflow-hidden px-3 pb-1"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
-      >
-        <V2Ribbon placement="top" />
-        <div className="relative flex items-center gap-2 py-2.5">
-          {/* User-supplied horizontal lockup (icon + "Sahayak" wordmark). */}
-          <V2Logo variant="full" className="h-11 w-auto shrink-0" />
-          <div className="min-w-0 flex-1" />
-          <button
-            type="button"
-            onClick={() => go('/v2/profile')}
-            aria-label={t('tabProfile')}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-black/5"
-          >
-            <Icon name="menu" className="h-6 w-6" strokeWidth={2.2} />
-          </button>
-        </div>
-      </header>
+      {/* Shared header — identical logo + flag + spacing on every screen */}
+      <V2Header linkHome={false}>
+        <button
+          type="button"
+          onClick={() => go('/v2/profile')}
+          aria-label={t('tabProfile')}
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-black/5"
+        >
+          <Icon name="menu" className="h-6 w-6" strokeWidth={2.2} />
+        </button>
+      </V2Header>
 
       {/* Body */}
       <div className="space-y-5 px-4 pb-10 pt-4">

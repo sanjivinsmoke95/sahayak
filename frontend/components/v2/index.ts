@@ -1,5 +1,6 @@
 export { V2Shell } from './V2Shell';
 export { V2AppBar } from './V2AppBar';
+export { V2Header } from './V2Header';
 export { V2TabBar } from './V2TabBar';
 export { V2Button } from './V2Button';
 export { V2Badge, statusTone } from './V2Badge';
