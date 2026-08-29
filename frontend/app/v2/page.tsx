@@ -73,16 +73,7 @@ export default function V2HomePage() {
   return (
     <div className="min-h-full bg-[#FEF9F3]">
       {/* Shared header — identical logo + flag + spacing on every screen */}
-      <V2Header linkHome={false}>
-        <button
-          type="button"
-          onClick={() => go('/v2/profile')}
-          aria-label={t('tabProfile')}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-black/5"
-        >
-          <Icon name="menu" className="h-6 w-6" strokeWidth={2.2} />
-        </button>
-      </V2Header>
+      <V2Header linkHome={false} />
 
       {/* Body */}
       <div className="space-y-5 px-4 pb-10 pt-4">
