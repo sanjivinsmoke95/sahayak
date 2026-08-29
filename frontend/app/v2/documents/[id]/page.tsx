@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
-import { V2Button, V2Ribbon } from '@/components/v2';
+import { V2Button, V2Header } from '@/components/v2';
 import {
   useAuthToken, useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
@@ -65,6 +65,7 @@ export default function V2DocumentDetailPage() {
   const remove = useDeleteDocument();
   const speech = useSpeech();
   const setDirection = useUiStore((s) => s.setDirection);
+  const setLanguageSheetOpen = useUiStore((s) => s.setLanguageSheetOpen);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -76,7 +77,6 @@ export default function V2DocumentDetailPage() {
 
   useEffect(() => () => speech.stop(), [speech]);
 
-  const goBack = () => { setDirection('pop'); router.back(); };
   const share = () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator.share({ title: 'Sahayak', url: window.location.href }).catch(() => {});
@@ -109,35 +109,26 @@ export default function V2DocumentDetailPage() {
 
   return (
     <div className="min-h-full">
-      {/* Header */}
-      <header
-        className="relative overflow-hidden bg-[#FEF9F3]"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
-      >
-        <V2Ribbon placement="top" />
-        <div className="relative flex items-center gap-2 px-3 py-2.5">
-          <button
-            type="button"
-            onClick={goBack}
-            aria-label={t('back')}
-            className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
-          >
-            <Icon name="left" className="h-6 w-6" strokeWidth={2.4} />
-          </button>
-          <p className="v2-heading min-w-0 flex-1 truncate px-1 text-lg font-bold text-[#173A78]">
-            {title || 'Document'}
-          </p>
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Options"
-            aria-haspopup="menu"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
-          >
-            <Icon name="moreV" className="h-5 w-5" />
-          </button>
-        </div>
-      </header>
+      {/* Shared header — identical logo + flag + spacing on every screen */}
+      <V2Header>
+        <button
+          type="button"
+          onClick={() => setLanguageSheetOpen(true)}
+          aria-label={t('language')}
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
+        >
+          <Icon name="globe" className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Options"
+          aria-haspopup="menu"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
+        >
+          <Icon name="moreV" className="h-5 w-5" />
+        </button>
+      </V2Header>
 
       {isLoading ? (
         <div className="space-y-4 px-4 pt-4">
