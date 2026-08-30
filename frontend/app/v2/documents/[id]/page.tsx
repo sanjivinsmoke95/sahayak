@@ -65,10 +65,8 @@ export default function V2DocumentDetailPage() {
   const remove = useDeleteDocument();
   const speech = useSpeech();
   const setDirection = useUiStore((s) => s.setDirection);
-  const setLanguageSheetOpen = useUiStore((s) => s.setLanguageSheetOpen);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setActiveDocumentId(id);
@@ -83,52 +81,10 @@ export default function V2DocumentDetailPage() {
     }
   };
 
-  const title = document ? (document.docType || tr(document.title)) : '';
-  const listenText = document
-    ? [tr(document.what), tr(document.why),
-       (document.steps ?? []).map((s) => tr(s)).join('. '), tr(document.explain)]
-      .filter(Boolean).join('. ')
-    : '';
-  const speaking = speech.state === 'speaking';
-  const nav = (path: string) => { setMenuOpen(false); setDirection('push'); router.push(path); };
-
-  const menuItems: { icon: string; label: string; onClick: () => void; disabled?: boolean; danger?: boolean }[] = [
-    {
-      icon: speaking ? 'close' : 'play',
-      label: speaking ? 'Stop reading' : 'Listen to explanation',
-      disabled: !speech.supported || !listenText,
-      onClick: () => { setMenuOpen(false); if (speaking) speech.stop(); else speech.speak(listenText); },
-    },
-    { icon: 'search', label: 'Find matching schemes', onClick: () => nav('/v2/schemes') },
-    { icon: 'tasks', label: 'Document plan', onClick: () => nav(`/v2/documents/${id}/plan`) },
-    { icon: 'chat', label: 'Ask about this document', onClick: () => nav('/v2/assistant') },
-    { icon: 'scan', label: 'Visit a nearby Mee Seva centre', onClick: () => nav('/v2/mee-seva') },
-    { icon: 'share', label: 'Share', onClick: () => { setMenuOpen(false); share(); } },
-    { icon: 'trash', label: 'Delete this document', danger: true, onClick: () => { setMenuOpen(false); setDeleteOpen(true); } },
-  ];
-
   return (
     <div className="min-h-full">
       {/* Shared header — identical logo + flag + spacing on every screen */}
-      <V2Header>
-        <button
-          type="button"
-          onClick={() => setLanguageSheetOpen(true)}
-          aria-label={t('language')}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
-        >
-          <Icon name="globe" className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Options"
-          aria-haspopup="menu"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
-        >
-          <Icon name="moreV" className="h-5 w-5" />
-        </button>
-      </V2Header>
+      <V2Header />
 
       {isLoading ? (
         <div className="space-y-4 px-4 pt-4">
@@ -147,32 +103,10 @@ export default function V2DocumentDetailPage() {
           onSchemes={() => { setDirection('push'); router.push('/v2/schemes'); }}
           onAsk={() => { setDirection('push'); router.push('/v2/assistant'); }}
           onMeeSeva={() => { setDirection('push'); router.push('/v2/mee-seva'); }}
+          onPlan={() => { setDirection('push'); router.push(`/v2/documents/${id}/plan`); }}
+          onShare={share}
           onDelete={() => setDeleteOpen(true)}
         />
-      )}
-
-      {document && (
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen} title={title || 'Options'} closeLabel={t('close')}>
-          <div className="space-y-1">
-            {menuItems.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                disabled={item.disabled}
-                onClick={item.onClick}
-                className={`flex w-full items-center gap-3 rounded-[14px] px-3 py-3.5 text-left text-[15px] font-semibold transition disabled:opacity-40 ${
-                  item.danger ? 'text-[#E5484D] active:bg-[#FDE8EA]' : 'text-[#101828] active:bg-[#F5F8FF]'
-                }`}
-              >
-                <Icon
-                  name={item.icon}
-                  className={`h-5 w-5 shrink-0 ${item.danger ? 'text-[#E5484D]' : 'text-[#173A78]'}`}
-                />
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </Sheet>
       )}
 
       {document && (
@@ -205,7 +139,7 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, slug, language, tr, speech, onSchemes, onAsk, onMeeSeva, onDelete,
+  document, slug, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete,
 }: {
   document: SahayakDocument;
   slug: string;
@@ -215,6 +149,8 @@ function DetailBody({
   onSchemes: () => void;
   onAsk: () => void;
   onMeeSeva: () => void;
+  onPlan: () => void;
+  onShare: () => void;
   onDelete: () => void;
 }) {
   const getToken = useAuthToken();
@@ -360,6 +296,30 @@ function DetailBody({
         <span className="flex-1 text-[15px] font-semibold text-[#101828]">Ask about this document</span>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
+
+      {/* Document plan */}
+      <button
+        type="button"
+        onClick={onPlan}
+        className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+      >
+        <Icon name="tasks" className="h-5 w-5 shrink-0 text-[#173A78]" />
+        <span className="flex-1 text-[15px] font-semibold text-[#101828]">Document plan</span>
+        <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+      </button>
+
+      {/* Share */}
+      {typeof navigator !== 'undefined' && 'share' in navigator && (
+        <button
+          type="button"
+          onClick={onShare}
+          className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+        >
+          <Icon name="share" className="h-5 w-5 shrink-0 text-[#173A78]" />
+          <span className="flex-1 text-[15px] font-semibold text-[#101828]">Share</span>
+          <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+        </button>
+      )}
 
       {/* Your details (extracted information) */}
       {personal.length > 0 && (
