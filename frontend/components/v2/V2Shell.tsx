@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useSettingsSync, useTranslation } from '@/hooks';
 import { TEXT_SIZES } from '@/lib/i18n';
 import { useSettingsStore } from '@/store';
@@ -15,6 +16,7 @@ export function V2Shell({ children }: { children: ReactNode }) {
   const scrollRef = useRef<HTMLElement>(null);
   const textSize = useSettingsStore((s) => s.textSize);
   const { language } = useTranslation();
+  const reduceMotion = useReducedMotion();
 
   useSettingsSync();
 
@@ -42,9 +44,18 @@ export function V2Shell({ children }: { children: ReactNode }) {
         <BackendStatusBanner />
         <main id="main" ref={scrollRef} tabIndex={-1} className="v2-scroll">
           {/* The header scrolls inside the body so every page is one continuous
-              block — the app bar and content are never two separate panes. */}
-          {!ownHeader && <V2AppBar />}
-          {ownHeader ? children : <div className="px-4 pb-10 pt-4">{children}</div>}
+              block — the app bar and content are never two separate panes. A
+              short fade+rise on each route keeps transitions smooth rather than
+              snapping between screens. */}
+          <motion.div
+            key={pathname}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {!ownHeader && <V2AppBar />}
+            {ownHeader ? children : <div className="px-4 pb-10 pt-4">{children}</div>}
+          </motion.div>
         </main>
         <V2TabBar />
         <LanguageSheet />
