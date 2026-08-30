@@ -72,13 +72,20 @@ export default function V2HomePage() {
 
   return (
     <div className="min-h-full bg-[#FEF9F3]">
-      {/* Shared header — identical logo + flag + spacing on every screen */}
-      <V2Header linkHome={false} />
+      {/* Home keeps the flag with the greeting, not in the app-bar strip. */}
+      <V2Header linkHome={false} showRibbon={false} />
 
       {/* Body */}
       <div className="space-y-5 px-4 pb-10 pt-4">
         {/* Greeting */}
-        <section>
+        <section className="relative">
+          <img
+            src="/v2-assets/soft-tricolor-flag.png"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="pointer-events-none absolute -right-7 -top-3 h-24 w-52 -scale-x-100 object-fill opacity-30 mix-blend-multiply blur-[0.5px] [mask-image:linear-gradient(to_right,transparent_0%,#000_18%,#000_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,#000_18%,#000_100%)]"
+          />
           <h1 className="v2-heading text-xl font-bold leading-tight text-[#101828]">
             {t('homeNamaste')}{displayName ? `, ${displayName}` : ''} <span aria-hidden="true">👋</span>
           </h1>

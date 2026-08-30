@@ -12,6 +12,8 @@ interface V2HeaderProps {
   children?: React.ReactNode;
   /** Set false on the home page so tapping the logo doesn't self-navigate. */
   linkHome?: boolean;
+  /** Home keeps its flag beside the greeting; other screens use the top strip. */
+  showRibbon?: boolean;
 }
 
 /**
@@ -21,7 +23,7 @@ interface V2HeaderProps {
  * moving between screens never feels like a change. Page-specific controls are
  * passed as children; the profile shortcut is always the right-most control.
  */
-export function V2Header({ children, linkHome = true }: V2HeaderProps) {
+export function V2Header({ children, linkHome = true, showRibbon = true }: V2HeaderProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const setDirection = useUiStore((s) => s.setDirection);
@@ -33,7 +35,7 @@ export function V2Header({ children, linkHome = true }: V2HeaderProps) {
       className="relative shrink-0 overflow-hidden bg-[#FEF9F3] px-3 pb-1"
       style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
     >
-      <V2Ribbon placement="top" />
+      {showRibbon && <V2Ribbon placement="top" />}
       <div className="relative flex items-center gap-2 py-2.5">
         {linkHome ? (
           <button
