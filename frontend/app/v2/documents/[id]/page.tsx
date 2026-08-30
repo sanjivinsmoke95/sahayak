@@ -186,6 +186,7 @@ function DetailBody({
   useEffect(() => () => { if (fileUrl) URL.revokeObjectURL(fileUrl); }, [fileUrl]);
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
+  const title = document.docType || tr(document.title);
   const issuer = tr(document.issuer);
   const what = tr(document.what);
   const why = tr(document.why);
@@ -203,31 +204,38 @@ function DetailBody({
 
   return (
     <div className="space-y-3.5 px-4 pb-6 pt-4">
-      {/* Status pill */}
-      <span className="inline-flex items-center rounded-full bg-[#EAF7F0] px-3 py-1 text-xs font-bold text-[#2FA66A]">
-        Explained
-      </span>
-
-      {/* Summary card */}
-      <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
-        <div className="flex items-start gap-3">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[#EAF1FF] text-[#173A78]">
-            <Icon name="doc" className="h-6 w-6" />
+      {/* Summary card — mirrors the reference certificate card */}
+      <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-5 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+        <div className="flex items-start justify-between gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[#EAF7F0] text-[#2FA66A]">
+            <Icon name="graduation" className="h-6 w-6" />
           </span>
-          <div className="grid flex-1 grid-cols-2 gap-3">
-            <div>
-              <p className="text-xs text-[#6B7890]">Issued on</p>
-              <p className="text-sm font-bold text-[#101828]">
-                {document.received ? formatDate(document.received, language)
-                  : deadline ? formatDate(deadline, language) : '—'}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-[#6B7890]">Issued by</p>
-              <p className="text-sm font-semibold leading-snug text-[#101828]">
-                {issuer || 'The issuing authority is printed on the certificate.'}
-              </p>
-            </div>
+          <span className="inline-flex items-center rounded-full bg-[#EAF7F0] px-3 py-1 text-xs font-bold text-[#2FA66A]">
+            Explained
+          </span>
+        </div>
+
+        <h2 className="v2-heading mt-3.5 text-xl font-extrabold text-[#101828]">{title}</h2>
+
+        <div className="mt-3">
+          <p className="text-xs text-[#6B7890]">Issued by</p>
+          <p className="mt-0.5 text-[15px] font-bold leading-snug text-[#101828]">
+            {issuer || 'The issuing authority is printed on the certificate.'}
+          </p>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <p className="text-xs text-[#6B7890]">Issued on</p>
+            <p className="mt-0.5 text-[15px] font-bold text-[#101828]">
+              {document.received ? formatDate(document.received, language) : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-[#6B7890]">Valid until</p>
+            <p className="mt-0.5 text-[15px] font-bold text-[#101828]">
+              {deadline ? formatDate(deadline, language) : '—'}
+            </p>
           </div>
         </div>
       </div>
