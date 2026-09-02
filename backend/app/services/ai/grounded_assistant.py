@@ -23,6 +23,11 @@ _UNVERIFIED = (
     "available."
 )
 
+_ASSISTANT_BUSY = (
+    "The assistant is temporarily over its usage limit and can't answer new questions right "
+    "now. Please try again in a little while."
+)
+
 _LOCATION_ANSWER = (
     "To find the nearest MeeSeva or government office, please use the SAHAYAK Centre Finder "
     "with device location access enabled. I cannot determine your physical location or the closest office "
@@ -442,6 +447,9 @@ async def answer_question(
             except httpx.HTTPError:
                 import logging
                 logging.getLogger(__name__).exception("AI Provider failed")
+                # The provider is reachable but erroring (e.g. rate-limited); be
+                # honest that this is temporary rather than implying no answer exists.
+                return AskResponse(text=_ASSISTANT_BUSY, citations=[], grounded=False)
         return AskResponse(text=_UNVERIFIED, citations=[], grounded=False)
 
     candidates = list(official.citations)
