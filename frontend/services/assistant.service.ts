@@ -3,7 +3,7 @@ import type { AssistantAnswer, EligibilityProfile, EligibilityResult, LanguageCo
 
 export const assistantService = {
   ask: (
-    payload: { question: string; lang: LanguageCode; documentId?: string | null; modelId?: string | null },
+    payload: { question: string; lang: LanguageCode; documentId?: string | null; modelId?: string | null; history?: { role: string; text: string }[] },
     token?: string | null,
   ) => api.post<AssistantAnswer>('/assistant/ask', payload, token),
 
