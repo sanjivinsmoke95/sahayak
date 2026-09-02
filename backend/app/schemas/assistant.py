@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.services import GovChatCitation
+
 Language = Literal["en", "hi", "te"]
 
 
@@ -10,6 +12,7 @@ class AskRequest(BaseModel):
     lang: Language = "en"
     documentId: str | None = None
     modelId: str | None = None
+    history: list[dict[str, str]] | None = None
 
 
 class AskResponse(BaseModel):
@@ -27,6 +30,8 @@ class AskResponse(BaseModel):
     bullets: list[str] | None = Field(default=None, alias="list")
     docRefs: list[str] | None = None
     setLang: Language | None = None
+    citations: list[GovChatCitation] = Field(default_factory=list)
+    grounded: bool = False
 
 
 class EligibilityProfile(BaseModel):

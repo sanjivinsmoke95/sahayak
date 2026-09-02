@@ -95,9 +95,17 @@ class GovChatRequest(BaseModel):
 
 
 class GovChatCitation(BaseModel):
+    """Provenance for an assistant claim from a saved document or official service."""
+
     service_name: str
     source_url: str | None = None
     official_application_url: str | None = None
+    source_type: Literal["official_service", "user_document"] = "official_service"
+    document_id: str | None = None
+    department: str | None = None
+    state: str | None = None
+    last_updated: str | None = None
+    version: int | None = None
 
 
 class GovChatResponse(BaseModel):

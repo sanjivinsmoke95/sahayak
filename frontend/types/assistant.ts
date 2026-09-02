@@ -1,5 +1,17 @@
 import type { LanguageCode } from './i18n';
 
+export interface AssistantCitation {
+  service_name: string;
+  source_url?: string | null;
+  official_application_url?: string | null;
+  source_type: 'official_service' | 'user_document';
+  document_id?: string | null;
+  department?: string | null;
+  state?: string | null;
+  last_updated?: string | null;
+  version?: number | null;
+}
+
 export interface AssistantAnswer {
   text: string;
   /** Optional bullet list, already localised. */
@@ -8,6 +20,8 @@ export interface AssistantAnswer {
   docRefs?: string[] | null;
   /** The assistant may switch language when asked to. */
   setLang?: LanguageCode | null;
+  citations?: AssistantCitation[];
+  grounded?: boolean;
 }
 
 export interface AssistantMessage {
@@ -17,6 +31,8 @@ export interface AssistantMessage {
   list?: string[] | null;
   docRefs?: string[] | null;
   createdAt: string;
+  citations?: AssistantCitation[];
+  grounded?: boolean;
 }
 
 export interface EligibilityReason {

@@ -10,7 +10,7 @@ from app.schemas import (
     EligibilityResponse,
 )
 from app.services import document_service as docs
-from app.services.ai import get_provider
+from app.services.ai.grounded_assistant import answer_question
 from app.services.eligibility import check_eligibility
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
@@ -29,23 +29,15 @@ async def ask(
     rule-based engine takes over whenever a provider is unavailable, so the
     assistant never goes silent.
     """
-    documents = await docs.get_user_documents(db, user)
-    as_api = [docs.to_api(d) for d in documents]
-
-    current = None
-    if payload.documentId:
-        current = next((d for d in as_api if d["id"] == payload.documentId), None)
-
-    provider = get_provider(payload.modelId)
-    try:
-        return await provider.answer_question(payload.question, payload.lang, current, as_api)
-    except Exception:
-        # A provider outage must not become a broken screen.
-        from app.services.ai import RuleBasedProvider
-
-        return await RuleBasedProvider().answer_question(
-            payload.question, payload.lang, current, as_api
-        )
+    return await answer_question(
+        db=db,
+        user=user,
+        question=payload.question,
+        lang=payload.lang,
+        document_id=payload.documentId,
+        model_id=payload.modelId,
+        history=payload.history or [],
+    )
 
 
 @router.post("/eligibility", response_model=EligibilityResponse)

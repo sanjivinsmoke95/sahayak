@@ -32,6 +32,11 @@ const ERROR_STRING: Record<RecognitionError, StringKey> = {
 export function PromptBox({ onSend, disabled, autoListen }: PromptBoxProps) {
   const { t } = useTranslation();
   const [value, setValue] = useState('');
+  // Speech support is a browser-only capability, so it is unknown during SSR.
+  // Gate the mic control on a post-mount flag so the server and first client
+  // render agree (otherwise React throws a hydration mismatch).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   // Guard so a single spoken phrase is only ever sent once.
   const sentRef = useRef(false);
 
@@ -125,7 +130,7 @@ export function PromptBox({ onSend, disabled, autoListen }: PromptBoxProps) {
           className="min-h-[52px] flex-1"
         />
 
-        {speech.supported && (
+        {mounted && speech.supported && (
           <Button
             variant={active ? 'danger' : 'secondary'}
             size="icon"

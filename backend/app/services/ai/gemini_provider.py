@@ -12,7 +12,7 @@ from app.services.ai.prompts import SYSTEM_ANALYZE, SYSTEM_EXPLAIN, question_pro
 class GeminiProvider(AIProvider):
     name = "gemini"
 
-    def __init__(self, model: str = "gemini-2.0-flash") -> None:
+    def __init__(self, model: str = "gemini-3.6-flash") -> None:
         self.model = model
         self.api_key = settings.gemini_api_key
 
@@ -20,17 +20,49 @@ class GeminiProvider(AIProvider):
     def available(self) -> bool:
         return bool(self.api_key)
 
-    async def _chat(self, system: str, user: str) -> str:
+    async def _chat(self, system: str, user: str, history: list[dict[str, str]] | None = None) -> str:
         url = (
             f"https://generativelanguage.googleapis.com/v1beta/models/"
             f"{self.model}:generateContent?key={self.api_key}"
         )
+        
+        raw_messages = []
+        if history:
+            for msg in history:
+                if not isinstance(msg, dict):
+                    continue
+                r = msg.get("role")
+                t = msg.get("text")
+                if not isinstance(t, str) or not t.strip():
+                    continue
+                role = "model" if r == "assistant" else "user"
+                raw_messages.append({"role": role, "text": t.strip()})
+        
+        if user and user.strip():
+            raw_messages.append({"role": "user", "text": user.strip()})
+            
+        contents = []
+        for msg in raw_messages:
+            if not contents:
+                contents.append({"role": msg["role"], "parts": [{"text": msg["text"]}]})
+            else:
+                last_msg = contents[-1]
+                if last_msg["role"] == msg["role"]:
+                    # Merge consecutive roles
+                    last_text = last_msg["parts"][0]["text"]
+                    last_msg["parts"][0]["text"] = f"{last_text}\n\n{msg['text']}"
+                else:
+                    contents.append({"role": msg["role"], "parts": [{"text": msg["text"]}]})
+                    
+        if not contents:
+            return ""
+
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.post(
                 url,
                 json={
                     "systemInstruction": {"parts": [{"text": system}]},
-                    "contents": [{"role": "user", "parts": [{"text": user}]}],
+                    "contents": contents,
                     "generationConfig": {"temperature": 0.2},
                 },
             )
@@ -47,9 +79,11 @@ class GeminiProvider(AIProvider):
         lang: str,
         document: dict[str, Any] | None,
         documents: list[dict[str, Any]],
+        grounded_context: str = "",
+        history: list[dict[str, str]] | None = None,
     ) -> AskResponse:
-        prompt = question_prompt(question, lang, document, documents)
-        text = await self._chat(SYSTEM_EXPLAIN, prompt)
+        prompt = question_prompt(question, lang, document, documents, grounded_context)
+        text = await self._chat(SYSTEM_EXPLAIN, prompt, history)
         return AskResponse(text=text.strip())
 
     async def analyze_document(self, text: str, filename: str) -> dict[str, Any]:

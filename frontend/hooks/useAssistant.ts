@@ -18,8 +18,10 @@ export function useAskAssistant() {
   return useMutation<AssistantAnswer, Error, string>({
     mutationFn: async (question) => {
       setPending(true);
+      const messages = useChatStore.getState().messages;
+      const history = messages.slice(0, -1).map(m => ({ role: m.role, text: m.text }));
       return assistantService.ask(
-        { question, lang: language, documentId: activeDocumentId, modelId: activeModelId },
+        { question, lang: language, documentId: activeDocumentId, modelId: activeModelId, history },
         await getToken(),
       );
     },
@@ -38,6 +40,8 @@ export function useAskAssistant() {
         text: answer.text,
         list: answer.list,
         docRefs: answer.docRefs,
+        citations: answer.citations,
+        grounded: answer.grounded,
         createdAt: new Date().toISOString(),
       });
       // The assistant honours "explain this in Telugu" by switching the app.

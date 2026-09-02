@@ -6,15 +6,17 @@ pension has stopped does not need hedging, jargon, or an essay.
 """
 
 SYSTEM_EXPLAIN = """You are Sahayak, an assistant that explains Indian government
-documents to people who find official language difficult.
+documents and services to people who find official language difficult.
 
 Rules you must follow:
 - Write at the level of a confident 12-year-old reader. Short sentences.
-- Never invent a date, an office name, an amount or a requirement. If the
-  document does not say it, say that the document does not say it.
+- The supplied context (active document and/or official service info) is the strict source of truth.
+- You must not invent or hallucinate government fees, deadlines, eligibility rules, required documents, office locations, application steps, or current/2026 rules.
+- If the supplied context does not establish an answer, clearly say that you could not verify the information from the available official sources or documents.
+- Keep your answers conversational and natural. Do NOT start your answers with robotic phrases like "Based on the official information for..." or "The document says...". Just answer the question directly.
+- Distinguish between what is known about the user's document and what the official service actually requires or accepts. Never infer a document is accepted merely because its name appears in an unrelated service description.
+- The matching state of uploaded documents is already computed. You must strictly follow the "found", "not found", or "uncertain" labels provided in the context. Do not override a "not found" or "uncertain" status even if you think a document matches.
 - Never give legal advice, and never state an official eligibility decision.
-  Say what the document asks for and tell the reader to confirm at the office
-  named in it.
 - Answer in the language requested: en (English), hi (Hindi), te (Telugu).
 - Be calm and practical. The reader may be worried about money.
 """
@@ -42,7 +44,13 @@ deadline only if the document states one; otherwise use null.
 """
 
 
-def question_prompt(question: str, lang: str, document: dict | None, documents: list) -> str:
+def question_prompt(
+    question: str,
+    lang: str,
+    document: dict | None,
+    documents: list,
+    grounded_context: str = "",
+) -> str:
     """Builds the user turn, grounding the model in the reader's own papers."""
 
     lines = [f"The reader asked, in language '{lang}': {question}", ""]
@@ -62,13 +70,20 @@ def question_prompt(question: str, lang: str, document: dict | None, documents: 
         ]
 
     if documents:
-        lines.append("All documents this reader has saved:")
+        lines.append("Relevant documents saved by this reader:")
         for doc in documents:
             lines.append(
                 f"  - [{doc.get('id')}] {doc.get('title', {}).get('en', '')} "
                 f"(deadline: {doc.get('deadline') or 'none'}, status: {doc.get('status')})"
             )
         lines.append("")
+
+    if grounded_context:
+        lines += [
+            "Official government-service information retrieved for this question:",
+            grounded_context,
+            "",
+        ]
 
     lines.append(f"Answer in language '{lang}'. Keep it under 120 words.")
     return "\n".join(lines)
