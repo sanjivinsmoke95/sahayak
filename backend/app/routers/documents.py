@@ -105,9 +105,7 @@ async def analyze_document(
         if not uploaded or uploaded.user_id != user.id:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Uploaded file not found")
         try:
-            raw_text = extract_text(
-                await storage.download(uploaded.storage_path), uploaded.mime_type, uploaded.name
-            )
+            content = await storage.download(uploaded.storage_path)
         except FileNotFoundError as exc:
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
         except httpx.HTTPError as exc:
@@ -116,20 +114,47 @@ async def analyze_document(
                 "The uploaded certificate could not be retrieved from storage. "
                 "Please try uploading it again.",
             ) from exc
-        except DocumentExtractionError as exc:
-            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+
+        # Try a text layer / OCR first. A blurry photo, a scanned PDF with no
+        # text layer, or a server without Tesseract yields nothing here — that
+        # is fine, the vision model below reads the file directly.
+        try:
+            raw_text = extract_text(content, uploaded.mime_type, uploaded.name)
+        except DocumentExtractionError:
+            raw_text = ""
 
         provider = get_provider()
-        analysis = docs.basic_analysis(raw_text, uploaded.name)
-        if not isinstance(provider, RuleBasedProvider):
+        vision = getattr(provider, "analyze_image", None)
+
+        if raw_text.strip():
+            analysis = docs.basic_analysis(raw_text, uploaded.name)
+            if not isinstance(provider, RuleBasedProvider):
+                try:
+                    analysis = await provider.analyze_document(raw_text, uploaded.name)
+                except Exception as exc:
+                    raise HTTPException(
+                        status.HTTP_502_BAD_GATEWAY,
+                        "The document text was read, but the analysis service is unavailable. "
+                        "Please try again.",
+                    ) from exc
+        elif vision is not None:
+            # No readable text — read the image/PDF directly with the vision model,
+            # so uploads work at any clarity and in any image format.
             try:
-                analysis = await provider.analyze_document(raw_text, uploaded.name)
+                analysis = await vision(content, uploaded.mime_type, uploaded.name)
             except Exception as exc:
                 raise HTTPException(
                     status.HTTP_502_BAD_GATEWAY,
-                    "The document text was read, but the analysis service is unavailable. "
-                    "Please try again.",
+                    "The document could not be analysed right now. Please try again.",
                 ) from exc
+        else:
+            # No text and no vision-capable AI configured: only then ask for a
+            # clearer copy (rule-based/OCR-only deployments).
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "This document could not be read. Please try a clearer photo or PDF, "
+                "or configure an AI provider to read images directly.",
+            )
 
         document = docs.from_analysis(analysis, user.id, raw_text, uploaded.name)
         db.add(document)
