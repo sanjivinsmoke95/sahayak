@@ -428,6 +428,20 @@ async def answer_question(
     # -----------------------------------------------------------------------
     official = await search_official_services(question, language=lang)
     if not official.hits:
+        # No official record (collector empty/offline). Rather than refuse, let a
+        # vision/LLM provider give general guidance, clearly framed as unverified.
+        provider = get_provider(model_id)
+        general = getattr(provider, "answer_general", None)
+        if general is not None:
+            try:
+                answer = await general(question, lang, history)
+                if answer.text and answer.text.strip():
+                    answer.citations = []
+                    answer.grounded = False
+                    return answer
+            except httpx.HTTPError:
+                import logging
+                logging.getLogger(__name__).exception("AI Provider failed")
         return AskResponse(text=_UNVERIFIED, citations=[], grounded=False)
 
     candidates = list(official.citations)
