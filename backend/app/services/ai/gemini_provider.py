@@ -8,7 +8,12 @@ import httpx
 from app.config import settings
 from app.schemas import AskResponse
 from app.services.ai.base import AIProvider
-from app.services.ai.prompts import SYSTEM_ANALYZE, SYSTEM_EXPLAIN, question_prompt
+from app.services.ai.prompts import (
+    SYSTEM_ANALYZE,
+    SYSTEM_EXPLAIN,
+    SYSTEM_GENERAL,
+    question_prompt,
+)
 
 
 class GeminiProvider(AIProvider):
@@ -86,6 +91,20 @@ class GeminiProvider(AIProvider):
     ) -> AskResponse:
         prompt = question_prompt(question, lang, document, documents, grounded_context)
         text = await self._chat(SYSTEM_EXPLAIN, prompt, history)
+        return AskResponse(text=text.strip())
+
+    async def answer_general(
+        self,
+        question: str,
+        lang: str,
+        history: list[dict[str, str]] | None = None,
+    ) -> AskResponse:
+        """General guidance when there is no grounded document or official hit.
+
+        Uses a looser system prompt so the assistant still helps instead of
+        refusing, while telling the reader to confirm details officially.
+        """
+        text = await self._chat(SYSTEM_GENERAL, question, history)
         return AskResponse(text=text.strip())
 
     async def analyze_document(self, text: str, filename: str) -> dict[str, Any]:
