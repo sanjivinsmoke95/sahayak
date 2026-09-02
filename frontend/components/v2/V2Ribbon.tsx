@@ -9,22 +9,23 @@ interface V2RibbonProps {
 }
 
 /**
- * The Indian tricolour wave supplied in the asset pack. Purely decorative, so
- * it is hidden from assistive tech and never intercepts taps.
+ * A shallow, light tricolour strip used only at the top of non-home screens.
+ * Its pointed end faces left; the cropped right end fades rather than cutting
+ * off sharply. It is purely decorative and never intercepts taps.
  */
 export function V2Ribbon({ placement = 'bottom', className }: V2RibbonProps) {
   return (
     <img
-      src="/v2-assets/tricolor-wave.svg"
+      src="/v2-assets/soft-tricolor-flag.png"
       alt=""
       aria-hidden="true"
       draggable={false}
       className={cn(
         'pointer-events-none absolute select-none',
         placement === 'top'
-          ? 'right-0 top-[2px] h-[80px] w-[272px] origin-top-right -rotate-[5deg] object-cover object-top '
-            + '[mask-image:linear-gradient(to_right,#000_42%,transparent_97%)] '
-            + '[-webkit-mask-image:linear-gradient(to_right,#000_42%,transparent_97%)]'
+          ? 'right-0 top-0 h-[42px] w-[190px] -scale-x-100 object-fill opacity-30 mix-blend-multiply blur-[0.4px] '
+            + '[mask-image:linear-gradient(to_right,transparent_0%,#000_18%,#000_100%)] '
+            + '[-webkit-mask-image:linear-gradient(to_right,transparent_0%,#000_18%,#000_100%)]'
           : 'inset-x-0 bottom-0 h-20 w-full object-cover',
         className,
       )}
