@@ -1,4 +1,6 @@
+import base64
 import json
+from io import BytesIO
 from typing import Any
 
 import httpx
@@ -88,4 +90,62 @@ class GeminiProvider(AIProvider):
 
     async def analyze_document(self, text: str, filename: str) -> dict[str, Any]:
         raw = await self._chat(SYSTEM_ANALYZE, f"File: {filename}\n\n{text}")
+        return json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
+
+    async def analyze_image(self, content: bytes, mime_type: str, filename: str) -> dict[str, Any]:
+        """Read a document straight from its bytes with the vision model.
+
+        This bypasses OCR entirely, so it works on photos of any clarity and on
+        scanned PDFs with no text layer — no Tesseract install required. Images
+        are normalised to PNG so any Pillow-readable format is accepted; PDFs are
+        sent as-is (the model reads them natively).
+        """
+        data = content
+        send_mime = mime_type or "application/octet-stream"
+
+        if send_mime.startswith("image/") or not send_mime.startswith("application/"):
+            try:
+                from PIL import Image
+
+                image = Image.open(BytesIO(content))
+                image = image.convert("RGB")
+                buffer = BytesIO()
+                image.save(buffer, format="PNG")
+                data = buffer.getvalue()
+                send_mime = "image/png"
+            except Exception:
+                # Not a Pillow-readable image (or already fine); send original bytes.
+                if not send_mime.startswith(("image/", "application/pdf")):
+                    send_mime = "image/png"
+
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{self.model}:generateContent?key={self.api_key}"
+        )
+        prompt = (
+            f"File: {filename}\n\nRead every visible field in this government "
+            "document image and analyse it. If parts are blurry, infer the most "
+            "likely intended text from context and legible characters."
+        )
+        async with httpx.AsyncClient(timeout=90) as client:
+            response = await client.post(
+                url,
+                json={
+                    "systemInstruction": {"parts": [{"text": SYSTEM_ANALYZE}]},
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [
+                                {"text": prompt},
+                                {"inline_data": {"mime_type": send_mime, "data": base64.b64encode(data).decode()}},
+                            ],
+                        }
+                    ],
+                    "generationConfig": {"temperature": 0.2},
+                },
+            )
+            response.raise_for_status()
+            candidates = response.json().get("candidates", [])
+            parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
+            raw = "".join(p.get("text", "") for p in parts)
         return json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
