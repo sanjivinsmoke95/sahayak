@@ -143,9 +143,17 @@ async def analyze_document(
             try:
                 analysis = await vision(content, uploaded.mime_type, uploaded.name)
             except Exception as exc:
+                # Vision reads images of any clarity, so a failure here is almost
+                # always the AI being temporarily unavailable or rate-limited —
+                # not an unreadable file. Say so honestly (503, retryable).
+                busy = isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429
                 raise HTTPException(
-                    status.HTTP_502_BAD_GATEWAY,
-                    "The document could not be analysed right now. Please try again.",
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    "The document reader is temporarily over its usage limit. Please try again "
+                    "in a little while."
+                    if busy
+                    else "The document reader is temporarily unavailable. Please try again "
+                    "in a little while.",
                 ) from exc
         else:
             # No text and no vision-capable AI configured: only then ask for a

@@ -161,6 +161,7 @@ export const T = {
   chatNotGovGuess:L("This looks like a {type}, not a government document. You can upload another document.", "यह {type} जैसा लगता है, कोई सरकारी दस्तावेज़ नहीं। आप कोई और दस्तावेज़ अपलोड कर सकते हैं।", "ఇది {type} లా ఉంది, ప్రభుత్వ పత్రం కాదు. మీరు మరో పత్రాన్ని అప్‌లోడ్ చేయవచ్చు."),
   chatUnsure:   L("I couldn't confidently identify this document. Please upload a clearer image or PDF.", "मैं इस दस्तावेज़ को ठीक से पहचान नहीं पाया। कृपया साफ़ तस्वीर या PDF अपलोड करें।", "నేను ఈ పత్రాన్ని కచ్చితంగా గుర్తించలేకపోయాను. దయచేసి స్పష్టమైన చిత్రం లేదా PDF అప్‌లోడ్ చేయండి."),
   chatUploadFail:L("Sorry, I couldn't read that document. Please try a clearer image or PDF.", "क्षमा करें, मैं वह दस्तावेज़ नहीं पढ़ पाया। कृपया साफ़ तस्वीर या PDF आज़माएँ।", "క్షమించండి, నేను ఆ పత్రాన్ని చదవలేకపోయాను. దయచేసి స్పష్టమైన చిత్రం లేదా PDF ప్రయత్నించండి."),
+  chatUploadBusy:L("The document reader is temporarily busy. Please try again in a little while.", "दस्तावेज़ रीडर अभी व्यस्त है। कृपया थोड़ी देर बाद फिर कोशिश करें।", "డాక్యుమెంట్ రీడర్ ప్రస్తుతం బిజీగా ఉంది. దయచేసి కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి."),
   // Government services directory
   svcTitle:     L("Government Services", "सरकारी सेवाएँ", "ప్రభుత్వ సేవలు"),
   svcSub:       L("Common services and the papers they ask for.", "आम सेवाएँ और उनके लिए ज़रूरी कागज़ात।", "సాధారణ సేవలు మరియు వాటికి అవసరమైన పత్రాలు."),

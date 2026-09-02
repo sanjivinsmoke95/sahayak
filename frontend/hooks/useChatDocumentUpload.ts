@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { ApiRequestError } from '@/lib/api-client';
 import { QUERY_KEYS } from '@/lib/constants';
 import { analyzeUploadedFile, classifyVerdict } from '@/lib/upload';
 import { documentsService } from '@/services';
@@ -66,8 +67,11 @@ export function useChatDocumentUpload() {
         void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.checklists });
         say(fill(t('chatDetected'), { type: typeName }), [doc.id]);
         return true;
-      } catch {
-        say(t('chatUploadFail'));
+      } catch (err) {
+        // A 503 means the reader (vision AI) is temporarily unavailable / over
+        // quota — not that the file was unreadable. Say so honestly.
+        const busy = err instanceof ApiRequestError && err.status === 503;
+        say(t(busy ? 'chatUploadBusy' : 'chatUploadFail'));
         return false;
       } finally {
         setBusy(false);
