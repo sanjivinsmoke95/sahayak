@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
@@ -126,43 +128,34 @@ async def analyze_document(
         provider = get_provider()
         vision = getattr(provider, "analyze_image", None)
 
+        # The upload must always finish with a saved document — a rich AI analysis
+        # when the model is reachable, and a safe rule-based record when it is not
+        # (no key, rate-limited, or offline). Never leave the client "Processing…".
         if raw_text.strip():
             analysis = docs.basic_analysis(raw_text, uploaded.name)
             if not isinstance(provider, RuleBasedProvider):
                 try:
                     analysis = await provider.analyze_document(raw_text, uploaded.name)
                 except Exception as exc:
-                    raise HTTPException(
-                        status.HTTP_502_BAD_GATEWAY,
-                        "The document text was read, but the analysis service is unavailable. "
-                        "Please try again.",
-                    ) from exc
+                    logging.getLogger(__name__).warning(
+                        "AI analysis unavailable (%s); using rule-based analysis for %s.",
+                        type(exc).__name__, uploaded.name,
+                    )
         elif vision is not None:
-            # No readable text — read the image/PDF directly with the vision model,
-            # so uploads work at any clarity and in any image format.
+            # No text layer (blurry photo / scanned PDF): read the file directly.
             try:
                 analysis = await vision(content, uploaded.mime_type, uploaded.name)
             except Exception as exc:
-                # Vision reads images of any clarity, so a failure here is almost
-                # always the AI being temporarily unavailable or rate-limited —
-                # not an unreadable file. Say so honestly (503, retryable).
-                busy = isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429
-                raise HTTPException(
-                    status.HTTP_503_SERVICE_UNAVAILABLE,
-                    "The document reader is temporarily over its usage limit. Please try again "
-                    "in a little while."
-                    if busy
-                    else "The document reader is temporarily unavailable. Please try again "
-                    "in a little while.",
-                ) from exc
+                logging.getLogger(__name__).warning(
+                    "Vision analysis unavailable (%s); saving a basic record for %s so the "
+                    "upload still opens.",
+                    type(exc).__name__, uploaded.name,
+                )
+                analysis = docs.basic_analysis(raw_text, uploaded.name)
         else:
-            # No text and no vision-capable AI configured: only then ask for a
-            # clearer copy (rule-based/OCR-only deployments).
-            raise HTTPException(
-                status.HTTP_422_UNPROCESSABLE_ENTITY,
-                "This document could not be read. Please try a clearer photo or PDF, "
-                "or configure an AI provider to read images directly.",
-            )
+            # No text and no vision-capable AI: still save a basic record so the
+            # reader gets a document to open rather than a dead end.
+            analysis = docs.basic_analysis(raw_text, uploaded.name)
 
         document = docs.from_analysis(analysis, user.id, raw_text, uploaded.name)
         db.add(document)
