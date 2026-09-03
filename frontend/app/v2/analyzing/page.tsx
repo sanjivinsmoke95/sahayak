@@ -62,7 +62,9 @@ function AnalyzingScreen() {
 
   return (
     <div className="flex min-h-full flex-col items-center pt-6 text-center">
-      <h1 className="v2-heading text-2xl font-extrabold text-[#101828]">Processing...</h1>
+      <h1 className="v2-heading text-2xl font-extrabold text-[#101828]">
+        {analyze.isError ? "Couldn't read this file" : 'Processing...'}
+      </h1>
 
       <img
         src="/v2-assets/illustration-processing.svg"
@@ -115,9 +117,18 @@ function AnalyzingScreen() {
       </div>
 
       {analyze.isError && (
-        <p className="mt-5 w-full rounded-[14px] bg-[#FDE8EA] p-4 text-sm text-[#DC3545]">
-          Something went wrong while reading this document. Please try again.
-        </p>
+        <div className="mt-5 w-full space-y-3">
+          <p className="rounded-[14px] bg-[#FDE8EA] p-4 text-sm text-[#DC3545]">
+            Something went wrong while reading this document. Please try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setDirection('pop'); router.replace('/v2/upload'); }}
+            className="w-full rounded-[14px] bg-[#173A78] px-4 py-3 text-base font-bold text-white active:translate-y-px"
+          >
+            Back to upload
+          </button>
+        </div>
       )}
     </div>
   );
