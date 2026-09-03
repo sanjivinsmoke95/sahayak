@@ -73,7 +73,11 @@ export default function V2DocumentDetailPage() {
     return () => setActiveDocumentId(null);
   }, [id, setActiveDocumentId]);
 
-  useEffect(() => () => speech.stop(), [speech]);
+  // Stop speech only when leaving the page. `speech.stop` is a stable callback;
+  // depending on the whole `speech` object (re-created every render) would cancel
+  // audio the instant a speaker button re-renders the screen.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => speech.stop(), [speech.stop]);
 
   const share = () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
@@ -186,7 +190,9 @@ function DetailBody({
   useEffect(() => () => { if (fileUrl) URL.revokeObjectURL(fileUrl); }, [fileUrl]);
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
-  const title = document.docType || tr(document.title);
+  // Prefer the specific analysed title ("Income Certificate") over the generic
+  // classification label (often just "Government document").
+  const title = tr(document.title) || document.docType;
   const issuer = tr(document.issuer);
   const what = tr(document.what);
   const why = tr(document.why);

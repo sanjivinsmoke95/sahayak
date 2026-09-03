@@ -59,6 +59,9 @@ def basic_analysis(raw_text: str, filename: str) -> dict[str, Any]:
     preview = raw_text[:6000]
     normalized = " ".join(raw_text.split())
     lowered = normalized.lower()
+    # OCR often drops spaces ("INCOMECERTIFICATE"); match against a de-spaced copy
+    # too so keyword detection survives imperfect scans.
+    collapsed = lowered.replace(" ", "")
 
     certificate_type = "Certificate"
     purpose = "proof of the information stated on this certificate"
@@ -98,7 +101,10 @@ def basic_analysis(raw_text: str, filename: str) -> dict[str, Any]:
             "education",
         ),
     ):
-        if any(keyword in lowered for keyword in keywords):
+        if any(
+            keyword in lowered or keyword.replace(" ", "") in collapsed
+            for keyword in keywords
+        ):
             certificate_type, purpose, category = label, meaning, candidate_category
             break
 
@@ -122,7 +128,9 @@ def basic_analysis(raw_text: str, filename: str) -> dict[str, Any]:
     return {
         "cat": category,
         "status": "info",
-        "title": localized(certificate_type if certificate_type != "Certificate" else filename),
+        # Use the detected type as the title. Never fall back to the raw upload
+        # filename (often a UUID like "8fe3…​.jpg"), which is meaningless to a reader.
+        "title": localized(certificate_type),
         "issuer": localized(issuer),
         "what": localized(f"This is your {certificate_type}. It is used as {purpose}."),
         "why": localized(f"It serves as {purpose}."),
@@ -348,7 +356,8 @@ def from_analysis(analysis: dict[str, Any], user_id: str, raw_text: str, filenam
         # UI would otherwise render as "Invalid Date".
         received_on=_parse_date(analysis.get("received")) or date.today(),
         deadline_on=_parse_date(analysis.get("deadline")),
-        title=localized(analysis.get("title"), filename),
+        # Fall back to a clean generic label, never the raw upload filename.
+        title=localized(analysis.get("title"), "Uploaded document"),
         issuer=localized(analysis.get("issuer")),
         what=localized(analysis.get("what"), "Text was extracted from the uploaded document."),
         why=localized(analysis.get("why")),

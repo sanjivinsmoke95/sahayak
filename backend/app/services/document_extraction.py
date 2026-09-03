@@ -1,10 +1,39 @@
 """Extract readable text from the document formats accepted by the upload UI."""
 
+import os
+import shutil
 from io import BytesIO
 
 
 class DocumentExtractionError(ValueError):
     """An upload could not be converted to usable text."""
+
+
+def _configure_tesseract() -> None:
+    """Point pytesseract at the tesseract binary even when it isn't on PATH.
+
+    A backend launched outside a login shell (a service manager, some IDEs)
+    may not inherit Homebrew's ``/opt/homebrew/bin``, so look there and in the
+    other common install locations before giving up.
+    """
+    try:
+        import pytesseract
+    except ImportError:
+        return
+    found = shutil.which("tesseract") or next(
+        (
+            path
+            for path in (
+                "/opt/homebrew/bin/tesseract",
+                "/usr/local/bin/tesseract",
+                "/usr/bin/tesseract",
+            )
+            if os.path.exists(path)
+        ),
+        None,
+    )
+    if found:
+        pytesseract.pytesseract.tesseract_cmd = found
 
 
 def extract_text(content: bytes, mime_type: str, filename: str) -> str:
@@ -45,6 +74,7 @@ def _extract_scanned_pdf_text(content: bytes) -> str:
             "PDF OCR dependencies are missing on this server. Install the backend requirements."
         ) from exc
 
+    _configure_tesseract()
     try:
         pdf = fitz.open(stream=content, filetype="pdf")
         pages: list[str] = []
@@ -81,6 +111,7 @@ def _extract_image_text(content: bytes) -> str:
             "Image OCR dependencies are missing on this server. Install the backend requirements."
         ) from exc
 
+    _configure_tesseract()
     try:
         text = pytesseract.image_to_string(Image.open(BytesIO(content)), lang="eng+hin+tel").strip()
     except pytesseract.TesseractNotFoundError as exc:
