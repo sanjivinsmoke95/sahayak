@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_db
-from app.models import File, User
+from app.models import Document, File, User
 from app.schemas import AnalyzeRequest, ChecklistToggle, ReminderToggle
 from app.services import document_service as docs
 from app.services import profile_service as profiles
@@ -106,6 +106,15 @@ async def analyze_document(
         uploaded = await db.get(File, payload.fileId)
         if not uploaded or uploaded.user_id != user.id:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Uploaded file not found")
+
+        # Idempotent: if this exact upload was already analysed, return that
+        # document instead of creating a duplicate (guards re-submits and the
+        # dev double-render of the analysing screen).
+        if uploaded.document_id:
+            existing = await db.get(Document, uploaded.document_id)
+            if existing and existing.user_id == user.id:
+                return docs.to_api(existing)
+
         try:
             content = await storage.download(uploaded.storage_path)
         except FileNotFoundError as exc:
