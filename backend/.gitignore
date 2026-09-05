@@ -6,3 +6,6 @@ venv/
 .pytest_cache/
 .ruff_cache/
 *.db
+
+# Uploaded user documents — runtime only, never commit (may contain personal data).
+uploads/
