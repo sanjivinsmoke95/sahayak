@@ -27,7 +27,7 @@ const FEATURES = [
     icon: '🌐',
     title: 'Multilingual output',
     sub: 'English · हिंदी · తెలుగు',
-    body: 'Every explanation is available in English, Hindi, and Telugu. Switch languages without re-uploading the document — the same document, the same explanation, in the language you're most comfortable with.',
+    body: "Every explanation is available in English, Hindi, and Telugu. Switch languages without re-uploading the document — the same document, the same explanation, in the language you're most comfortable with.",
     bullets: [
       'Full explanations in all three languages',
       'Switch instantly with no delay',
