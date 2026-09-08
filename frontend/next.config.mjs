@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: false },
   async redirects() {
-    // The V2 experience is the app; open into it.
-    return [{ source: '/', destination: '/v2', permanent: false }];
+    // /app is the public-facing entry point to the Sahayak application.
+    return [{ source: '/app', destination: '/v2', permanent: false }];
   },
   async rewrites() {
     // Lets the browser call /api/... same-origin while FastAPI runs elsewhere.
