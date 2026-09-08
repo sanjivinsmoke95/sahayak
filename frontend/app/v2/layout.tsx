@@ -1,8 +1,8 @@
-import { Inter } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { V2Shell } from '@/components/v2';
 import './v2.css';
 
-const heading = Inter({
+const heading = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-v2-heading',
   display: 'swap',

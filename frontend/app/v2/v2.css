@@ -27,7 +27,7 @@
   width: 100%;
   flex-direction: column;
   overflow: hidden;
-  background: #FEF9F3;
+  background: #F0F5FF;
 }
 
 .v2-notch {
@@ -71,7 +71,7 @@
 
 /* ─── V2 heading font ─── */
 .v2-heading {
-  font-family: var(--font-v2-heading), 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-v2-heading), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 /* ─── Focus ring override for v2 ─── */

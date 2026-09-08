@@ -32,7 +32,7 @@ export function V2Header({ children, linkHome = true, showRibbon = true }: V2Hea
 
   return (
     <header
-      className="relative shrink-0 overflow-hidden bg-[#FEF9F3] px-3 pb-1"
+      className="relative shrink-0 overflow-hidden bg-[#F0F5FF] px-3 pb-1"
       style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
     >
       {showRibbon && <V2Ribbon placement="top" />}

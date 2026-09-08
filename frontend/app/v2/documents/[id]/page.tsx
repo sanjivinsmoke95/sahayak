@@ -10,7 +10,7 @@ import {
 } from '@/hooks';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode, Localized, SahayakDocument } from '@/types';
-import { formatDate, isValidIsoDate } from '@/utils/format';
+import { fill, formatDate, isValidIsoDate } from '@/utils/format';
 
 type Tr = (value: Localized) => string;
 
@@ -27,9 +27,9 @@ const TONE: Record<Tone, { card: string; icon: string; title: string }> = {
 
 /** One pastel explanation card, with an optional speaker to hear just this part. */
 function QACard({
-  tone, icon, title, children, onListen,
+  tone, icon, title, children, onListen, listenLabel,
 }: {
-  tone: Tone; icon: string; title: string; children: React.ReactNode; onListen?: () => void;
+  tone: Tone; icon: string; title: string; children: React.ReactNode; onListen?: () => void; listenLabel: string;
 }) {
   const s = TONE[tone];
   return (
@@ -45,7 +45,7 @@ function QACard({
         <button
           type="button"
           onClick={onListen}
-          aria-label="Listen to this section"
+          aria-label={listenLabel}
           className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/70 ${s.icon} active:translate-y-px`}
         >
           <Icon name="speaker" className="h-4 w-4" />
@@ -157,6 +157,7 @@ function DetailBody({
   onShare: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const getToken = useAuthToken();
   const [originalOpen, setOriginalOpen] = useState(false);
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
@@ -200,8 +201,8 @@ function DetailBody({
   const personal = document.personal ?? [];
 
   const byWhenText = deadline
-    ? `Submit or renew by ${formatDate(deadline, language)}.`
-    : 'There is no deadline printed on this document.';
+    ? fill(t('docDeadline'), { date: formatDate(deadline, language) })
+    : t('docNoDeadline');
 
   const listenText = [what, why, steps.join('. '), byWhenText, tr(document.explain)].filter(Boolean).join('. ');
   const speaking = speech.state === 'speaking';
@@ -217,28 +218,28 @@ function DetailBody({
             <Icon name="graduation" className="h-6 w-6" />
           </span>
           <span className="inline-flex items-center rounded-full bg-[#EAF7F0] px-3 py-1 text-xs font-bold text-[#2FA66A]">
-            Explained
+            {t('pillExplained')}
           </span>
         </div>
 
         <h2 className="v2-heading mt-3.5 text-xl font-extrabold text-[#101828]">{title}</h2>
 
         <div className="mt-3">
-          <p className="text-xs text-[#6B7890]">Issued by</p>
+          <p className="text-xs text-[#6B7890]">{t('docIssuedBy')}</p>
           <p className="mt-0.5 text-[15px] font-bold leading-snug text-[#101828]">
-            {issuer || 'The issuing authority is printed on the certificate.'}
+            {issuer || t('docIssuerFallback')}
           </p>
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
-            <p className="text-xs text-[#6B7890]">Issued on</p>
+            <p className="text-xs text-[#6B7890]">{t('docIssuedOn')}</p>
             <p className="mt-0.5 text-[15px] font-bold text-[#101828]">
               {document.received ? formatDate(document.received, language) : '—'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-[#6B7890]">Valid until</p>
+            <p className="text-xs text-[#6B7890]">{t('docValidUntil')}</p>
             <p className="mt-0.5 text-[15px] font-bold text-[#101828]">
               {deadline ? formatDate(deadline, language) : '—'}
             </p>
@@ -248,17 +249,17 @@ function DetailBody({
 
       {/* Q&A explanation cards — each with a speaker to hear just that part */}
       {what && (
-        <QACard tone="blue" icon="doc" title="What is this?" onListen={say(what)}>
+        <QACard tone="blue" icon="doc" title={t('docWhatTitle')} listenLabel={t('listenSection')} onListen={say(what)}>
           {what}
         </QACard>
       )}
       {why && (
-        <QACard tone="purple" icon="help" title="Why did I receive this?" onListen={say(why)}>
+        <QACard tone="purple" icon="help" title={t('docWhyTitle')} listenLabel={t('listenSection')} onListen={say(why)}>
           {why}
         </QACard>
       )}
       {steps.length > 0 && (
-        <QACard tone="green" icon="tasks" title="What should I do?" onListen={say(steps.map((s, i) => `${i + 1}. ${s}`).join('. '))}>
+        <QACard tone="green" icon="tasks" title={t('docStepsTitle')} listenLabel={t('listenSection')} onListen={say(steps.map((s, i) => `${i + 1}. ${s}`).join('. '))}>
           <ol className="space-y-1.5">
             {steps.map((step: string, i: number) => (
               <li key={i} className="flex gap-2">
@@ -269,7 +270,7 @@ function DetailBody({
           </ol>
         </QACard>
       )}
-      <QACard tone="orange" icon="calendar" title="By when?" onListen={say(byWhenText)}>
+      <QACard tone="orange" icon="calendar" title={t('docByWhenTitle')} listenLabel={t('listenSection')} onListen={say(byWhenText)}>
         {byWhenText}
       </QACard>
 
@@ -282,11 +283,11 @@ function DetailBody({
         style={{ backgroundColor: NAVY }}
       >
         <Icon name={speaking ? 'close' : 'play'} className="h-5 w-5" />
-        {speaking ? 'Stop' : 'Listen to explanation'}
+        {speaking ? t('docStop') : t('docListen')}
       </button>
       {!speech.supported && (
         <p className="-mt-1 text-center text-xs text-[#667085]">
-          Voice output isn&apos;t available in this browser.
+          {t('docNoTts')}
         </p>
       )}
 
@@ -296,7 +297,7 @@ function DetailBody({
         onClick={onSchemes}
         className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-[#D6E0F5] bg-[#EAF1FF] px-4 py-4 text-base font-bold text-[#173A78] active:bg-[#DDE8FB]"
       >
-        Find matching schemes
+        {t('docSchemes')}
         <Icon name="right" className="h-4 w-4" />
       </button>
 
@@ -307,7 +308,7 @@ function DetailBody({
         className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
       >
         <Icon name="chat" className="h-5 w-5 shrink-0 text-[#173A78]" />
-        <span className="flex-1 text-[15px] font-semibold text-[#101828]">Ask about this document</span>
+        <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docAsk')}</span>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
 
@@ -318,7 +319,7 @@ function DetailBody({
         className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
       >
         <Icon name="tasks" className="h-5 w-5 shrink-0 text-[#173A78]" />
-        <span className="flex-1 text-[15px] font-semibold text-[#101828]">Document plan</span>
+        <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docPlanTitle')}</span>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
 
@@ -330,7 +331,7 @@ function DetailBody({
           className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
         >
           <Icon name="share" className="h-5 w-5 shrink-0 text-[#173A78]" />
-          <span className="flex-1 text-[15px] font-semibold text-[#101828]">Share</span>
+          <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docShare')}</span>
           <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
         </button>
       )}
@@ -338,7 +339,7 @@ function DetailBody({
       {/* Your details (extracted information) */}
       {personal.length > 0 && (
         <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
-          <h2 className="v2-heading text-base font-bold text-[#101828]">Your details</h2>
+          <h2 className="v2-heading text-base font-bold text-[#101828]">{t('docYourDetails')}</h2>
           <dl className="mt-3 space-y-3">
             {personal.map((field, i) => {
               const show = revealed[i];
@@ -353,7 +354,7 @@ function DetailBody({
                         onClick={() => setRevealed((r) => ({ ...r, [i]: !r[i] }))}
                         className="text-xs font-semibold text-[#173A78]"
                       >
-                        {show ? 'Hide' : 'Show'}
+                        {show ? t('hideField') : t('showField')}
                       </button>
                     )}
                   </dd>
@@ -374,7 +375,7 @@ function DetailBody({
             className="flex w-full items-center gap-3 p-4 text-left active:bg-[#F5F8FF]"
           >
             <Icon name="doc" className="h-5 w-5 shrink-0 text-[#173A78]" />
-            <span className="flex-1 text-[15px] font-semibold text-[#101828]">See the original document</span>
+            <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docSeeOriginal')}</span>
             <Icon name="down" className={`h-5 w-5 shrink-0 text-[#6B7890] transition-transform ${originalOpen ? 'rotate-180' : ''}`} />
           </button>
           {originalOpen && (
@@ -382,9 +383,9 @@ function DetailBody({
               {document.originalFile && (
                 <div>
                   {fileError ? (
-                    <p className="text-sm text-[#667085]">The uploaded file is no longer available.</p>
+                    <p className="text-sm text-[#667085]">{t('docFileGone')}</p>
                   ) : !fileUrl ? (
-                    <p className="text-sm text-[#667085]">Loading your uploaded file…</p>
+                    <p className="text-sm text-[#667085]">{t('docFileLoading')}</p>
                   ) : isImage ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={fileUrl} alt={document.originalFile.name} className="w-full rounded-[12px] border border-[#EAF1FF]" />
@@ -396,7 +397,7 @@ function DetailBody({
                       className="flex items-center gap-2 rounded-[12px] bg-[#EAF1FF] p-3 text-sm font-semibold text-[#173A78]"
                     >
                       <Icon name="doc" className="h-5 w-5 shrink-0" />
-                      <span className="min-w-0 flex-1 truncate">Open the uploaded file — {document.originalFile.name}</span>
+                      <span className="min-w-0 flex-1 truncate">{t('openFile')} — {document.originalFile.name}</span>
                       <Icon name="right" className="h-4 w-4 shrink-0" />
                     </a>
                   )}
@@ -422,8 +423,8 @@ function DetailBody({
           <Icon name="scan" className="h-5 w-5" />
         </span>
         <span className="flex-1">
-          <span className="block text-[15px] font-bold text-[#101828]">Visit a nearby Mee Seva centre</span>
-          <span className="mt-0.5 block text-xs text-[#6B7890]">Find the closest centre to submit this in person</span>
+          <span className="block text-[15px] font-bold text-[#101828]">{t('docMeeSevaBtn')}</span>
+          <span className="mt-0.5 block text-xs text-[#6B7890]">{t('docMeeSevaHint')}</span>
         </span>
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
@@ -435,7 +436,7 @@ function DetailBody({
         className="flex w-full items-center gap-3 rounded-[18px] border border-[#FBD9DB] bg-[#FEF1F2] p-4 text-left active:bg-[#FDE8EA]"
       >
         <Icon name="trash" className="h-5 w-5 shrink-0 text-[#E5484D]" />
-        <span className="flex-1 text-[15px] font-bold text-[#E5484D]">Delete this document</span>
+        <span className="flex-1 text-[15px] font-bold text-[#E5484D]">{t('removeDoc')}</span>
       </button>
     </div>
   );

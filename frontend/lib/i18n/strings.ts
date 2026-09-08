@@ -700,6 +700,31 @@ export const T = {
     "आपकी प्रोफ़ाइल और सेटिंग्स इसी डिवाइस पर रहती हैं। आप इन्हें कभी भी बदल सकते हैं।",
     "మీ ప్రొఫైల్ మరియు ప్రాధాన్యతలు ఈ పరికరంలోనే ఉంటాయి. మీరు వాటిని ఎప్పుడైనా మార్చవచ్చు.",
   ),
+
+  /* ---------- V2 document detail ---------- */
+  docIssuedOn:      L("Issued on", "जारी किया गया", "జారీ అయిన తేదీ"),
+  docValidUntil:    L("Valid until", "तक वैध", "చెల్లుబాటు వరకు"),
+  docDeadline:      L("Submit or renew by {date}.", "जमा करें या {date} तक नवीनीकरण करें।", "{date} లోపు సమర్పించండి లేదా నవీకరించండి."),
+  docNoDeadline:    L("There is no deadline printed on this document.", "इस दस्तावेज़ पर कोई अंतिम तिथि नहीं है।", "ఈ పత్రంపై చివరి తేదీ లేదు."),
+  docIssuerFallback:L("The issuing authority is printed on the certificate.", "जारीकर्ता का नाम प्रमाणपत्र पर है।", "జారీ చేసే అధికారి పేరు ధృవపత్రంపై ఉంది."),
+  docWhatTitle:     L("What is this?", "यह क्या है?", "ఇది ఏమిటి?"),
+  docWhyTitle:      L("Why did I receive this?", "मुझे यह क्यों मिला?", "ఇది నాకు ఎందుకు వచ్చింది?"),
+  docStepsTitle:    L("What should I do?", "मुझे क्या करना चाहिए?", "నేను ఏమి చేయాలి?"),
+  docByWhenTitle:   L("By when?", "कब तक?", "ఎప్పటికి?"),
+  docStop:          L("Stop", "रोकें", "ఆపు"),
+  docListen:        L("Listen to explanation", "स्पष्टीकरण सुनें", "వివరణ వినండి"),
+  docNoTts:         L("Voice output isn't available in this browser.", "इस ब्राउज़र में आवाज़ उपलब्ध नहीं है।", "ఈ బ్రౌజర్‌లో వాయిస్ అందుబాటులో లేదు."),
+  docSchemes:       L("Find matching schemes", "मेल खाने वाली योजनाएँ खोजें", "సరిపోలే పథకాలు కనుగొనండి"),
+  docAsk:           L("Ask about this document", "इस दस्तावेज़ के बारे में पूछें", "ఈ పత్రం గురించి అడగండి"),
+  docPlanTitle:     L("Document plan", "दस्तावेज़ योजना", "పత్రం ప్రణాళిక"),
+  docShare:         L("Share", "साझा करें", "షేర్ చేయండి"),
+  docYourDetails:   L("Your details", "आपकी जानकारी", "మీ వివరాలు"),
+  showField:        L("Show", "दिखाएँ", "చూపించు"),
+  docSeeOriginal:   L("See the original document", "मूल दस्तावेज़ देखें", "అసలు పత్రం చూడండి"),
+  docFileGone:      L("The uploaded file is no longer available.", "अपलोड की गई फ़ाइल अब उपलब्ध नहीं है।", "అప్‌లోడ్ చేసిన ఫైల్ ఇప్పుడు అందుబాటులో లేదు."),
+  docFileLoading:   L("Loading your uploaded file…", "अपलोड की गई फ़ाइल लोड हो रही है…", "అప్‌లోడ్ చేసిన ఫైల్ లోడ్ అవుతోంది…"),
+  docMeeSevaBtn:    L("Visit a nearby Mee Seva centre", "नज़दीकी मी सेवा केंद्र जाएँ", "సమీప మీ‌సేవ కేంద్రాన్ని సందర్శించండి"),
+  docMeeSevaHint:   L("Find the closest centre to submit this in person", "व्यक्तिगत रूप से जमा करने के लिए नज़दीकी केंद्र खोजें", "స్వయంగా సమర్పించడానికి దగ్గరి కేంద్రాన్ని కనుగొనండి"),
 };
 
 export type StringKey = keyof typeof T;
