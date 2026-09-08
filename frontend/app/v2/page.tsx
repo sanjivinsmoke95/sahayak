@@ -71,7 +71,7 @@ export default function V2HomePage() {
     ago === null ? '' : ago === 0 ? t('agoToday') : fill(t('agoDays'), { n: ago });
 
   return (
-    <div className="min-h-full bg-[#F0F5FF]">
+    <div className="min-h-full bg-[#FEF9F3]">
       {/* Home keeps the flag with the greeting, not in the app-bar strip. */}
       <V2Header linkHome={false} showRibbon={false} />
 
