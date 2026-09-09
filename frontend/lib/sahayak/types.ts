@@ -25,7 +25,7 @@ export interface FileRead {
 }
 
 // ─── Documents ───────────────────────────────────────────────────────
-export type DocStatus = 'pending' | 'processing' | 'done' | 'error';
+export type DocStatus = 'pending' | 'processing' | 'done' | 'info' | 'error';
 
 export interface DocumentRead {
   id: string;

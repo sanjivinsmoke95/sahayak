@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuthToken } from '@/hooks';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -306,11 +306,12 @@ function ChatPanel({ documentId, lang }: { documentId: string; lang: Lang }) {
 }
 
 /* ── Main page ───────────────────────────────────────────────── */
-export default function DocumentPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
+export default function DocumentPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const getToken = useAuthToken();
   const [lang, setLang] = useState<Lang>('en');
   const [checkDone, setCheckDone] = useState<boolean[]>([]);
+  const isAnalyzed = (status: string | undefined) => status === 'done' || status === 'info';
 
   const { data: doc, isLoading, error } = useQuery<DocumentRead>({
     queryKey: ['document', slug],
@@ -330,7 +331,7 @@ export default function DocumentPage({ params }: { params: Promise<{ slug: strin
       const token = await getToken();
       return intelligenceService.validity(slug, token ?? '');
     },
-    enabled: doc?.status === 'done',
+    enabled: isAnalyzed(doc?.status),
     retry: false,
   });
 
@@ -340,7 +341,7 @@ export default function DocumentPage({ params }: { params: Promise<{ slug: strin
       const token = await getToken();
       return intelligenceService.rejection(slug, token ?? '');
     },
-    enabled: doc?.status === 'done',
+    enabled: isAnalyzed(doc?.status),
     retry: false,
   });
 
@@ -399,7 +400,7 @@ export default function DocumentPage({ params }: { params: Promise<{ slug: strin
           {issuer && <p style={{ ...F, fontSize: 14, color: 'var(--sh-ink-muted)', margin: '4px 0 0' }}>{issuer}</p>}
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', flexShrink: 0 }}>
-          {readText && doc.status === 'done' && <VoiceButton text={readText} />}
+          {readText && isAnalyzed(doc.status) && <VoiceButton text={readText} />}
           <LangToggle lang={lang} onChange={setLang} />
         </div>
       </div>
@@ -422,7 +423,7 @@ export default function DocumentPage({ params }: { params: Promise<{ slug: strin
       )}
 
       {/* Main content */}
-      {doc.status === 'done' && (
+      {isAnalyzed(doc.status) && (
         <div style={{ padding: '28px 40px', display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
           {/* Left: Analysis */}
           <div>
