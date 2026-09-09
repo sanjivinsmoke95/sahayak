@@ -14,6 +14,7 @@ const NAV = [
   { href: '/app/chat', icon: ChatIcon, label: 'AI assistant' },
   { href: '/app/schemes', icon: SchemeIcon, label: 'Schemes' },
   { href: '/app/services', icon: ServicesIcon, label: 'Gov services' },
+  { href: '/app/alerts', icon: AlertsIcon, label: 'Alerts' },
 ];
 
 export default function SahayakLayout({ children }: { children: React.ReactNode }) {
@@ -134,6 +135,14 @@ function ServicesIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
       <path d="M15.75 12.75A.75.75 0 0115 13.5H3A.75.75 0 012.25 12.75V5.25A.75.75 0 013 4.5H6.75L9 2.25L11.25 4.5H15A.75.75 0 0115.75 5.25V12.75Z"
+        stroke={active ? '#fff' : 'rgba(255,255,255,0.55)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function AlertsIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 2.25a6.75 6.75 0 100 13.5A6.75 6.75 0 009 2.25zm0 3.75v3.75M9 12.75h.008"
         stroke={active ? '#fff' : 'rgba(255,255,255,0.55)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
