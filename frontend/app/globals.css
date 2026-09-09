@@ -2,15 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================================
-   PHONE APP SHELL
-   On a phone the app fills the screen edge to edge. On a desktop
-   it is drawn inside a phone-shaped frame, so the layout is never
-   stretched into something it was not designed for.
-   ============================================================ */
+/* ────────────────────────────────────────────────────────────
+   SAHAYAK V2 — Design tokens (new desktop-app palette)
+   ──────────────────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --sh-blue:       #1557B0;
+  --sh-blue-hover: #1046A0;
+  --sh-deep-navy:  #092B5A;
+  --sh-dark-ink:   #102A43;
+
+  /* Surfaces */
+  --sh-bg:         #F4F8FC;
+  --sh-card:       #FFFFFF;
+  --sh-soft-blue:  #E8F1FC;
+  --sh-doc:        #FFFDF6;
+
+  /* Semantic */
+  --sh-teal:       #167C80;
+  --sh-success:    #2E8B67;
+  --sh-warning:    #D9972B;
+  --sh-danger:     #D9535B;
+
+  /* Text */
+  --sh-ink:        #102A43;
+  --sh-ink-muted:  #4A6070;
+  --sh-ink-faint:  #8BA5B8;
+
+  /* Borders */
+  --sh-border:     #D4E4F2;
+  --sh-border-strong: #B0C8DC;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LEGACY phone-app shell (used by (app)/ group)
+   ──────────────────────────────────────────────────────────── */
 @layer base {
   html {
-    font-size: 16px; /* Large = 18px, Extra large = 20px, set at runtime */
+    font-size: 16px;
   }
 
   html,
@@ -25,16 +54,15 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Visible, generous focus ring — keyboard users must always know where they are. */
   :focus-visible {
-    outline: 3px solid #1b4b8f;
+    outline: 3px solid #1557B0;
     outline-offset: 3px;
     border-radius: 6px;
   }
 
   input,
   textarea {
-    font-size: 16px; /* stops iOS Safari zooming on focus */
+    font-size: 16px;
   }
 
   button,
@@ -72,7 +100,6 @@
     display: none;
   }
 
-  /* The one scrolling region. Header and tab bar stay put, like a native app. */
   .app-scroll {
     flex: 1 1 auto;
     overflow-x: hidden;
@@ -86,10 +113,79 @@
     height: 0;
   }
 
-  /* The "official notice" paper block used for original government wording. */
   .notice-paper {
     background: repeating-linear-gradient(180deg, #fffdf7 0 31px, #f3efe4 31px 32px);
     border: 1px solid #e3dbc8;
+  }
+
+  /* ── NEW: Desktop app shell ──────────────────────────────── */
+  .sh-app-body {
+    background: var(--sh-bg);
+    min-height: 100dvh;
+    color: var(--sh-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sh-sidebar {
+    width: 240px;
+    min-height: 100dvh;
+    background: var(--sh-deep-navy);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .sh-main {
+    flex: 1 1 0;
+    overflow: auto;
+    min-height: 100dvh;
+  }
+
+  .sh-card {
+    background: var(--sh-card);
+    border: 1px solid var(--sh-border);
+    border-radius: 12px;
+  }
+
+  .sh-input {
+    width: 100%;
+    border: 1.5px solid var(--sh-border);
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    color: var(--sh-ink);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .sh-input:focus {
+    border-color: var(--sh-blue);
+    box-shadow: 0 0 0 3px rgba(21, 87, 176, 0.12);
+  }
+
+  .sh-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--sh-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .sh-btn-primary:hover {
+    background: var(--sh-blue-hover);
+  }
+
+  .sh-btn-primary:active {
+    transform: scale(0.98);
   }
 }
 
@@ -130,6 +226,11 @@
 
   .fake-status {
     display: flex;
+  }
+
+  /* New desktop app resets body background when inside sh-app-body */
+  .sh-app-body {
+    background: var(--sh-bg) !important;
   }
 }
 

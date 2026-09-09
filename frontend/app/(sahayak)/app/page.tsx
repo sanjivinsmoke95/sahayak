@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function OldHome() {
+export default function AppRoot() {
   redirect('/app/dashboard');
 }

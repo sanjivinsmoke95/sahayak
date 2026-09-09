@@ -2,19 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import { Providers } from './providers';
 import './globals.css';
 
-/**
- * No webfont on purpose.
- *
- * The audience is often on a weak rural connection, and a font fetch is a
- * poor thing to spend it on. Indian Android and iOS both ship Devanagari and
- * Telugu system faces, so the three languages render correctly offline and on
- * first paint. The stack is declared in tailwind.config.ts.
- */
-
 export const metadata: Metadata = {
-  title: 'SAHAYAK — Government information, made simple.',
+  title: {
+    default: 'Sahayak — Government documents, made simple',
+    template: '%s | Sahayak',
+  },
   description:
-    'SAHAYAK explains government documents in simple language, shrinks your files for upload, and tells you exactly what to do next.',
+    'Sahayak explains government documents in plain language — what it is, why you received it, what to do, and by when. Free for citizens.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
@@ -28,18 +22,23 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1B4B8F',
+  themeColor: '#1557B0',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-paper font-sans text-ink">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        />
+      </head>
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>

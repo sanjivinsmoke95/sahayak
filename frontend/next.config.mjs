@@ -4,7 +4,7 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: false },
   async redirects() {
     // /app is the public-facing entry point to the Sahayak application.
-    return [{ source: '/app', destination: '/v2', permanent: false }];
+    return [{ source: '/app', destination: '/app/dashboard', permanent: false }];
   },
   async rewrites() {
     // Lets the browser call /api/... same-origin while FastAPI runs elsewhere.
