@@ -76,17 +76,57 @@ async def ensure_database_schema() -> None:
         await connection.run_sync(Base.metadata.create_all)
 
 
+class InsecureConfiguration(RuntimeError):
+    """A setting that is a convenience locally and a breach anywhere else."""
+
+
+def verify_production_configuration() -> None:
+    """Refuse to serve real traffic with development shortcuts left switched on.
+
+    Both of these fail open by design so a fresh clone runs: without Clerk every
+    request becomes the same development user, and without encryption keys the
+    identity endpoints stay disabled. Locally that is helpful. On a deployed
+    instance the first one silently pools every visitor into one account, where
+    they read each other's documents — so outside development it has to stop the
+    process rather than log a line nobody reads.
+    """
+    if settings.environment == "development":
+        if not settings.auth_enabled:
+            logger.warning(
+                "Clerk is not configured — every request runs as the development user. "
+                "This is refused outside development."
+            )
+        if not crypto_available():
+            logger.warning(
+                "IDENTITY_ENCRYPTION_KEYS is not set — Aadhaar/PAN storage is disabled. "
+                "See backend/.env.example; the app never stores these values unencrypted."
+            )
+        return
+
+    problems: list[str] = []
+    if not settings.auth_enabled:
+        problems.append(
+            "CLERK_ISSUER is empty, so authentication is disabled and every request "
+            "would share a single account. Set it, or set ENVIRONMENT=development."
+        )
+    if settings.cors_origin_list == ["*"] or "*" in settings.cors_origin_list:
+        problems.append("CORS_ORIGINS is a wildcard. Name the origins that may call this API.")
+    if not problems:
+        return
+
+    for problem in problems:
+        logger.critical("Refusing to start: %s", problem)
+    raise InsecureConfiguration(
+        f"Unsafe configuration for ENVIRONMENT={settings.environment!r}: "
+        + " ".join(problems)
+    )
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     configure_logging()
     logger.info("Starting %s in %s mode", settings.app_name, settings.environment)
-    if not settings.auth_enabled:
-        logger.warning("Clerk is not configured — every request runs as the development user")
-    if not crypto_available():
-        logger.warning(
-            "IDENTITY_ENCRYPTION_KEYS is not set — Aadhaar/PAN storage is disabled. "
-            "See backend/.env.example; the app never stores these values unencrypted."
-        )
+    verify_production_configuration()
     try:
         await ensure_database_schema()
         await sync_ai_models()
