@@ -1,14 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Icon } from '@/components/common';
-import { useTranslation } from '@/hooks';
-import { useUiStore } from '@/store';
+import { useSettingsStore, useUiStore } from '@/store';
+import type { LanguageCode } from '@/types';
 import { V2Logo } from './V2Logo';
 import { V2Ribbon } from './V2Ribbon';
 
+const GLYPH: Record<LanguageCode, string> = { te: 'తె', hi: 'हि', en: 'En' };
+
 interface V2HeaderProps {
-  /** Page-specific controls (globe, kebab …); rendered left of the profile button. */
+  /** Page-specific controls rendered left of the language button. */
   children?: React.ReactNode;
   /** Set false on the home page so tapping the logo doesn't self-navigate. */
   linkHome?: boolean;
@@ -17,18 +18,15 @@ interface V2HeaderProps {
 }
 
 /**
- * The single Sahayak header used on every V2 screen. The supplied logo lockup
- * sits at the left with the tricolour ribbon behind the top-right — identical
- * spacing, padding and flag placement on the home page and every sub-page, so
- * moving between screens never feels like a change. Page-specific controls are
- * passed as children; the profile shortcut is always the right-most control.
+ * The single Sahayak header used on every V2 screen. The language badge on
+ * the right shows the active language and opens the language picker on tap.
  */
 export function V2Header({ children, linkHome = true, showRibbon = true }: V2HeaderProps) {
   const router = useRouter();
-  const { t } = useTranslation();
   const setDirection = useUiStore((s) => s.setDirection);
+  const language = useSettingsStore((s) => s.language);
   const goHome = () => { setDirection('pop'); router.push('/v2'); };
-  const goProfile = () => { setDirection('push'); router.push('/v2/profile'); };
+  const goLanguage = () => { setDirection('push'); router.push('/v2/language'); };
 
   return (
     <header
@@ -53,11 +51,11 @@ export function V2Header({ children, linkHome = true, showRibbon = true }: V2Hea
         {children}
         <button
           type="button"
-          onClick={goProfile}
-          aria-label={t('tabProfile')}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#173A78] active:bg-[#EAF1FF]"
+          onClick={goLanguage}
+          aria-label="Change language"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#EAF1FF] text-sm font-bold text-[#173A78] active:bg-[#D6E4FF]"
         >
-          <Icon name="menu" className="h-6 w-6" strokeWidth={2.2} />
+          {GLYPH[language] ?? 'En'}
         </button>
       </div>
     </header>
