@@ -1,11 +1,11 @@
 /**
  * Google Maps loader + client-side Mee Seva search.
  *
- * The project's Maps key is referrer-restricted — safe to use in the browser,
- * but blocked server-side. So the search runs here, in the page, against the
- * Places API (New): the referer is present, the key stays restricted to this
- * origin, and no server proxy is needed. The script is loaded once and shared
- * by both the search and the interactive map.
+ * Uses the legacy Places API (PlacesService.nearbySearch) rather than the
+ * Places API (New) / Place.searchByText, because the newer API requires a
+ * separate enablement step in Google Cloud Console and commonly fails with
+ * a browser-restricted key. The legacy API works with the same key as the
+ * Maps JavaScript API.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +45,7 @@ export interface RawCentre {
   openNow: boolean | null;
 }
 
-/** Nearby Mee Seva centres via the Places API (New) text search, client-side. */
+/** Nearby Mee Seva centres via the legacy Places nearbySearch, client-side. */
 export async function searchMeeSeva(
   key: string,
   lat: number,
@@ -53,38 +53,45 @@ export async function searchMeeSeva(
   radius = 6000,
 ): Promise<RawCentre[]> {
   const google = await loadGoogleMaps(key);
-  const { Place } = await google.maps.importLibrary('places');
 
-  const { places } = await Place.searchByText({
-    textQuery: 'Meeseva center',
-    fields: ['displayName', 'formattedAddress', 'location', 'rating', 'regularOpeningHours'],
-    locationBias: { center: { lat, lng }, radius },
-    maxResultCount: 20,
-    language: 'en',
+  return new Promise<RawCentre[]>((resolve, reject) => {
+    // PlacesService requires a map or HTML element — use a detached div.
+    const div = document.createElement('div');
+    const map = new google.maps.Map(div, { center: { lat, lng }, zoom: 14 });
+    const service = new google.maps.places.PlacesService(map);
+
+    service.nearbySearch(
+      {
+        location: new google.maps.LatLng(lat, lng),
+        radius,
+        keyword: 'Meeseva center',
+      },
+      (results: GoogleNS[], status: string) => {
+        const OK = google.maps.places.PlacesServiceStatus.OK;
+        const ZERO = google.maps.places.PlacesServiceStatus.ZERO_RESULTS;
+        if (status !== OK && status !== ZERO) {
+          reject(new Error(`Places API: ${status}`));
+          return;
+        }
+
+        const out: RawCentre[] = [];
+        for (const p of results ?? []) {
+          const loc = p.geometry?.location;
+          const pLat = typeof loc?.lat === 'function' ? loc.lat() : null;
+          const pLng = typeof loc?.lng === 'function' ? loc.lng() : null;
+          if (pLat == null || pLng == null) continue;
+
+          out.push({
+            name: p.name ?? '',
+            address: p.vicinity ?? '',
+            lat: pLat,
+            lng: pLng,
+            rating: p.rating ?? null,
+            openNow: p.opening_hours?.open_now ?? null,
+          });
+        }
+        resolve(out);
+      },
+    );
   });
-
-  const out: RawCentre[] = [];
-  for (const p of places ?? []) {
-    const loc = p.location;
-    const pLat = typeof loc?.lat === 'function' ? loc.lat() : loc?.lat;
-    const pLng = typeof loc?.lng === 'function' ? loc.lng() : loc?.lng;
-    if (pLat == null || pLng == null) continue;
-
-    let openNow: boolean | null = null;
-    try {
-      if (typeof p.isOpen === 'function') openNow = (await p.isOpen()) ?? null;
-    } catch {
-      openNow = null;
-    }
-
-    out.push({
-      name: typeof p.displayName === 'string' ? p.displayName : p.displayName?.text ?? '',
-      address: p.formattedAddress ?? '',
-      lat: pLat,
-      lng: pLng,
-      rating: p.rating ?? null,
-      openNow,
-    });
-  }
-  return out;
 }
