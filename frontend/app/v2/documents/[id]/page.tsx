@@ -70,7 +70,6 @@ export default function V2DocumentDetailPage() {
 
   useEffect(() => {
     setActiveDocumentId(id);
-    return () => setActiveDocumentId(null);
   }, [id, setActiveDocumentId]);
 
   // Stop speech only when leaving the page. `speech.stop` is a stable callback;
