@@ -6,7 +6,7 @@ import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
 import { V2Button, V2Header } from '@/components/v2';
 import {
-  useAuthToken, useDeleteDocument, useDocument, useSpeech, useTranslation,
+  useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode, Localized, SahayakDocument } from '@/types';
@@ -99,7 +99,6 @@ export default function V2DocumentDetailPage() {
       ) : (
         <DetailBody
           document={document}
-          slug={id}
           language={language}
           tr={tr}
           speech={speech}
@@ -142,10 +141,9 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, slug, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete,
+  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete,
 }: {
   document: SahayakDocument;
-  slug: string;
   language: LanguageCode;
   tr: Tr;
   speech: ReturnType<typeof useSpeech>;
@@ -157,37 +155,7 @@ function DetailBody({
   onDelete: () => void;
 }) {
   const { t } = useTranslation();
-  const getToken = useAuthToken();
-  const [originalOpen, setOriginalOpen] = useState(false);
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [fileError, setFileError] = useState(false);
-
-  const isImage = (document.originalFile?.mime ?? '').startsWith('image/');
-
-  // Fetch the user's uploaded file (authenticated) as a blob URL once opened.
-  useEffect(() => {
-    if (!originalOpen || !document.originalFile || fileUrl || fileError) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const token = await getToken();
-        const res = await fetch(`/api/documents/${slug}/file`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        const blob = await res.blob();
-        if (!cancelled) setFileUrl(URL.createObjectURL(blob));
-      } catch {
-        if (!cancelled) setFileError(true);
-      }
-    })();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originalOpen, slug]);
-
-  // Release the blob URL only when it changes or the screen unmounts.
-  useEffect(() => () => { if (fileUrl) URL.revokeObjectURL(fileUrl); }, [fileUrl]);
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   // Prefer the specific analysed title ("Income Certificate") over the generic
@@ -361,54 +329,6 @@ function DetailBody({
               );
             })}
           </dl>
-        </div>
-      )}
-
-      {/* See the original document — the uploaded file, then the read-off text */}
-      {(document.original || document.originalFile) && (
-        <div className="overflow-hidden rounded-[18px] border border-[#EAF1FF] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
-          <button
-            type="button"
-            onClick={() => setOriginalOpen(!originalOpen)}
-            aria-expanded={originalOpen}
-            className="flex w-full items-center gap-3 p-4 text-left active:bg-[#F5F8FF]"
-          >
-            <Icon name="doc" className="h-5 w-5 shrink-0 text-[#173A78]" />
-            <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docSeeOriginal')}</span>
-            <Icon name="down" className={`h-5 w-5 shrink-0 text-[#6B7890] transition-transform ${originalOpen ? 'rotate-180' : ''}`} />
-          </button>
-          {originalOpen && (
-            <div className="space-y-4 border-t border-[#EAF1FF] p-4">
-              {document.originalFile && (
-                <div>
-                  {fileError ? (
-                    <p className="text-sm text-[#667085]">{t('docFileGone')}</p>
-                  ) : !fileUrl ? (
-                    <p className="text-sm text-[#667085]">{t('docFileLoading')}</p>
-                  ) : isImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={fileUrl} alt={document.originalFile.name} className="w-full rounded-[12px] border border-[#EAF1FF]" />
-                  ) : (
-                    <a
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-[12px] bg-[#EAF1FF] p-3 text-sm font-semibold text-[#173A78]"
-                    >
-                      <Icon name="doc" className="h-5 w-5 shrink-0" />
-                      <span className="min-w-0 flex-1 truncate">{t('openFile')} — {document.originalFile.name}</span>
-                      <Icon name="right" className="h-4 w-4 shrink-0" />
-                    </a>
-                  )}
-                </div>
-              )}
-              {document.original && (
-                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#101828]">
-                  {document.original}
-                </pre>
-              )}
-            </div>
-          )}
         </div>
       )}
 
