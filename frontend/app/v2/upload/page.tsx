@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Icon } from '@/components/common';
 import { useAuthToken } from '@/hooks';
+import { ApiRequestError } from '@/lib/api-client';
 import { GOV_DOCUMENT_TARGET_BYTES, GOV_TARGET_LABEL } from '@/lib/gov-upload-limits';
 import { filesService } from '@/services';
 import { useUiStore } from '@/store';
@@ -55,8 +56,13 @@ export default function V2UploadPage() {
       }
       setDirection('push');
       router.push(`/v2/analyzing?${q.toString()}`);
-    } catch {
-      toast.error('Could not upload the document. Make sure the backend is running.');
+    } catch (err) {
+      // A rejected file (wrong format, too large) already carries a reason worth
+      // showing; only a genuine transport failure means "the backend is down".
+      const rejected = err instanceof ApiRequestError && err.status >= 400 && err.status < 500;
+      toast.error(
+        rejected ? err.message : 'Could not upload the document. Make sure the backend is running.',
+      );
       setBusy(false);
     }
   };

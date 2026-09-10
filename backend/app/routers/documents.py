@@ -1,7 +1,9 @@
 import logging
+from contextlib import suppress
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +17,10 @@ from app.services.document_extraction import DocumentExtractionError, extract_te
 from app.services.storage import storage
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+
+# Types a browser may render in place. HTML and SVG are deliberately absent:
+# both run script, and these files are served from the app's own origin.
+_INLINE_SAFE_TYPES = {"application/pdf", "image/png", "image/jpeg", "image/webp"}
 
 
 @router.get("")
@@ -244,11 +250,34 @@ async def get_document_file(
         ) from exc
 
     safe_name = file.name.replace('"', "").replace("\n", " ")
+    # Rows predating upload sniffing can carry any type the client claimed, so the
+    # stored value is re-checked here rather than trusted. Anything outside the
+    # allowlist is handed back as an opaque download, and nosniff stops the
+    # browser second-guessing the type we set.
+    inline = file.mime_type in _INLINE_SAFE_TYPES
     return Response(
         content=content,
-        media_type=file.mime_type or "application/octet-stream",
-        headers={"Content-Disposition": f'inline; filename="{safe_name}"'},
+        media_type=file.mime_type if inline else "application/octet-stream",
+        headers={
+            "Content-Disposition": f'{"inline" if inline else "attachment"}; filename="{safe_name}"',
+            "X-Content-Type-Options": "nosniff",
+        },
     )
+
+
+async def _purge_files(db: AsyncSession, files: list[File]) -> None:
+    """Erase the stored bytes behind these records, then the records themselves.
+
+    Document rows only hold the explanation; the scan of someone's PAN card or
+    pension notice lives in storage. The files.document_id foreign key is
+    SET NULL, so deleting a document alone leaves that scan on disk forever —
+    it has to be removed explicitly.
+    """
+    for file in files:
+        # One unreachable object must not strand the rest of the deletion.
+        with suppress(FileNotFoundError, httpx.HTTPError, ValueError):
+            await storage.delete(file.storage_path)
+        await db.delete(file)
 
 
 @router.delete("/{slug}", status_code=status.HTTP_204_NO_CONTENT)
@@ -258,8 +287,14 @@ async def delete_document(
     user: User = Depends(get_current_user),
 ) -> None:
     document = await docs.get_document_by_slug(db, user, slug)
-    if document:
-        await db.delete(document)
+    if not document:
+        return
+
+    result = await db.execute(
+        select(File).where(File.document_id == document.id, File.user_id == user.id)
+    )
+    await _purge_files(db, list(result.scalars().all()))
+    await db.delete(document)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -267,6 +302,8 @@ async def clear_documents(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> None:
-    from sqlalchemy import delete as sa_delete
-    from app.models import Document
+    # "Delete all my documents" must leave nothing behind, including uploads
+    # already orphaned by an earlier delete that only removed the document row.
+    result = await db.execute(select(File).where(File.user_id == user.id))
+    await _purge_files(db, list(result.scalars().all()))
     await db.execute(sa_delete(Document).where(Document.user_id == user.id))
