@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Document, User
 from app.services.classification import classify_document
-from app.services.personal_details import extract_personal
+from app.services.personal_details import extract_personal, redact_pii
 
 def _find_seed_path() -> Path | None:
     """
@@ -323,13 +323,16 @@ def from_analysis(analysis: dict[str, Any], user_id: str, raw_text: str, filenam
     """Build a safe, complete document row from extracted text and optional AI output."""
 
     def localized(value: Any, fallback: str = "") -> dict[str, str]:
+        # The vision path reads an ID card directly, so a model can quote the
+        # number back inside its explanation. Every stored string is redacted
+        # here, which is the one place all of them pass through.
         if not isinstance(value, dict):
             value = {}
-        english = str(value.get("en") or fallback)
+        english = redact_pii(str(value.get("en") or fallback))
         return {
             "en": english,
-            "hi": str(value.get("hi") or english),
-            "te": str(value.get("te") or english),
+            "hi": redact_pii(str(value.get("hi") or english)),
+            "te": redact_pii(str(value.get("te") or english)),
         }
 
     category = (
@@ -371,7 +374,10 @@ def from_analysis(analysis: dict[str, Any], user_id: str, raw_text: str, filenam
         needs=normalized_needs,
         need_done=[False] * len(normalized_needs),
         checklist={"steps": {}, "need": {}},
-        raw_text=raw_text,
+        # Stored redacted: this column exists so a document can be re-classified
+        # or re-analysed later, and none of that needs the actual numbers. A
+        # value the reader wants kept goes to the encrypted identity store.
+        raw_text=redact_pii(raw_text),
     )
 
 

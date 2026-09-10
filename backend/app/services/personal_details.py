@@ -12,6 +12,8 @@ and no value is ever logged.
 import re
 from typing import Any
 
+from app.services.identity_validation import mask as identity_mask
+
 Localized = dict[str, str]
 
 
@@ -75,8 +77,39 @@ def _value_after_label(lines: list[str], label_patterns: tuple[str, ...]) -> str
     return None
 
 
+def redact_pii(text: str | None) -> str:
+    """Replace identity numbers with their masked form, in place.
+
+    Used before OCR output is persisted and before it is sent to a model. The
+    surrounding wording is untouched, so classification and explanation still
+    see "PAN: XXXXX1234F" and behave exactly as before — what is removed is
+    only the part that identifies a person.
+    """
+    if not text:
+        return ""
+    text = _PAN_RE.sub(lambda m: f"XXXXX{m.group(1)[5:]}", text)
+    return _AADHAAR_RE.sub(lambda m: f"XXXX XXXX {m.group(1)[-4:]}", text)
+
+
+def _mask_sensitive(value: str, kind: str | None = None) -> str:
+    """The display form of a sensitive value.
+
+    PAN and Aadhaar use the same masks as the encrypted identity store, so the
+    reader sees one consistent shape wherever a number appears. Anything else
+    (an account number, say) falls back to keeping the last four characters.
+    """
+    if kind in ("aadhaar", "pan"):
+        return identity_mask(kind, re.sub(r"[\s-]", "", value).upper())
+    return f"{'X' * max(len(value) - 4, 4)}{value[-4:]}"
+
+
 def extract_personal(raw_text: str | None) -> list[dict[str, Any]]:
-    """Return a list of {label: Localized, value: str, sensitive: bool}."""
+    """Return a list of {label: Localized, value: str, sensitive: bool}.
+
+    Sensitive entries carry the masked form only. The full number is never put
+    on the wire from here: a value the reader wants to keep goes through the
+    encrypted identity store, which has its own audited reveal.
+    """
     if not raw_text:
         return []
 
@@ -85,7 +118,9 @@ def extract_personal(raw_text: str | None) -> list[dict[str, Any]]:
     fields: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
 
-    def add(label: Localized, value: str | None, sensitive: bool) -> None:
+    def add(
+        label: Localized, value: str | None, sensitive: bool, kind: str | None = None
+    ) -> None:
         if not value:
             return
         value = value.strip(" :\t-.,")
@@ -95,7 +130,15 @@ def extract_personal(raw_text: str | None) -> list[dict[str, Any]]:
         if key in seen:
             return
         seen.add(key)
-        fields.append({"label": label, "value": value, "sensitive": sensitive})
+        # Masked at the point of construction, so no later caller can reach the
+        # full number through this list even by mistake.
+        fields.append(
+            {
+                "label": label,
+                "value": _mask_sensitive(value, kind) if sensitive else value,
+                "sensitive": sensitive,
+            }
+        )
 
     # Name / relations — label driven, and only when it reads like a name.
     father = _value_after_label(lines, (r"father'?s?\s*name", r"पिता", r"తండ్రి"))
@@ -122,11 +165,11 @@ def extract_personal(raw_text: str | None) -> list[dict[str, Any]]:
     # Identifiers.
     pan = _PAN_RE.search(text)
     if pan:
-        add(_loc("PAN number", "पैन नंबर", "పాన్ నంబర్"), pan.group(1), True)
+        add(_loc("PAN number", "पैन नंबर", "పాన్ నంబర్"), pan.group(1), True, "pan")
 
     aadhaar = _AADHAAR_RE.search(text)
     if aadhaar:
-        add(_loc("Aadhaar number", "आधार नंबर", "ఆధార్ నంబర్"), aadhaar.group(1), True)
+        add(_loc("Aadhaar number", "आधार नंबर", "ఆధార్ నంబర్"), aadhaar.group(1), True, "aadhaar")
 
     for patterns, label, sensitive in (
         (

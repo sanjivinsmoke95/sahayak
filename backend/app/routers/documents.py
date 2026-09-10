@@ -14,6 +14,7 @@ from app.services import document_service as docs
 from app.services import profile_service as profiles
 from app.services.ai import RuleBasedProvider, get_provider
 from app.services.document_extraction import DocumentExtractionError, extract_text
+from app.services.personal_details import redact_pii
 from app.services.storage import storage
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -136,7 +137,10 @@ async def analyze_document(
         # text layer, or a server without Tesseract yields nothing here — that
         # is fine, the vision model below reads the file directly.
         try:
-            raw_text = extract_text(content, uploaded.mime_type, uploaded.name)
+            # Redacted immediately, at the only point OCR output enters the app.
+            # Explaining a notice never needs the actual Aadhaar or PAN digits,
+            # so they are removed before this text reaches a model or the row.
+            raw_text = redact_pii(extract_text(content, uploaded.mime_type, uploaded.name))
         except DocumentExtractionError:
             raw_text = ""
 

@@ -43,6 +43,21 @@ export const useSettingsStore = create<SettingsState>()(
       setContact: (contact) => set(contact),
       hydrateFromServer: (settings) => set(settings),
     }),
-    { name: 'sahayak.settings.v1' },
+    {
+      name: 'sahayak.settings.v1',
+      // An explicit allowlist rather than the whole state. Without it, any
+      // field added to this store later would be written to localStorage by
+      // default — which is precisely how an identity number ends up on disk.
+      // Adding a key here should be a deliberate decision.
+      partialize: (state) => ({
+        language: state.language,
+        textSize: state.textSize,
+        readAloud: state.readAloud,
+        autoShrink: state.autoShrink,
+        displayName: state.displayName,
+        email: state.email,
+        phone: state.phone,
+      }),
+    },
   ),
 );

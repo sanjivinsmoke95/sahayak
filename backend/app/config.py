@@ -52,6 +52,12 @@ class Settings(BaseSettings):
     google_maps_api_key: str = ""
     google_maps_browser_key: str = ""
 
+    # Identity encryption (Aadhaar / PAN). Versioned so keys can be rotated:
+    # "v1:<base64 32 bytes>,v2:<base64 32 bytes>". Blank leaves the identity
+    # endpoints disabled — there is no plaintext fallback. See .env.example.
+    identity_encryption_keys: str = ""
+    identity_encryption_active_version: str = ""
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

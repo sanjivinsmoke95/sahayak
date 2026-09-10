@@ -3,6 +3,7 @@ from app.models.application import Application, ApplicationEvent
 from app.models.chat import Chat
 from app.models.document import Document
 from app.models.file import File
+from app.models.identity import IdentityAuditLog, UserIdentity
 from app.models.message import Message
 from app.models.profile import DocumentProfile, Profile
 from app.models.project import Project
@@ -19,6 +20,8 @@ __all__ = [
     "DocumentProfile",
     "Profile",
     "File",
+    "IdentityAuditLog",
+    "UserIdentity",
     "Message",
     "Project",
     "Session",

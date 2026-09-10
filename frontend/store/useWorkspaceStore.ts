@@ -18,6 +18,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setActiveDocumentId: (activeDocumentId) => set({ activeDocumentId }),
       setActiveModelId: (activeModelId) => set({ activeModelId }),
     }),
-    { name: 'sahayak.workspace.v1' },
+    {
+      name: 'sahayak.workspace.v1',
+      // Allowlisted for the same reason as the settings store: only these two
+      // ids should ever reach localStorage from here.
+      partialize: (state) => ({
+        activeDocumentId: state.activeDocumentId,
+        activeModelId: state.activeModelId,
+      }),
+    },
   ),
 );

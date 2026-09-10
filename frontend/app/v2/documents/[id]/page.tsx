@@ -108,6 +108,7 @@ export default function V2DocumentDetailPage() {
           onPlan={() => { setDirection('push'); router.push(`/v2/documents/${id}/plan`); }}
           onShare={share}
           onDelete={() => setDeleteOpen(true)}
+          onIdentity={() => { setDirection('push'); router.push('/v2/identity'); }}
         />
       )}
 
@@ -141,7 +142,7 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete,
+  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete, onIdentity,
 }: {
   document: SahayakDocument;
   language: LanguageCode;
@@ -153,9 +154,9 @@ function DetailBody({
   onPlan: () => void;
   onShare: () => void;
   onDelete: () => void;
+  onIdentity: () => void;
 }) {
   const { t } = useTranslation();
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   // Prefer the specific analysed title ("Income Certificate") over the generic
@@ -308,27 +309,28 @@ function DetailBody({
         <div className="rounded-[20px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
           <h2 className="v2-heading text-base font-bold text-[#101828]">{t('docYourDetails')}</h2>
           <dl className="mt-3 space-y-3">
-            {personal.map((field, i) => {
-              const show = revealed[i];
-              return (
-                <div key={i} className="flex items-center justify-between gap-3">
-                  <dt className="text-sm text-[#6B7890]">{tr(field.label)}</dt>
-                  <dd className="flex items-center gap-2 text-right text-sm font-bold tabular-nums text-[#101828]">
-                    <span>{field.sensitive && !show ? '•••••' : field.value}</span>
-                    {field.sensitive && (
-                      <button
-                        type="button"
-                        onClick={() => setRevealed((r) => ({ ...r, [i]: !r[i] }))}
-                        className="text-xs font-semibold text-[#173A78]"
-                      >
-                        {show ? t('hideField') : t('showField')}
-                      </button>
-                    )}
-                  </dd>
-                </div>
-              );
-            })}
+            {personal.map((field, i) => (
+              <div key={i} className="flex items-center justify-between gap-3">
+                <dt className="text-sm text-[#6B7890]">{tr(field.label)}</dt>
+                {/* Sensitive values arrive masked from the server and there is
+                    no plaintext here to reveal. Saving a number for reuse goes
+                    through the encrypted store, which has its own audited
+                    reveal — hence the link rather than a toggle. */}
+                <dd className="text-right text-sm font-bold tabular-nums text-[#101828]">
+                  {field.value}
+                </dd>
+              </div>
+            ))}
           </dl>
+          <button
+            type="button"
+            onClick={onIdentity}
+            className="mt-3 flex w-full items-center gap-2 rounded-[12px] bg-[#F5F8FF] px-3 py-2.5 text-left"
+          >
+            <Icon name="lock" className="h-4 w-4 shrink-0 text-[#173A78]" />
+            <span className="flex-1 text-xs font-semibold text-[#173A78]">{t('idTitle')}</span>
+            <Icon name="right" className="h-4 w-4 shrink-0 text-[#C6D0E4]" />
+          </button>
         </div>
       )}
 

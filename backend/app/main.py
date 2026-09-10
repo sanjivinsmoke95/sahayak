@@ -23,6 +23,7 @@ from app.routers import (
     documents,
     files,
     health,
+    identity,
     intelligence,
     places,
     profiles,
@@ -35,6 +36,7 @@ from app.routers import (
     settings as settings_router,
 )
 from app.services.ai.factory import _REGISTRY
+from app.services.identity_crypto import crypto_available
 from app.utils import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -80,6 +82,11 @@ async def lifespan(_app: FastAPI):
     logger.info("Starting %s in %s mode", settings.app_name, settings.environment)
     if not settings.auth_enabled:
         logger.warning("Clerk is not configured — every request runs as the development user")
+    if not crypto_available():
+        logger.warning(
+            "IDENTITY_ENCRYPTION_KEYS is not set — Aadhaar/PAN storage is disabled. "
+            "See backend/.env.example; the app never stores these values unencrypted."
+        )
     try:
         await ensure_database_schema()
         await sync_ai_models()
@@ -104,6 +111,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    """Baseline hardening for every response.
+
+    HSTS is only meaningful over TLS and is harmful on a plain-HTTP dev origin,
+    so it is sent outside development only.
+    """
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+    if settings.environment != "development":
+        response.headers.setdefault(
+            "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+        )
+    return response
+
 for router in (
     health.router,
     users.router,
@@ -120,6 +146,7 @@ for router in (
     applications.router,
     profiles.router,
     schemes.router,
+    identity.router,
 ):
     app.include_router(router, prefix=settings.api_prefix)
 

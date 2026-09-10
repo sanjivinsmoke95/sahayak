@@ -2,6 +2,7 @@ export { documentsService } from './documents.service';
 export type { AnalyzeRequest } from './documents.service';
 export { assistantService } from './assistant.service';
 export { filesService } from './files.service';
+export { identityService } from './identity.service';
 export { settingsService } from './settings.service';
 export { aiModelsService } from './ai-models.service';
 export type { AiModel } from './ai-models.service';

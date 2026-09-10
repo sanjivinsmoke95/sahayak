@@ -6,6 +6,9 @@ export {
 } from './useDocuments';
 export { useAskAssistant, useCheckEligibility } from './useAssistant';
 export { useSettingsSync, useUpdateSettings } from './useSettings';
+export {
+  useIdentities, useSaveIdentity, useDeleteIdentity, useIdentityAudit, useRevealIdentity,
+} from './useIdentity';
 export { useCompressor } from './useCompressor';
 export { useInstallPrompt } from './useInstallPrompt';
 export { useSpeech } from './useSpeech';

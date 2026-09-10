@@ -33,6 +33,7 @@ export default function V2ProfilePage() {
   const services: Row[] = [
     { icon: 'folder', label: t('navDocs'), value: String(docCount), onClick: () => go('/v2/documents') },
     { icon: 'user', label: t('famTitle'), value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
+    { icon: 'lock', label: t('idTitle'), onClick: () => go('/v2/identity') },
     { icon: 'search', label: t('schemesForMe'), onClick: () => go('/v2/schemes') },
     { icon: 'spark', label: t('discoverServices'), onClick: () => go('/v2/discover') },
     { icon: 'tasks', label: t('appMyTitle'), onClick: () => go('/v2/applications') },

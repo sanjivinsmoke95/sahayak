@@ -9,3 +9,4 @@ export * from './application';
 export * from './workflows';
 export * from './profile';
 export * from './scheme';
+export * from './identity';
