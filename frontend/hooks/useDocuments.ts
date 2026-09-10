@@ -6,11 +6,17 @@ import { documentsService, type AnalyzeRequest } from '@/services';
 import type { ChecklistMap, SahayakDocument } from '@/types';
 import { useAuthToken } from './useAuthToken';
 
+// Documents only change through mutations in this app, and every one of those
+// invalidates these keys — so a short staleTime would only re-fetch the same
+// rows on each navigation.
+const DOC_STALE_MS = 5 * 60_000;
+
 export function useDocuments() {
   const getToken = useAuthToken();
   return useQuery<SahayakDocument[]>({
     queryKey: QUERY_KEYS.documents,
     queryFn: async () => documentsService.list(await getToken()),
+    staleTime: DOC_STALE_MS,
   });
 }
 
@@ -20,6 +26,7 @@ export function useDocument(id: string) {
     queryKey: QUERY_KEYS.document(id),
     queryFn: async () => documentsService.get(id, await getToken()),
     enabled: !!id,
+    staleTime: DOC_STALE_MS,
   });
 }
 

@@ -243,3 +243,16 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ─── Bottom sheet ─── */
+/* Radix drives these through data-state, so the sheet animates in and out with
+   no animation library on the client. */
+@keyframes sheet-overlay-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes sheet-overlay-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes sheet-panel-in    { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes sheet-panel-out   { from { transform: translateY(0) } to { transform: translateY(100%) } }
+
+.sheet-overlay[data-state='open']    { animation: sheet-overlay-in 0.2s ease both; }
+.sheet-overlay[data-state='closed']  { animation: sheet-overlay-out 0.2s ease both; }
+.sheet-panel[data-state='open']      { animation: sheet-panel-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
+.sheet-panel[data-state='closed']    { animation: sheet-panel-out 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }

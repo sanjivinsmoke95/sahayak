@@ -30,6 +30,8 @@ export function useSchemeMatches() {
   return useQuery<SchemeMatchResult>({
     queryKey: ['scheme-matches'],
     queryFn: async () => schemesService.matches(await getToken()),
+    // Matches are recomputed from the document set, which only changes on upload.
+    staleTime: 5 * 60_000,
   });
 }
 
@@ -39,5 +41,7 @@ export function useScheme(id: string) {
     queryKey: ['scheme', id],
     queryFn: async () => schemesService.get(id, await getToken()),
     enabled: !!id,
+    // Scheme definitions are static reference data.
+    staleTime: Infinity,
   });
 }

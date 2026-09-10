@@ -274,21 +274,18 @@ async def answer_question(
         if prev_user:
             context_query = f"{prev_user} {question}"
             
+    # LOCATION and FRESHNESS answer with fixed text and cite nothing, and neither
+    # depends on whether a document is open. Classify them before touching the
+    # database so they return without loading and re-serialising every document.
+    lowered = context_query.lower()
+    if any(p in lowered for p in _LOCATION_PHRASES):
+        return AskResponse(text=_LOCATION_ANSWER, citations=[], grounded=True)
+    if any(p in lowered for p in _FRESHNESS_PATTERNS):
+        return AskResponse(text=_FRESHNESS_ANSWER, citations=[], grounded=False)
+
     documents = await retrieve_user_documents(db, user, context_query, document_id)
     has_active_doc = bool(documents.active_document)
     route = _classify_route(context_query, has_active_doc)
-
-    # -----------------------------------------------------------------------
-    # Route 1: LOCATION
-    # -----------------------------------------------------------------------
-    if route == AssistantRoute.LOCATION:
-        return AskResponse(text=_LOCATION_ANSWER, citations=[], grounded=True)
-
-    # -----------------------------------------------------------------------
-    # Route 2: FRESHNESS
-    # -----------------------------------------------------------------------
-    if route == AssistantRoute.FRESHNESS:
-        return AskResponse(text=_FRESHNESS_ANSWER, citations=[], grounded=False)
 
     # -----------------------------------------------------------------------
     # Route 3: DOCUMENT_ONLY

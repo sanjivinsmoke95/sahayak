@@ -30,17 +30,18 @@ function AnalyzingScreen() {
   const toBytes = Number(params.get('to')) || 0;
 
   const [stage, setStage] = useState(0);
-  const finished = stage >= STEPS.length;
+  const ready = docParam ? true : analyze.isSuccess;
 
+  // The ticker walks the first steps so the screen feels alive, but it parks on
+  // the last one: the real backend call decides when this screen is done, so a
+  // fast analysis is never held back by an animation.
   useEffect(() => {
-    let current = 0;
+    if (ready) return;
     const id = setInterval(() => {
-      current += 1;
-      setStage(current);
-      if (current >= STEPS.length) clearInterval(id);
-    }, 850);
+      setStage((s) => Math.min(s + 1, STEPS.length - 1));
+    }, 450);
     return () => clearInterval(id);
-  }, []);
+  }, [ready]);
 
   useEffect(() => {
     // When arriving with an already-analysed document id, just wait and open it.
@@ -50,15 +51,15 @@ function AnalyzingScreen() {
 
   useEffect(() => {
     const id = docParam ?? analyze.data?.id ?? sampleId;
-    if (finished && id && (docParam || analyze.isSuccess)) {
-      const timer = setTimeout(() => {
-        setDirection('push');
-        router.replace(`/v2/documents/${id}`);
-      }, 700);
-      return () => clearTimeout(timer);
-    }
+    if (!ready || !id) return;
+    setStage(STEPS.length);
+    const timer = setTimeout(() => {
+      setDirection('push');
+      router.replace(`/v2/documents/${id}`);
+    }, 200);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finished, analyze.isSuccess, docParam]);
+  }, [ready, docParam]);
 
   return (
     <div className="flex min-h-full flex-col items-center pt-6 text-center">

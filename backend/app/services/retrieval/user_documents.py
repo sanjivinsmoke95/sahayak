@@ -81,30 +81,32 @@ async def retrieve_user_documents(
     )
     wanted = _tokens(question)
 
-    def _score(doc: dict[str, Any]) -> int:
-        title_matches = len(wanted.intersection(_tokens(_title_text(doc))))
-        content_matches = len(wanted.intersection(_tokens(_searchable_text(doc))))
-        return title_matches * 3 + content_matches
+    # Tokenising a document means flattening every trilingual JSONB field and
+    # running a regex over it. Do it once per document per request — scoring,
+    # match detection and ranking all read from this single pass.
+    scored: list[tuple[int, dict[str, Any]]] = []
+    matching_ids: set[str] = set()
+    for document in api_documents:
+        title_hits = wanted & _tokens(_title_text(document))
+        content_hits = wanted & _tokens(_searchable_text(document))
+        score = len(title_hits) * 3 + len(content_hits)
+        if wanted and (title_hits or len(content_hits) >= 2):
+            matching_ids.add(document["id"])
+        if score > 0:
+            scored.append((score, document))
 
-    matching_ids = {
-        document["id"]
-        for document in api_documents
-        if wanted and (
-            wanted.intersection(_tokens(_title_text(document)))
-            or len(wanted.intersection(_tokens(_searchable_text(document)))) >= 2
-        )
-    }
+    scored.sort(key=lambda pair: pair[0], reverse=True)
 
-    ranked = sorted(
-        [doc for doc in api_documents if _score(doc) > 0],
-        key=_score,
-        reverse=True,
-    )
     selected: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     if active:
         selected.append(active)
-    for document in ranked:
-        if document not in selected and len(selected) < limit:
+        seen_ids.add(active["id"])
+    for _, document in scored:
+        if len(selected) >= limit:
+            break
+        if document["id"] not in seen_ids:
+            seen_ids.add(document["id"])
             selected.append(document)
 
     citation_docs = [doc for doc in selected if doc["id"] in matching_ids or doc["id"] == active_document_id]
