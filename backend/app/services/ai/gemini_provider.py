@@ -64,13 +64,13 @@ class GeminiProvider(AIProvider):
         if not contents:
             return ""
 
-        async with httpx.AsyncClient(timeout=60) as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
                 url,
                 json={
                     "systemInstruction": {"parts": [{"text": system}]},
                     "contents": contents,
-                    "generationConfig": {"temperature": 0.2},
+                    "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1024},
                 },
             )
             response.raise_for_status()
@@ -108,7 +108,10 @@ class GeminiProvider(AIProvider):
         return AskResponse(text=text.strip())
 
     async def analyze_document(self, text: str, filename: str) -> dict[str, Any]:
-        raw = await self._chat(SYSTEM_ANALYZE, f"File: {filename}\n\n{text}")
+        # Government docs carry all key info in the first page or two.
+        # Sending the full multi-page OCR text slows Gemini down significantly.
+        trimmed = text[:3500] if len(text) > 3500 else text
+        raw = await self._chat(SYSTEM_ANALYZE, f"File: {filename}\n\n{trimmed}")
         return json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
 
     async def analyze_image(self, content: bytes, mime_type: str, filename: str) -> dict[str, Any]:
@@ -146,7 +149,7 @@ class GeminiProvider(AIProvider):
             "document image and analyse it. If parts are blurry, infer the most "
             "likely intended text from context and legible characters."
         )
-        async with httpx.AsyncClient(timeout=90) as client:
+        async with httpx.AsyncClient(timeout=45) as client:
             response = await client.post(
                 url,
                 json={
@@ -160,7 +163,7 @@ class GeminiProvider(AIProvider):
                             ],
                         }
                     ],
-                    "generationConfig": {"temperature": 0.2},
+                    "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1024},
                 },
             )
             response.raise_for_status()
