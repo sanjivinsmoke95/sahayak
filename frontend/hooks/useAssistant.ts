@@ -19,7 +19,8 @@ export function useAskAssistant() {
     mutationFn: async (question) => {
       setPending(true);
       const messages = useChatStore.getState().messages;
-      const history = messages.slice(0, -1).map(m => ({ role: m.role, text: m.text }));
+      // Cap at last 20 turns so we never send unbounded payloads to the LLM.
+      const history = messages.slice(0, -1).slice(-20).map(m => ({ role: m.role, text: m.text }));
       return assistantService.ask(
         { question, lang: language, documentId: activeDocumentId, modelId: activeModelId, history },
         await getToken(),

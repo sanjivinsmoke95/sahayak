@@ -170,4 +170,7 @@ class GeminiProvider(AIProvider):
             candidates = response.json().get("candidates", [])
             parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
             raw = "".join(p.get("text", "") for p in parts)
-        return json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
+        try:
+            return json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Gemini vision returned non-JSON: {raw[:200]}") from exc

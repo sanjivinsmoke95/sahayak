@@ -267,5 +267,6 @@ async def clear_documents(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> None:
-    for document in await docs.get_user_documents(db, user):
-        await db.delete(document)
+    from sqlalchemy import delete as sa_delete
+    from app.models import Document
+    await db.execute(sa_delete(Document).where(Document.user_id == user.id))

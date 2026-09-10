@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 from fastapi import File as FastAPIFile
+
+_MAX_UPLOAD_BYTES = 25 * 1024 * 1024  # 25 MB
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,6 +54,11 @@ async def upload_file(
     device. `original_size_bytes` is what it weighed before that.
     """
     content = await file.read()
+    if len(content) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            f"File exceeds the 25 MB limit ({len(content) // (1024*1024)} MB received).",
+        )
     path = storage.build_path(user.id, file.filename or "upload.bin")
 
     path = await storage.upload(path, content, file.content_type)

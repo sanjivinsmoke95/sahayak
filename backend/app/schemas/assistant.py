@@ -8,11 +8,11 @@ Language = Literal["en", "hi", "te"]
 
 
 class AskRequest(BaseModel):
-    question: str
+    question: str = Field(..., max_length=2000)
     lang: Language = "en"
     documentId: str | None = None
     modelId: str | None = None
-    history: list[dict[str, str]] | None = None
+    history: list[dict[str, str]] | None = Field(default=None, max_length=40)
 
 
 class AskResponse(BaseModel):
