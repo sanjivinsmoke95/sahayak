@@ -8,33 +8,84 @@ import { analyzeUploadedFile, classifyVerdict } from '@/lib/upload';
 import { documentsService } from '@/services';
 import { useChatStore, useSettingsStore, useWorkspaceStore } from '@/store';
 import { fill } from '@/utils/format';
+import type { Localized, SahayakDocument } from '@/types';
 import { useAuthToken } from './useAuthToken';
 import { useTranslation } from './useTranslation';
 
+function buildDocumentAnalysis(
+  doc: SahayakDocument,
+  tr: (l: Localized | undefined) => string,
+): string {
+  const title = tr(doc.title) || 'Document';
+  const issuer = tr(doc.issuer);
+  const what = tr(doc.what);
+  const why = tr(doc.why);
+  const steps = (doc.steps ?? []).map((s) => tr(s)).filter(Boolean);
+  const need = (doc.need ?? []).map((n) => tr(n)).filter(Boolean);
+  const deadline = doc.deadline;
+
+  const lines: string[] = [];
+  lines.push(`📄 ${title}`);
+  if (issuer) lines.push(`Issued by: ${issuer}`);
+  lines.push('');
+
+  if (what) {
+    lines.push('What this document is:');
+    lines.push(what);
+    lines.push('');
+  }
+
+  if (why) {
+    lines.push('Why you have it:');
+    lines.push(why);
+    lines.push('');
+  }
+
+  if (steps.length > 0) {
+    lines.push('What to do next:');
+    steps.forEach((step, i) => lines.push(`${i + 1}. ${step}`));
+    lines.push('');
+  }
+
+  if (need.length > 0) {
+    lines.push('What you may need:');
+    need.forEach((item) => lines.push(`• ${item}`));
+    lines.push('');
+  }
+
+  if (deadline) {
+    lines.push(`⚠️ Deadline: ${deadline}`);
+    lines.push('');
+  }
+
+  lines.push('You can now ask me anything about this document.');
+  return lines.join('\n');
+}
+
 /**
  * Reads a document dropped into the assistant conversation, reusing the same
- * upload and analysis endpoints as the main flow. It classifies the result and
- * speaks back: what it detected (and makes it available as grounded context),
- * or a friendly note when the file is not a government document or is too
- * unclear to identify. Junk uploads are removed so they never clutter the
- * reader's saved documents.
+ * upload and analysis endpoints as the main flow. Shows an immediate
+ * "Reading…" placeholder, then replaces it with a rich analysis card built
+ * from the existing document fields — no navigation chip, no redirect.
  */
 export function useChatDocumentUpload() {
   const getToken = useAuthToken();
   const { t, tr } = useTranslation();
   const autoShrink = useSettingsStore((s) => s.autoShrink);
   const addMessage = useChatStore((s) => s.addMessage);
+  const replaceMessage = useChatStore((s) => s.replaceMessage);
   const setActiveDocumentId = useWorkspaceStore((s) => s.setActiveDocumentId);
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
 
+  const makeId = () => `a-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
   const say = useCallback(
-    (text: string, docRefs?: string[]) =>
+    (text: string) =>
       addMessage({
-        id: `a-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        id: makeId(),
         role: 'assistant',
         text,
-        docRefs,
         createdAt: new Date().toISOString(),
       }),
     [addMessage],
@@ -44,6 +95,16 @@ export function useChatDocumentUpload() {
     async (file: File | null | undefined): Promise<boolean> => {
       if (!file || busy) return false;
       setBusy(true);
+
+      // Immediately show a reading placeholder — no lag for the user.
+      const readingId = makeId();
+      addMessage({
+        id: readingId,
+        role: 'assistant',
+        text: t('chatReading'),
+        createdAt: new Date().toISOString(),
+      });
+
       try {
         const token = await getToken();
         const doc = await analyzeUploadedFile(file, { autoShrink, token });
@@ -51,33 +112,37 @@ export function useChatDocumentUpload() {
 
         if (verdict === 'unsure') {
           await documentsService.remove(doc.id, token);
-          say(t('chatUnsure'));
+          replaceMessage(readingId, { text: t('chatUnsure') });
           return false;
         }
         if (verdict === 'not-government') {
           await documentsService.remove(doc.id, token);
-          say(doc.docType ? fill(t('chatNotGovGuess'), { type: doc.docType }) : t('chatNotGov'));
+          replaceMessage(readingId, {
+            text: doc.docType
+              ? fill(t('chatNotGovGuess'), { type: doc.docType })
+              : t('chatNotGov'),
+          });
           return false;
         }
 
-        // A real government document: keep it, ground on it, refresh lists.
-        const typeName = doc.docType || tr(doc.title) || t('chatDetectedDoc');
+        // A real government document: set as active context and show rich analysis.
         setActiveDocumentId(doc.id);
         void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.documents });
         void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.checklists });
-        say(fill(t('chatDetected'), { type: typeName }), [doc.id]);
+
+        const richText = buildDocumentAnalysis(doc, tr);
+        // No docRefs — we don't want a navigation chip that confuses users.
+        replaceMessage(readingId, { text: richText });
         return true;
       } catch (err) {
-        // A 503 means the reader (vision AI) is temporarily unavailable / over
-        // quota — not that the file was unreadable. Say so honestly.
-        const busy = err instanceof ApiRequestError && err.status === 503;
-        say(t(busy ? 'chatUploadBusy' : 'chatUploadFail'));
+        const isBusy = err instanceof ApiRequestError && err.status === 503;
+        replaceMessage(readingId, { text: t(isBusy ? 'chatUploadBusy' : 'chatUploadFail') });
         return false;
       } finally {
         setBusy(false);
       }
     },
-    [autoShrink, busy, getToken, queryClient, say, setActiveDocumentId, t, tr],
+    [addMessage, autoShrink, busy, getToken, queryClient, replaceMessage, setActiveDocumentId, t, tr],
   );
 
   return { handleFile, busy };
