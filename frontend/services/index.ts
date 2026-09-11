@@ -13,3 +13,16 @@ export { applicationsService } from './applications.service';
 export { profilesService } from './profiles.service';
 export { schemesService } from './schemes.service';
 export type { SchemeSearchParams } from './schemes.service';
+export { interoperabilityService } from './interoperability.service';
+export type {
+  AddressValue,
+  BatchStatus,
+  CitizenProfile,
+  ConnectedSystem,
+  GovSystem,
+  SyncBatchRecord,
+  SyncField,
+  SyncResponse,
+  SystemResult,
+  SystemStatus,
+} from './interoperability.service';

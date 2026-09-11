@@ -49,3 +49,13 @@ export {
   useBackendHealth, useSearchServices, useTriggerCrawl, govKeys,
 } from './useGovServices';
 export { useSchemeSearch, useSchemeCategories, useSchemeMatches, useScheme } from './useSchemes';
+export {
+  useCitizenProfile,
+  useConnectedSystems,
+  useSyncHistory,
+  useUpdateAddress,
+  useUpdatePhone,
+  useRetrySync,
+  useUpdateIdentity,
+  useSimulateSystem,
+} from './useInteroperability';
