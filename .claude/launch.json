@@ -4,16 +4,15 @@
     {
       "name": "frontend-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "frontend", "run", "dev", "--", "-p", "3001"],
+      "runtimeArgs": ["--prefix", "frontend", "run", "dev", "--", "-p", "3001", "-H", "0.0.0.0"],
       "port": 3001,
       "autoPort": false
     },
     {
-      "name": "website",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "website", "run", "dev"],
-      "port": 3002,
-      "autoPort": false
+      "name": "backend",
+      "runtimeExecutable": "backend/.venv/bin/uvicorn",
+      "runtimeArgs": ["app.main:app", "--reload", "--port", "8000"],
+      "port": 8000
     }
   ]
 }

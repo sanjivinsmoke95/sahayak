@@ -5,7 +5,7 @@
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Icon } from '@/components/common';
-import { useDocuments, useProfiles, useTranslation } from '@/hooks';
+import { useDocuments, useTranslation } from '@/hooks';
 import { useChatStore, useSettingsStore, useUiStore, useWorkspaceStore } from '@/store';
 
 interface Row {
@@ -24,15 +24,12 @@ export default function V2ProfilePage() {
   const language = useSettingsStore((s) => s.language);
   const setDirection = useUiStore((s) => s.setDirection);
   const { data: documents } = useDocuments();
-  const { data: profiles } = useProfiles();
 
   const go = (path: string) => { setDirection('push'); router.push(path); };
   const docCount = (documents ?? []).length;
-  const famCount = (profiles ?? []).length;
 
   const services: Row[] = [
     { icon: 'folder', label: t('navDocs'), value: String(docCount), onClick: () => go('/v2/documents') },
-    { icon: 'user', label: t('famTitle'), value: famCount ? String(famCount) : undefined, onClick: () => go('/v2/profiles') },
     { icon: 'lock', label: t('idTitle'), onClick: () => go('/v2/identity') },
     { icon: 'search', label: t('schemesForMe'), onClick: () => go('/v2/schemes') },
     { icon: 'spark', label: t('discoverServices'), onClick: () => go('/v2/discover') },
@@ -45,14 +42,12 @@ export default function V2ProfilePage() {
   const account: Row[] = [
     { icon: 'globe', label: t('language'), value: language.toUpperCase(), onClick: () => go('/v2/language') },
     { icon: 'help', label: t('helpSupport'), onClick: () => go('/v2/assistant') },
-    { icon: 'info', label: t('aboutSahayak'), onClick: () => go('/v2/settings') },
     { icon: 'star', label: t('rateUs'), onClick: () => toast(t('rateThanks')) },
     {
       icon: 'logout',
       label: t('logout'),
       danger: true,
       onClick: () => {
-        // Clear all user-specific client state so the next user starts clean.
         useChatStore.getState().reset();
         useWorkspaceStore.setState({ activeDocumentId: null, activeModelId: null });
         useSettingsStore.getState().setContact({ displayName: '', email: '', phone: '' });
@@ -115,14 +110,10 @@ export default function V2ProfilePage() {
             <Icon name="right" className="h-5 w-5" />
           </span>
         </button>
-        <div className="grid grid-cols-3 border-t border-white/15 bg-white/5 text-center">
+        <div className="grid grid-cols-2 border-t border-white/15 bg-white/5 text-center">
           <div className="py-3">
             <b className="block text-lg">{docCount}</b>
             <span className="text-xs text-white/70">{t('statDocuments')}</span>
-          </div>
-          <div className="border-x border-white/15 py-3">
-            <b className="block text-lg">{famCount}</b>
-            <span className="text-xs text-white/70">{t('statFamily')}</span>
           </div>
           <div className="py-3">
             <b className="block text-lg">{language.toUpperCase()}</b>

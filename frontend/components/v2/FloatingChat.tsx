@@ -15,15 +15,13 @@ export function FloatingChat() {
   const { messages, pending, reset } = useChatStore();
   const endRef = useRef<HTMLDivElement>(null);
 
-  // Don't show on the full assistant page — it's redundant there.
-  const isAssistantPage = pathname === '/v2/assistant';
-  if (isAssistantPage) return null;
-
-  // Scroll to latest message.
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // All hooks must run unconditionally — early returns come after.
   useEffect(() => {
     if (open) endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length, pending, open]);
+
+  // Don't render on the full assistant page — it's redundant there.
+  if (pathname === '/v2/assistant') return null;
 
   const unread = messages.length;
 
@@ -70,7 +68,6 @@ export function FloatingChat() {
 
             {/* Messages */}
             <div className="floating-chat-messages">
-              {/* Greeting */}
               {messages.length === 0 && (
                 <div className="flex gap-2.5">
                   <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#102D63] text-white">

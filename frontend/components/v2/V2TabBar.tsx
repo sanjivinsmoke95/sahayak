@@ -40,10 +40,7 @@ const TABS: Tab[] = [
     href: '/v2/profile',
     labelKey: 'tabProfile',
     icon: 'user',
-    match: (p) =>
-      p.startsWith('/v2/profile') ||
-      p.startsWith('/v2/settings') ||
-      p.startsWith('/v2/profiles'),
+    match: (p) => p.startsWith('/v2/profile'),
   },
 ];
 

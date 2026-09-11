@@ -64,7 +64,7 @@ export default function V2HomePage() {
   const quickTiles: { icon: string; labelKey: StringKey; bg: string; ink: string; href: string }[] = [
     { icon: 'folder', labelKey: 'tileMyDocs', bg: GREEN_SOFT, ink: GREEN_INK, href: '/v2/documents' },
     { icon: 'bell', labelKey: 'tileAlerts', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/alerts' },
-    { icon: 'mic', labelKey: 'tileVoice', bg: PEACH_SOFT, ink: ORANGE_INK, href: '/v2/voice' },
+    { icon: 'search', labelKey: 'searchTitle', bg: BLUE_SOFT, ink: NAVY, href: '/v2/search' },
   ];
 
   const agoLabel = (ago: number | null) =>
@@ -115,9 +115,6 @@ export default function V2HomePage() {
             className="flex-1 bg-transparent text-base text-[#101828] placeholder:text-[#98A2B3] outline-none"
             readOnly
           />
-          <button type="button" onClick={() => go('/v2/voice')} aria-label={t('tileVoice')} className="shrink-0 text-[#173A78]">
-            <Icon name="mic" className="h-5 w-5" />
-          </button>
         </form>
 
         {/* Language chips */}
