@@ -45,6 +45,11 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'sahayak.settings.v1',
+      // Hydrate from localStorage only after mount (see StoreHydrator). Reading
+      // it synchronously at store creation makes the first client render differ
+      // from the server's default and trips React's hydration check on every
+      // page that shows the language or the user's name.
+      skipHydration: true,
       // An explicit allowlist rather than the whole state. Without it, any
       // field added to this store later would be written to localStorage by
       // default — which is precisely how an identity number ends up on disk.

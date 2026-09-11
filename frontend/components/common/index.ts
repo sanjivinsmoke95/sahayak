@@ -11,3 +11,4 @@ export { ExpandableSection } from './ExpandableSection';
 export { Timeline } from './Timeline';
 export { BackendStatusBanner } from './BackendStatusBanner';
 export { ServiceWorkerInit } from './ServiceWorkerInit';
+export { StoreHydrator } from './StoreHydrator';

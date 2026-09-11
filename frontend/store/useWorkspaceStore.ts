@@ -20,6 +20,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     }),
     {
       name: 'sahayak.workspace.v1',
+      // Deferred to after mount (see StoreHydrator) so the persisted ids do not
+      // make the first client render differ from the server and trip hydration.
+      skipHydration: true,
       // Allowlisted for the same reason as the settings store: only these two
       // ids should ever reach localStorage from here.
       partialize: (state) => ({

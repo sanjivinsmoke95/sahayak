@@ -92,11 +92,10 @@ export default function V2ProfilePage() {
           className="flex w-full items-center gap-4 p-5 text-left active:bg-white/5"
         >
           <img
-            src="/v2-assets/avatar-user.jpg"
+            src="/v2-assets/avatar-default.svg"
             alt=""
             className="h-16 w-16 shrink-0 rounded-full bg-white/10 object-cover"
             draggable={false}
-            onError={(e) => { e.currentTarget.src = '/v2-assets/avatar-default.svg'; }}
           />
           <div className="min-w-0 flex-1">
             <p className="v2-heading truncate text-xl font-extrabold">
