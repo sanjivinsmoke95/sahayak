@@ -2,10 +2,12 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { useAnalyzeDocument } from '@/hooks';
+import { GOV_SERVICES } from '@/lib/data/gov-services';
+import { documentSatisfies } from '@/lib/requirement-match';
 import { useUiStore } from '@/store';
 import { humanBytes } from '@/utils/format';
 
@@ -21,6 +23,7 @@ function AnalyzingScreen() {
   const params = useSearchParams();
   const analyze = useAnalyzeDocument();
   const setDirection = useUiStore((s) => s.setDirection);
+  const hasCalledRef = useRef(false);
 
   const sampleId = params.get('sampleId') ?? undefined;
   const fileId = params.get('fileId') ?? undefined;
@@ -30,11 +33,11 @@ function AnalyzingScreen() {
   const toBytes = Number(params.get('to')) || 0;
 
   const [stage, setStage] = useState(0);
+  const [showSlow, setShowSlow] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const ready = docParam ? true : analyze.isSuccess;
 
-  // The ticker walks the first steps so the screen feels alive, but it parks on
-  // the last one: the real backend call decides when this screen is done, so a
-  // fast analysis is never held back by an animation.
+  // Walk the steps animation while analysis is in progress
   useEffect(() => {
     if (ready) return;
     const id = setInterval(() => {
@@ -43,23 +46,112 @@ function AnalyzingScreen() {
     return () => clearInterval(id);
   }, [ready]);
 
+  // Show "taking longer" message after 30s
   useEffect(() => {
-    // When arriving with an already-analysed document id, just wait and open it.
-    if (!docParam) analyze.mutate({ sampleId, fileId, fileName });
+    if (ready) return;
+    const id = setTimeout(() => setShowSlow(true), 30_000);
+    return () => clearTimeout(id);
+  }, [ready]);
+
+  // Fire analyze exactly once — ref guard prevents React Strict Mode double-invoke
+  useEffect(() => {
+    if (docParam || hasCalledRef.current) return;
+    hasCalledRef.current = true;
+    analyze.mutate({ sampleId, fileId, fileName });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // On success: show results for 2.5s then navigate
   useEffect(() => {
     const id = docParam ?? analyze.data?.id ?? sampleId;
     if (!ready || !id) return;
     setStage(STEPS.length);
-    const timer = setTimeout(() => {
-      setDirection('push');
-      router.replace(`/v2/documents/${id}`);
-    }, 200);
-    return () => clearTimeout(timer);
+
+    if (analyze.data) {
+      setShowResults(true);
+      const timer = setTimeout(() => {
+        setDirection('push');
+        router.replace(`/v2/documents/${id}`);
+      }, 2500);
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => {
+        setDirection('push');
+        router.replace(`/v2/documents/${id}`);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, docParam]);
+
+  const doc = analyze.data;
+  const matchedServices = doc
+    ? GOV_SERVICES.filter((svc) =>
+        svc.documents.some((req) => documentSatisfies(req.en, doc)),
+      )
+    : [];
+
+  // Results screen — shown for 2.5s after successful analysis
+  if (showResults && doc) {
+    return (
+      <div className="flex min-h-full flex-col gap-4 pt-4">
+        <div className="flex items-center gap-3 rounded-[18px] bg-[#EDFDF4] p-4">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#2E9B67] text-white">
+            <Icon name="check" className="h-5 w-5" strokeWidth={3} />
+          </span>
+          <div>
+            <p className="text-base font-bold text-[#101828]">Document analysed</p>
+            <p className="text-sm text-[#6B7890]">Opening details…</p>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-[18px] border border-[#EAF1FF] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+          <div className="border-b border-[#EAF1FF] px-4 pt-4 pb-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7890]">
+              Detected document
+            </p>
+            <p className="mt-0.5 text-lg font-bold text-[#101828]">
+              {doc.docType || 'Government Document'}
+            </p>
+          </div>
+          {(doc.personal ?? []).slice(0, 4).map((field) => (
+            <div
+              key={field.label.en}
+              className="flex items-center justify-between border-b border-[#EAF1FF] px-4 py-2.5 last:border-none"
+            >
+              <span className="text-sm text-[#6B7890]">{field.label.en}</span>
+              <span className="max-w-[55%] truncate text-right text-sm font-semibold text-[#101828]">
+                {field.sensitive ? '••••••' : field.value}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {matchedServices.length > 0 && (
+          <div className="rounded-[18px] border border-[#EAF1FF] bg-white p-4 shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#6B7890]">
+              Services you can apply for
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {matchedServices.slice(0, 4).map((svc) => (
+                <span
+                  key={svc.id}
+                  className="rounded-full bg-[#EAF1FF] px-3 py-1 text-xs font-semibold text-[#173A78]"
+                >
+                  {svc.title.en}
+                </span>
+              ))}
+              {matchedServices.length > 4 && (
+                <span className="rounded-full bg-[#F0F4FF] px-3 py-1 text-xs font-semibold text-[#6B7890]">
+                  +{matchedServices.length - 4} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-full flex-col items-center pt-6 text-center">
@@ -77,7 +169,11 @@ function AnalyzingScreen() {
       <h2 className="v2-heading mt-6 max-w-[18rem] text-xl font-bold leading-snug text-[#101828]">
         Extracting and understanding your document
       </h2>
-      <p className="mt-2 text-base text-[#667085]">This may take a few seconds...</p>
+      <p className="mt-2 text-base text-[#667085]">
+        {showSlow
+          ? 'This is taking a bit longer than usual — please wait…'
+          : 'This may take a few seconds...'}
+      </p>
 
       {fromBytes > 0 && toBytes > 0 && toBytes < fromBytes && (
         <div className="mt-4 flex items-center gap-2 rounded-full bg-[#EAF7F0] px-4 py-2 text-sm font-semibold text-[#2FA66A]">
@@ -124,7 +220,10 @@ function AnalyzingScreen() {
           </p>
           <button
             type="button"
-            onClick={() => { setDirection('pop'); router.replace('/v2/upload'); }}
+            onClick={() => {
+              setDirection('pop');
+              router.replace('/v2/upload');
+            }}
             className="w-full rounded-[14px] bg-[#173A78] px-4 py-3 text-base font-bold text-white active:translate-y-px"
           >
             Back to upload

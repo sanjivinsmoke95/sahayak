@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { ServiceRequirement } from '@/components/services';
@@ -23,6 +24,12 @@ export default function V2DocumentPlanPage() {
   const router = useRouter();
   const { t, tr } = useTranslation();
   const id = params.id;
+
+  // This page's navigation button was removed from the V2 doc detail.
+  // Redirect direct visitors to the document detail which now shows matched services inline.
+  useEffect(() => {
+    router.replace(`/v2/documents/${id}`);
+  }, [id, router]);
 
   const { data: document, isLoading } = useDocument(id);
   const { data: allDocuments } = useDocuments();
