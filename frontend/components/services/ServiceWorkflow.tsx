@@ -12,7 +12,6 @@ import {
 import { matchRequirement } from '@/lib/requirement-match';
 import { useUiStore } from '@/store';
 import type { CitizenService } from '@/types';
-import { ReadinessCheck } from './ReadinessCheck';
 import { ServiceRequirement } from './ServiceRequirement';
 
 /**
@@ -83,8 +82,6 @@ export function ServiceWorkflow({ service }: { service: CitizenService }) {
           ))}
         </ul>
       </section>
-
-      <ReadinessCheck service={service} />
 
       <section>
         <h2 className="mb-3 text-xl font-bold">{t('svcSteps')}</h2>
