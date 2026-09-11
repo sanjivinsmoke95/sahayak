@@ -49,13 +49,7 @@ export {
   useBackendHealth, useSearchServices, useTriggerCrawl, govKeys,
 } from './useGovServices';
 export { useSchemeSearch, useSchemeCategories, useSchemeMatches, useScheme } from './useSchemes';
-export {
-  useCitizenProfile,
-  useConnectedSystems,
-  useSyncHistory,
-  useUpdateAddress,
-  useUpdatePhone,
-  useRetrySync,
-  useUpdateIdentity,
-  useSimulateSystem,
-} from './useInteroperability';
+// Interoperability hooks are imported directly from './useInteroperability' by
+// their one consumer, not re-exported here — routing them through this barrel
+// created a circular-initialization path that left the hooks undefined at
+// render. See app/v2/gov-profile/page.tsx.

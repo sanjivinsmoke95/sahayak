@@ -11,13 +11,13 @@ import {
   useSimulateSystem,
   useUpdateAddress,
   useUpdatePhone,
-} from '@/hooks';
+} from '@/hooks/useInteroperability';
 import type {
   AddressValue,
   ConnectedSystem,
   GovSystem,
   SyncResponse,
-} from '@/services';
+} from '@/services/interoperability.service';
 
 const ALL_SYSTEMS: GovSystem[] = ['aadhaar', 'pan', 'rto', 'passport', 'voter'];
 const SYSTEM_ICON: Record<GovSystem, string> = {

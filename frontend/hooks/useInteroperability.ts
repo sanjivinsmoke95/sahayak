@@ -8,7 +8,7 @@ import {
   type ConnectedSystem,
   type GovSystem,
   type SyncBatchRecord,
-} from '@/services';
+} from '@/services/interoperability.service';
 import { useAuthToken } from './useAuthToken';
 
 const PROFILE_KEY = ['interop', 'profile'] as const;
