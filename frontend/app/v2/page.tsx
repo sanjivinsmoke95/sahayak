@@ -110,8 +110,10 @@ export default function V2HomePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => { setDirection('push'); router.push('/v2/search'); }}
             placeholder={t('askAnything')}
             className="flex-1 bg-transparent text-base text-[#101828] placeholder:text-[#98A2B3] outline-none"
+            readOnly
           />
           <button type="button" onClick={() => go('/v2/voice')} aria-label={t('tileVoice')} className="shrink-0 text-[#173A78]">
             <Icon name="mic" className="h-5 w-5" />

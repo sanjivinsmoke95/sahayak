@@ -25,6 +25,12 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/v2/documents'),
   },
   {
+    href: '/v2/search',
+    labelKey: 'searchTitle',
+    icon: 'search',
+    match: (p) => p.startsWith('/v2/search'),
+  },
+  {
     href: '/v2/alerts',
     labelKey: 'tabAlerts',
     icon: 'bell',
@@ -52,7 +58,7 @@ export function V2TabBar() {
       className="shrink-0 border-t border-[#E8EDF5] bg-white"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-5">
         {TABS.map((tab) => {
           const active = tab.match(pathname);
           return (
