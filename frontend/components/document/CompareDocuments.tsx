@@ -9,6 +9,33 @@ import type { SahayakDocument } from '@/types';
 
 const norm = (v: string) => v.trim().toLowerCase().replace(/\s+/g, ' ');
 
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  const dp: number[][] = [];
+  for (let i = 0; i <= m; i++) {
+    dp[i] = [];
+    for (let j = 0; j <= n; j++) {
+      if (i === 0) { dp[i][j] = j; continue; }
+      if (j === 0) { dp[i][j] = i; continue; }
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+/** Names: treat as matching if edit distance ≤ 35% of the longer name. */
+function valuesMatch(key: string, a: string, b: string): boolean {
+  const na = norm(a), nb = norm(b);
+  if (na === nb) return true;
+  if (key === 'name' || key === 'father' || key === 'mother') {
+    const dist = levenshtein(na, nb);
+    return dist / Math.max(na.length, nb.length) <= 0.35;
+  }
+  return false;
+}
+
 function canon(labelEn: string): string {
   const s = labelEn.toLowerCase();
   if (s.includes('father')) return 'father';
@@ -57,7 +84,7 @@ export function CompareDocuments({ document: doc }: { document: SahayakDocument 
         a: fa.value,
         b: fb.value,
         sensitive: fa.sensitive || fb.sensitive,
-        match: norm(fa.value) === norm(fb.value),
+        match: valuesMatch(key, fa.value, fb.value),
       });
     }
 
@@ -75,7 +102,7 @@ export function CompareDocuments({ document: doc }: { document: SahayakDocument 
         a: issue.values[ai] ?? '',
         b: issue.values[bi] ?? '',
         sensitive: false,
-        match: norm(issue.values[ai] ?? '') === norm(issue.values[bi] ?? ''),
+        match: valuesMatch(key, issue.values[ai] ?? '', issue.values[bi] ?? ''),
       });
     }
 

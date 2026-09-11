@@ -23,6 +23,35 @@ function norm(v: string) {
 
 type PersonalEntry = { label: string; value: string };
 
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  const dp: number[][] = [];
+  for (let i = 0; i <= m; i++) {
+    dp[i] = [];
+    for (let j = 0; j <= n; j++) {
+      if (i === 0) { dp[i][j] = j; continue; }
+      if (j === 0) { dp[i][j] = i; continue; }
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+/**
+ * Names like "Sanjith" and "Sanjeeth" are the same person — transliteration
+ * and minor spelling variations should not be flagged. We treat names as
+ * mismatched only when they are more than 35% different by edit distance
+ * relative to the longer of the two strings.
+ */
+function nameSimilar(a: string, b: string): boolean {
+  const na = norm(a), nb = norm(b);
+  if (na === nb) return true;
+  const dist = levenshtein(na, nb);
+  return dist / Math.max(na.length, nb.length) <= 0.35;
+}
+
 function findPersonalField(personal: PersonalEntry[] | undefined, field: 'name' | 'dob'): string | undefined {
   return personal?.find((p) => {
     const l = p.label.toLowerCase();
@@ -46,7 +75,9 @@ function checkIdentityMismatch(newDoc: SahayakDocument, existingDocs: SahayakDoc
     if (!ep?.length) continue;
     const existingName = findPersonalField(ep, 'name');
     const existingDob = findPersonalField(ep, 'dob');
-    if (newName && existingName && norm(newName) !== norm(existingName)) return true;
+    // Name: allow minor spelling variation (transliteration, typos)
+    if (newName && existingName && !nameSimilar(newName, existingName)) return true;
+    // DOB: must match exactly — no valid variation exists for a date
     if (newDob && existingDob && norm(newDob) !== norm(existingDob)) return true;
   }
   return false;
