@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Icon } from '@/components/common';
 import { useDocuments, useProfiles, useTranslation } from '@/hooks';
-import { useSettingsStore, useUiStore } from '@/store';
+import { useChatStore, useSettingsStore, useUiStore, useWorkspaceStore } from '@/store';
 
 interface Row {
   icon: string;
@@ -47,7 +47,20 @@ export default function V2ProfilePage() {
     { icon: 'help', label: t('helpSupport'), onClick: () => go('/v2/assistant') },
     { icon: 'info', label: t('aboutSahayak'), onClick: () => go('/v2/settings') },
     { icon: 'star', label: t('rateUs'), onClick: () => toast(t('rateThanks')) },
-    { icon: 'logout', label: t('logout'), danger: true, onClick: () => toast(t('logoutNote')) },
+    {
+      icon: 'logout',
+      label: t('logout'),
+      danger: true,
+      onClick: () => {
+        // Clear all user-specific client state so the next user starts clean.
+        useChatStore.getState().reset();
+        useWorkspaceStore.setState({ activeDocumentId: null, activeModelId: null });
+        useSettingsStore.getState().setContact({ displayName: '', email: '', phone: '' });
+        localStorage.removeItem('sahayak.workspace.v1');
+        localStorage.removeItem('sahayak.last_user_id');
+        toast(t('logoutNote'));
+      },
+    },
   ];
 
   const List = ({ rows }: { rows: Row[] }) => (

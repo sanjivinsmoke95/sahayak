@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSettingsSync, useTranslation } from '@/hooks';
+import { useSettingsSync, useSessionGuard, useTranslation } from '@/hooks';
 import { TEXT_SIZES } from '@/lib/i18n';
 import { useSettingsStore } from '@/store';
 import { BackendStatusBanner } from '@/components/common';
 import { V2AppBar } from './V2AppBar';
 import { V2TabBar } from './V2TabBar';
+import { FloatingChat } from './FloatingChat';
 
 export function V2Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export function V2Shell({ children }: { children: ReactNode }) {
   const { language } = useTranslation();
 
   useSettingsSync();
+  useSessionGuard();
 
   useEffect(() => {
     document.documentElement.style.fontSize = `${TEXT_SIZES[textSize]}px`;
@@ -49,6 +51,7 @@ export function V2Shell({ children }: { children: ReactNode }) {
             {ownHeader ? children : <div className="px-4 pb-10 pt-4">{children}</div>}
           </div>
         </main>
+        <FloatingChat />
         <V2TabBar />
       </div>
     </div>

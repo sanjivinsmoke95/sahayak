@@ -6,6 +6,7 @@ export {
 } from './useDocuments';
 export { useAskAssistant, useCheckEligibility } from './useAssistant';
 export { useSettingsSync, useUpdateSettings } from './useSettings';
+export { useSessionGuard } from './useSessionGuard';
 export {
   useIdentities, useSaveIdentity, useDeleteIdentity, useIdentityAudit, useRevealIdentity,
 } from './useIdentity';
