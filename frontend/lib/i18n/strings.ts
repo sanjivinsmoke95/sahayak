@@ -642,7 +642,7 @@ export const T = {
   homeLead:      L("Let's make government documents easy to understand.",
                    "आइए सरकारी दस्तावेज़ों को समझना आसान बनाएँ।",
                    "ప్రభుత్వ పత్రాలను సులభంగా అర్థం చేసుకుందాం."),
-  askAnything:   L("Search any document...", "कोई भी दस्तावेज़ खोजें...", "ఏదైనా పత్రం వెతకండి..."),
+  askAnything:   L("Search for document requirements...", "दस्तावेज़ आवश्यकताएं खोजें...", "పత్ర అవసరాలు వెతకండి..."),
   uploadSubtitle: L("Photo, PDF or scan", "फोटो, PDF या स्कैन", "ఫోటో, PDF లేదా స్కాన్"),
   tileMyDocs:    L("My Docs", "मेरे दस्तावेज़", "నా పత్రాలు"),
   tileAlerts:    L("Alerts", "अलर्ट", "హెచ్చరికలు"),
@@ -726,6 +726,12 @@ export const T = {
   docFileLoading:   L("Loading your uploaded file…", "अपलोड की गई फ़ाइल लोड हो रही है…", "అప్‌లోడ్ చేసిన ఫైల్ లోడ్ అవుతోంది…"),
   docMeeSevaBtn:    L("Visit a nearby Mee Seva centre", "नज़दीकी मी सेवा केंद्र जाएँ", "సమీప మీ‌సేవ కేంద్రాన్ని సందర్శించండి"),
   docMeeSevaHint:   L("Find the closest centre to submit this in person", "व्यक्तिगत रूप से जमा करने के लिए नज़दीकी केंद्र खोजें", "స్వయంగా సమర్పించడానికి దగ్గరి కేంద్రాన్ని కనుగొనండి"),
+  docServicesTitle: L("Services you can apply for", "जिन सेवाओं के लिए आवेदन कर सकते हैं", "మీరు దరఖాస్తు చేయగలిగే సేవలు"),
+  docServicesHint:  L("This document qualifies you for the following government services", "यह दस्तावेज़ आपको इन सरकारी सेवाओं के लिए योग्य बनाता है", "ఈ పత్రం మీకు ఈ ప్రభుత్వ సేవలకు అర్హత కల్పిస్తుంది"),
+  docHaveDoc:       L("You have this", "आपके पास है", "మీ వద్ద ఉంది"),
+  docThisDoc:       L("This document", "यह दस्तावेज़", "ఈ పత్రం"),
+  docMissingDoc:    L("Still needed", "अभी चाहिए", "ఇంకా అవసరం"),
+  docApplyBtn:      L("How to apply", "कैसे आवेदन करें", "ఎలా దరఖాస్తు చేయాలి"),
 
   // Secure identity numbers (Aadhaar / PAN).
   idTitle:          L("ID numbers", "पहचान संख्याएँ", "గుర్తింపు నంబర్లు"),
