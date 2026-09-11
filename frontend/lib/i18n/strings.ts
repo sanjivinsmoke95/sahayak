@@ -682,6 +682,7 @@ export const T = {
   logout:        L("Logout", "लॉग आउट", "లాగ్ అవుట్"),
   rateThanks:    L("Thanks for using Sahayak!", "सहायक उपयोग करने के लिए धन्यवाद!", "సహాయక్ ఉపయోగించినందుకు ధన్యవాదాలు!"),
   searchTitle:   L("Search", "खोजें", "శోధన"),
+  searchAnything: L("Search documents, services, schemes...", "दस्तावेज़, सेवाएँ, योजनाएँ खोजें...", "పత్రాలు, సేవలు, పథకాలు వెతకండి..."),
   searchHint:    L("Search your documents and government schemes.",
                    "अपने दस्तावेज़ और सरकारी योजनाएँ खोजें।",
                    "మీ పత్రాలు మరియు ప్రభుత్వ పథకాలను శోధించండి."),

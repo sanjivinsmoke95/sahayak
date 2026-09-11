@@ -69,6 +69,32 @@ SERVICES: dict[str, ServiceEntry] = {
             _req("Address proof", ["residence", "domicile"]),
         ]
     },
+    "ews-certificate": {
+        "requirements": [
+            _req("Aadhaar card", ["aadhaar", "aadhar"]),
+            _req("Income certificate (family income ≤ ₹8 lakh/year)", ["income"]),
+            _req("Ration card or address proof", ["ration", "residence", "domicile"]),
+            _req("Land / property record (if applicable)", ["land", "property", "patta"]),
+            _req("Affidavit on stamp paper", []),
+            _req("Passport size photo", []),
+        ]
+    },
+    "birth-certificate": {
+        "requirements": [
+            _req("Hospital discharge summary or delivery record", []),
+            _req("Parents' Aadhaar card", ["aadhaar", "aadhar"]),
+            _req("Marriage certificate of parents", []),
+            _req("Address proof", ["residence", "domicile", "ration"]),
+        ]
+    },
+    "disability-certificate": {
+        "requirements": [
+            _req("Aadhaar card", ["aadhaar", "aadhar"]),
+            _req("Medical records / doctor's report", []),
+            _req("Passport size photo", []),
+            _req("Address proof", ["residence", "domicile"]),
+        ]
+    },
 }
 
 

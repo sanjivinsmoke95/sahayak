@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/components/common';
 import { V2Badge } from '@/components/v2';
 import { useDocuments, useSchemeSearch, useTranslation } from '@/hooks';
+import { GOV_SERVICES } from '@/lib/data/gov-services';
 import { CATS } from '@/lib/i18n';
 import { useUiStore } from '@/store';
 
@@ -19,6 +20,7 @@ function SearchScreen() {
   const { data: schemeData, isLoading: schemesLoading } = useSchemeSearch({ q: query, limit: 20 });
 
   const q = query.trim().toLowerCase();
+
   const docs = useMemo(() => {
     if (!q) return [];
     return (documents ?? []).filter((d) =>
@@ -26,9 +28,23 @@ function SearchScreen() {
     );
   }, [documents, q, tr]);
 
+  // Match against service titles, forWhom text, and document names
+  const services = useMemo(() => {
+    if (!q) return [];
+    return GOV_SERVICES.filter((s) => {
+      const haystack = [
+        tr(s.title),
+        tr(s.forWhom),
+        s.id,
+        ...s.documents.map((d) => tr(d)),
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [q, tr]);
+
   const schemes = q ? (schemeData?.results ?? []) : [];
   const go = (path: string) => { setDirection('push'); router.push(path); };
-  const nothing = q && docs.length === 0 && schemes.length === 0 && !schemesLoading;
+  const nothing = q && docs.length === 0 && services.length === 0 && schemes.length === 0 && !schemesLoading;
 
   return (
     <div className="space-y-5">
@@ -40,13 +56,28 @@ function SearchScreen() {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={t('askAnything')}
+          placeholder={t('searchAnything')}
           className="w-full rounded-full border border-[#E5E7EB] bg-white py-3.5 pl-12 pr-4 text-base text-[#101828] placeholder:text-[#98A2B3] outline-none focus:border-[#173A78] focus:ring-2 focus:ring-[#EAF1FF]"
         />
       </div>
 
       {!q && (
-        <p className="pt-6 text-center text-sm text-[#667085]">{t('searchHint')}</p>
+        <div className="space-y-3 pt-2">
+          <p className="text-center text-sm text-[#667085]">{t('searchHint')}</p>
+          {/* Quick suggestion chips */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {['EWS certificate', 'Income certificate', 'Pension', 'Caste certificate', 'Birth certificate'].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setQuery(s)}
+                className="rounded-full border border-[#E5E7EB] bg-white px-3.5 py-1.5 text-sm text-[#173A78] font-medium active:bg-[#F5F8FF]"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {nothing && (
@@ -56,7 +87,44 @@ function SearchScreen() {
         </div>
       )}
 
-      {/* Documents */}
+      {/* Government Services — "How to apply" results */}
+      {services.length > 0 && (
+        <section>
+          <h2 className="v2-heading mb-2 text-sm font-bold uppercase tracking-wider text-[#667085]">
+            How to apply
+          </h2>
+          <ul className="space-y-2.5">
+            {services.map((svc) => {
+              const docCount = svc.documents.length;
+              return (
+                <li key={svc.id}>
+                  <button
+                    type="button"
+                    onClick={() => go(`/v2/services/${svc.id}`)}
+                    className="flex w-full items-start gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-3.5 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#173A78]">
+                      <Icon name="tasks" className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[15px] font-bold leading-snug text-[#101828]">{tr(svc.title)}</span>
+                      <span className="mt-1 flex items-center gap-1.5">
+                        <Icon name="doc" className="h-3.5 w-3.5 text-[#667085]" />
+                        <span className="text-xs text-[#667085]">{docCount} documents required</span>
+                      </span>
+                    </span>
+                    <span className="mt-1 shrink-0 rounded-full bg-[#173A78] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                      Apply
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      {/* My Documents */}
       {docs.length > 0 && (
         <section>
           <h2 className="v2-heading mb-2 text-sm font-bold uppercase tracking-wider text-[#667085]">{t('shortDocs')}</h2>
