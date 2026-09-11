@@ -32,10 +32,12 @@ export function ServiceRequirement({
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [identityMismatch, setIdentityMismatch] = useState(false);
 
   const pick = async (file?: File) => {
     if (!file) return;
     setFeedback(null);
+    setIdentityMismatch(false);
     setPending(true);
     const res = await onUpload(file);
     setPending(false);
@@ -46,6 +48,7 @@ export function ServiceRequirement({
     else if (res.kind === 'not-gov')
       setFeedback(res.docType ? fill(t('chatNotGovGuess'), { type: res.docType }) : t('chatNotGov'));
     else setFeedback(t('chatUploadFail'));
+    if (res.identityMismatch) setIdentityMismatch(true);
   };
 
   const provided = !!matched;
@@ -75,6 +78,12 @@ export function ServiceRequirement({
             <p className="mt-2 rounded-lg bg-navy-50 p-2 text-sm leading-relaxed text-ink">
               {feedback}
             </p>
+          )}
+          {identityMismatch && (
+            <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2">
+              <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <p className="text-sm leading-relaxed text-amber-800">{t('svcIdMismatch')}</p>
+            </div>
           )}
         </div>
 

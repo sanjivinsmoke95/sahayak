@@ -7,10 +7,8 @@ import { Button, Sheet, Skeleton } from '@/components/ui';
 import {
   BelongsTo,
   CompareDocuments,
-  DocumentQuickActions,
   DocumentSummaryCard,
   EligibilityChecker,
-  ExplanationSections,
   FormAssistant,
   JargonPairs,
   OriginalFile,
@@ -69,25 +67,19 @@ export default function DocumentDetailPage() {
       {/* Identity + status. */}
       <DocumentSummaryCard document={document} />
 
+      {/* Original document preview — always visible so you can see what you uploaded. */}
+      <OriginalFile document={document} />
+
+      {/* Extracted personal information — shown immediately after the file. */}
+      <PersonalDetails document={document} />
+
       {/* Urgent, contextual — these self-hide when not applicable. */}
       <RejectionExplainer document={document} />
       <FormAssistant document={document} />
       <BelongsTo document={document} />
 
-      {/* Primary next actions. */}
-      <DocumentQuickActions document={document} />
-
-      {/* Optional, user-triggered document comparison. */}
+      {/* Cross-check this document's details against another. */}
       <CompareDocuments document={document} />
-
-      {/* Documents you need — kept prominent, with its direct submit path. */}
-      <StepChecklist document={document} checklist={checklist} kind="need" />
-
-      {/* More information — progressive disclosure. */}
-      <ExpandableSection title={t('moreExtracted')} icon="info">
-        <PersonalDetails document={document} />
-        <ExplanationSections document={document} />
-      </ExpandableSection>
 
       <ExpandableSection title={t('moreDocsServices')} icon="tasks">
         <RelevantServices document={document} />
@@ -101,7 +93,6 @@ export default function DocumentDetailPage() {
       </ExpandableSection>
 
       <ExpandableSection title={t('moreOriginal')} icon="doc">
-        <OriginalFile document={document} />
         <OriginalWording document={document} />
       </ExpandableSection>
 

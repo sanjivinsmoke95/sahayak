@@ -215,6 +215,7 @@ export const T = {
   svcReuse:         L("Already in My Documents", "पहले से मेरे दस्तावेज़ में", "ఇప్పటికే నా పత్రాలలో ఉంది"),
   svcSlotSatisfied: L("Added. This satisfies the requirement.", "जोड़ा गया। यह आवश्यकता पूरी करता है।", "జోడించబడింది. ఇది అవసరాన్ని తీరుస్తుంది."),
   svcSlotWrong:     L("Saved to My Documents, but this {type} does not satisfy this requirement.", "मेरे दस्तावेज़ में सहेजा गया, पर यह {type} इस आवश्यकता को पूरा नहीं करता।", "నా పత్రాలలో భద్రపరచబడింది, కానీ ఈ {type} ఈ అవసరాన్ని తీర్చదు."),
+  svcIdMismatch:    L("Warning: the name or date of birth on this document does not match your other documents. Please verify it belongs to the same person.", "चेतावनी: इस दस्तावेज़ पर नाम या जन्म तिथि आपके अन्य दस्तावेज़ों से मेल नहीं खाती। कृपया जाँचें कि यह उसी व्यक्ति का है।", "హెచ్చరిక: ఈ పత్రంలోని పేరు లేదా జన్మ తేదీ మీ ఇతర పత్రాలతో సరిపోలడం లేదు. ఇది అదే వ్యక్తిదని ధృవీకరించండి."),
   svcRelevant:      L("Where you can use this document", "आप इस दस्तावेज़ का उपयोग कहाँ कर सकते हैं", "ఈ పత్రాన్ని మీరు ఎక్కడ ఉపయోగించవచ్చు"),
   svcReplace:       L("Replace", "बदलिए", "మార్చండి"),
   // Action plan (per document)
