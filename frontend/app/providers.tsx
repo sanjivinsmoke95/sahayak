@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
+import { ServiceWorkerInit } from '@/components/common';
 
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -34,6 +35,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <MaybeClerk>
       <QueryClientProvider client={queryClient}>
+        <ServiceWorkerInit />
         {children}
         <Toaster position="bottom-center" richColors closeButton={false} />
       </QueryClientProvider>

@@ -642,7 +642,7 @@ export const T = {
   homeLead:      L("Let's make government documents easy to understand.",
                    "आइए सरकारी दस्तावेज़ों को समझना आसान बनाएँ।",
                    "ప్రభుత్వ పత్రాలను సులభంగా అర్థం చేసుకుందాం."),
-  askAnything:   L("Ask Sahayak anything...", "सहायक से कुछ भी पूछें...", "సహాయక్‌ను ఏదైనా అడగండి..."),
+  askAnything:   L("Search any document...", "कोई भी दस्तावेज़ खोजें...", "ఏదైనా పత్రం వెతకండి..."),
   uploadSubtitle: L("Photo, PDF or scan", "फोटो, PDF या स्कैन", "ఫోటో, PDF లేదా స్కాన్"),
   tileMyDocs:    L("My Docs", "मेरे दस्तावेज़", "నా పత్రాలు"),
   tileAlerts:    L("Alerts", "अलर्ट", "హెచ్చరికలు"),
