@@ -6,10 +6,8 @@ import { Icon } from '@/components/common';
 import { Sheet, Skeleton } from '@/components/ui';
 import { V2Button, V2Header } from '@/components/v2';
 import {
-  useDeleteDocument, useDocument, useDocuments, useSpeech, useTranslation,
+  useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
-import { GOV_SERVICES } from '@/lib/data/gov-services';
-import { documentSatisfies, matchRequirement } from '@/lib/requirement-match';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode, Localized, SahayakDocument } from '@/types';
 import { fill, formatDate, isValidIsoDate } from '@/utils/format';
@@ -111,7 +109,7 @@ export default function V2DocumentDetailPage() {
           onShare={share}
           onDelete={() => setDeleteOpen(true)}
           onIdentity={() => { setDirection('push'); router.push('/v2/identity'); }}
-          onApplyService={(sid) => { setDirection('push'); router.push(`/v2/services/${sid}`); }}
+          onServices={() => { setDirection('push'); router.push('/v2/services'); }}
         />
       )}
 
@@ -145,7 +143,7 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete, onIdentity, onApplyService,
+  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete, onIdentity, onServices,
 }: {
   document: SahayakDocument;
   language: LanguageCode;
@@ -158,11 +156,9 @@ function DetailBody({
   onShare: () => void;
   onDelete: () => void;
   onIdentity: () => void;
-  onApplyService: (serviceId: string) => void;
+  onServices: () => void;
 }) {
   const { t } = useTranslation();
-  const { data: allDocuments } = useDocuments();
-  const doc = document; // alias to avoid global `document` shadowing in closures
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   // Prefer the specific analysed title ("Income Certificate") over the generic
@@ -265,101 +261,21 @@ function DetailBody({
         </p>
       )}
 
-      {/* Services this document helps with */}
-      {(() => {
-        const docs = allDocuments ?? [];
-        const matchingServices = GOV_SERVICES.filter((svc) =>
-          svc.documents.some((req) => documentSatisfies(req.en, doc))
-        );
-        if (matchingServices.length === 0) return null;
-        return (
-          <div className="rounded-[20px] border border-[#E8EDF5] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)] overflow-hidden">
-            <div className="px-4 pt-4 pb-3 border-b border-[#F0F4FB]">
-              <h2 className="v2-heading text-base font-bold text-[#101828]">{t('docServicesTitle')}</h2>
-              <p className="mt-0.5 text-xs text-[#667085]">{t('docServicesHint')}</p>
-            </div>
-            <div className="divide-y divide-[#F0F4FB]">
-              {matchingServices.map((svc) => {
-                const matches = svc.documents.map((req) => matchRequirement(req.en, docs));
-                const provided = matches.filter(Boolean).length;
-                const total = svc.documents.length;
-                const pct = total > 0 ? Math.round((provided / total) * 100) : 0;
-                const ready = provided === total;
-                return (
-                  <div key={svc.id} className="px-4 py-3.5">
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-[#EAF1FF] text-[#173A78]">
-                          <Icon name={svc.icon} className="h-4 w-4" />
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-[#101828] leading-tight truncate">{tr(svc.title)}</p>
-                          <p className="text-[10px] text-[#667085]">{fill(t('reqMet'), { a: provided, b: total })}</p>
-                        </div>
-                      </div>
-                      <span
-                        className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
-                        style={ready
-                          ? { backgroundColor: '#D3E9D4', color: '#3E8E5A' }
-                          : { backgroundColor: '#FFE3C5', color: '#EA9A3E' }}
-                      >
-                        {pct}%
-                      </span>
-                    </div>
-                    {/* Progress bar */}
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#EEF2F7] mb-3">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: ready ? '#3E8E5A' : '#173A78' }}
-                      />
-                    </div>
-                    {/* Document checklist */}
-                    <ul className="space-y-1.5 mb-3">
-                      {svc.documents.map((req, idx) => {
-                        const matched = matches[idx];
-                        const isThisDoc = documentSatisfies(req.en, doc);
-                        return (
-                          <li key={req.en} className="flex items-center gap-2">
-                            <span
-                              className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-white text-[10px]`}
-                              style={{ backgroundColor: matched ? '#3E8E5A' : '#C6CDD8' }}
-                            >
-                              {matched ? (
-                                <Icon name="check" className="h-3 w-3" />
-                              ) : (
-                                <span>–</span>
-                              )}
-                            </span>
-                            <span className={`text-xs flex-1 ${matched ? 'text-[#101828]' : 'text-[#667085]'}`}>
-                              {tr(req)}
-                            </span>
-                            {matched ? (
-                              <span className="text-[10px] font-semibold" style={{ color: isThisDoc ? '#173A78' : '#3E8E5A' }}>
-                                {isThisDoc ? t('docThisDoc') : t('docHaveDoc')}
-                              </span>
-                            ) : (
-                              <span className="text-[10px] text-[#C6CDD8]">{t('docMissingDoc')}</span>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <button
-                      type="button"
-                      onClick={() => onApplyService(svc.id)}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-[12px] py-2.5 text-sm font-bold text-white"
-                      style={{ backgroundColor: '#173A78' }}
-                    >
-                      {t('docApplyBtn')}
-                      <Icon name="right" className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })()}
+      {/* Services banner — tap to explore services this document unlocks */}
+      <button
+        type="button"
+        onClick={onServices}
+        className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+      >
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#173A78]">
+          <Icon name="tasks" className="h-5 w-5" />
+        </span>
+        <span className="flex-1">
+          <span className="block text-[15px] font-bold text-[#101828]">{t('docServicesTitle')}</span>
+          <span className="mt-0.5 block text-xs text-[#6B7890]">{t('docServicesHint')}</span>
+        </span>
+        <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+      </button>
 
       {/* Find matching schemes */}
       <button
