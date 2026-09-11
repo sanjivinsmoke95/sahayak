@@ -8,6 +8,8 @@ import { V2Button, V2Header } from '@/components/v2';
 import {
   useDeleteDocument, useDocument, useSpeech, useTranslation,
 } from '@/hooks';
+import { GOV_SERVICES } from '@/lib/data/gov-services';
+import { documentSatisfies } from '@/lib/requirement-match';
 import { useUiStore, useWorkspaceStore } from '@/store';
 import type { LanguageCode, Localized, SahayakDocument } from '@/types';
 import { fill, formatDate, isValidIsoDate } from '@/utils/format';
@@ -105,11 +107,10 @@ export default function V2DocumentDetailPage() {
           onSchemes={() => { setDirection('push'); router.push('/v2/schemes'); }}
           onAsk={() => { setDirection('push'); router.push('/v2/assistant'); }}
           onMeeSeva={() => { setDirection('push'); router.push('/v2/mee-seva'); }}
-          onPlan={() => { setDirection('push'); router.push(`/v2/documents/${id}/plan`); }}
           onShare={share}
           onDelete={() => setDeleteOpen(true)}
           onIdentity={() => { setDirection('push'); router.push('/v2/identity'); }}
-          onServices={() => { setDirection('push'); router.push('/v2/services'); }}
+          onService={(id) => { setDirection('push'); router.push(`/v2/services/${id}`); }}
         />
       )}
 
@@ -143,7 +144,7 @@ export default function V2DocumentDetailPage() {
 }
 
 function DetailBody({
-  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onPlan, onShare, onDelete, onIdentity, onServices,
+  document, language, tr, speech, onSchemes, onAsk, onMeeSeva, onShare, onDelete, onIdentity, onService,
 }: {
   document: SahayakDocument;
   language: LanguageCode;
@@ -152,13 +153,16 @@ function DetailBody({
   onSchemes: () => void;
   onAsk: () => void;
   onMeeSeva: () => void;
-  onPlan: () => void;
   onShare: () => void;
   onDelete: () => void;
   onIdentity: () => void;
-  onServices: () => void;
+  onService: (serviceId: string) => void;
 }) {
   const { t } = useTranslation();
+
+  const matchedServices = GOV_SERVICES.filter((svc) =>
+    svc.documents.some((req) => documentSatisfies(req.en, document)),
+  );
 
   const deadline = isValidIsoDate(document.deadline) ? document.deadline : null;
   // Prefer the specific analysed title ("Income Certificate") over the generic
@@ -261,31 +265,44 @@ function DetailBody({
         </p>
       )}
 
-      {/* Services banner — tap to explore services this document unlocks */}
-      <button
-        type="button"
-        onClick={onServices}
-        className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
-      >
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#EAF1FF] text-[#173A78]">
-          <Icon name="tasks" className="h-5 w-5" />
-        </span>
-        <span className="flex-1">
-          <span className="block text-[15px] font-bold text-[#101828]">{t('docServicesTitle')}</span>
-          <span className="mt-0.5 block text-xs text-[#6B7890]">{t('docServicesHint')}</span>
-        </span>
-        <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
-      </button>
-
-      {/* Find matching schemes */}
-      <button
-        type="button"
-        onClick={onSchemes}
-        className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-[#D6E0F5] bg-[#EAF1FF] px-4 py-4 text-base font-bold text-[#173A78] active:bg-[#DDE8FB]"
-      >
-        {t('docSchemes')}
-        <Icon name="right" className="h-4 w-4" />
-      </button>
+      {/* Services this document can be used for — computed from the document type */}
+      {matchedServices.length > 0 && (
+        <div className="overflow-hidden rounded-[20px] border border-[#EAF1FF] bg-white shadow-[0_1px_4px_rgba(16,40,99,0.05)]">
+          <div className="flex items-center gap-3 border-b border-[#EAF1FF] px-4 py-3.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-[#EAF1FF] text-[#173A78]">
+              <Icon name="tasks" className="h-5 w-5" />
+            </span>
+            <div className="flex-1">
+              <p className="text-[15px] font-bold text-[#101828]">{t('svcRelevant')}</p>
+              <p className="mt-0.5 text-xs text-[#6B7890]">
+                {matchedServices.length === 1
+                  ? '1 service'
+                  : `${matchedServices.length} services`}
+              </p>
+            </div>
+          </div>
+          <ul className="divide-y divide-[#EAF1FF]">
+            {matchedServices.map((svc) => (
+              <li key={svc.id}>
+                <button
+                  type="button"
+                  onClick={() => onService(svc.id)}
+                  className="flex w-full items-center gap-3 px-4 py-3.5 text-left active:bg-[#F5F8FF]"
+                >
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-[#F5F8FF] text-[#173A78]">
+                    <Icon name={svc.icon} className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[15px] font-semibold text-[#101828]">{tr(svc.title)}</span>
+                    <span className="block truncate text-xs text-[#6B7890]">{tr(svc.forWhom)}</span>
+                  </span>
+                  <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Ask about this document */}
       <button
@@ -298,15 +315,14 @@ function DetailBody({
         <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
       </button>
 
-      {/* Document plan */}
+      {/* Find matching schemes */}
       <button
         type="button"
-        onClick={onPlan}
-        className="flex w-full items-center gap-3 rounded-[18px] border border-[#EAF1FF] bg-white p-4 text-left shadow-[0_1px_4px_rgba(16,40,99,0.05)] active:bg-[#F5F8FF]"
+        onClick={onSchemes}
+        className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-[#D6E0F5] bg-[#EAF1FF] px-4 py-4 text-base font-bold text-[#173A78] active:bg-[#DDE8FB]"
       >
-        <Icon name="tasks" className="h-5 w-5 shrink-0 text-[#173A78]" />
-        <span className="flex-1 text-[15px] font-semibold text-[#101828]">{t('docPlanTitle')}</span>
-        <Icon name="right" className="h-5 w-5 shrink-0 text-[#C6D0E4]" />
+        {t('docSchemes')}
+        <Icon name="right" className="h-4 w-4" />
       </button>
 
       {/* Share */}
