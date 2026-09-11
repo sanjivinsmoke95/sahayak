@@ -25,6 +25,8 @@ from app.routers import (
     health,
     identity,
     intelligence,
+    interoperability,
+    mock_gov,
     places,
     profiles,
     projects,
@@ -189,6 +191,13 @@ for router in (
     identity.router,
 ):
     app.include_router(router, prefix=settings.api_prefix)
+
+# Interoperability (SIH26129) is registered only while enabled, so the whole
+# feature — the citizen API and the five mock systems — can be switched off with
+# a single flag without touching anything else.
+if settings.interop_enabled:
+    app.include_router(interoperability.router, prefix=settings.api_prefix)
+    app.include_router(mock_gov.router, prefix=settings.api_prefix)
 
 
 @app.get("/")
