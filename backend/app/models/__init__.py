@@ -4,6 +4,13 @@ from app.models.chat import Chat
 from app.models.document import Document
 from app.models.file import File
 from app.models.identity import IdentityAuditLog, UserIdentity
+from app.models.interoperability import (
+    CitizenProfile,
+    MockGovRecord,
+    SyncBatch,
+    SyncConsent,
+    SyncResult,
+)
 from app.models.message import Message
 from app.models.profile import DocumentProfile, Profile
 from app.models.project import Project
@@ -16,11 +23,16 @@ __all__ = [
     "Application",
     "ApplicationEvent",
     "Chat",
+    "CitizenProfile",
     "Document",
     "DocumentProfile",
     "Profile",
     "File",
     "IdentityAuditLog",
+    "MockGovRecord",
+    "SyncBatch",
+    "SyncConsent",
+    "SyncResult",
     "UserIdentity",
     "Message",
     "Project",

@@ -30,6 +30,7 @@ export default function V2ProfilePage() {
 
   const services: Row[] = [
     { icon: 'folder', label: t('navDocs'), value: String(docCount), onClick: () => go('/v2/documents') },
+    { icon: 'shield', label: 'Government Profile', onClick: () => go('/v2/gov-profile') },
     { icon: 'lock', label: t('idTitle'), onClick: () => go('/v2/identity') },
     { icon: 'search', label: t('schemesForMe'), onClick: () => go('/v2/schemes') },
     { icon: 'spark', label: t('discoverServices'), onClick: () => go('/v2/discover') },

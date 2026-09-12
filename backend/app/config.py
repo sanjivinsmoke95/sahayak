@@ -52,6 +52,19 @@ class Settings(BaseSettings):
     google_maps_api_key: str = ""
     google_maps_browser_key: str = ""
 
+    # Government interoperability (SIH26129). The connectors reach the mock
+    # government systems over HTTP at this base (the app's own /api by default,
+    # so a single running backend serves both sides of the demonstration).
+    interop_enabled: bool = True
+    mock_gov_base_url: str = "http://localhost:8000/api"
+    # Optional shared secret the connectors present to the mock systems, to
+    # model system-to-system authentication. Blank leaves the mock endpoints
+    # open, which is fine for a local demo.
+    mock_gov_api_key: str = ""
+    # Optional data.gov.in key for reference lookups (pincode -> city/state).
+    # Never a dependency: absent, the interop demo works unchanged.
+    data_gov_api_key: str = ""
+
     # Identity encryption (Aadhaar / PAN). Versioned so keys can be rotated:
     # "v1:<base64 32 bytes>,v2:<base64 32 bytes>". Blank leaves the identity
     # endpoints disabled — there is no plaintext fallback. See .env.example.
@@ -77,6 +90,10 @@ class Settings(BaseSettings):
     @property
     def maps_enabled(self) -> bool:
         return bool(self.google_maps_api_key)
+
+    @property
+    def data_gov_enabled(self) -> bool:
+        return bool(self.data_gov_api_key)
 
 
 @lru_cache
